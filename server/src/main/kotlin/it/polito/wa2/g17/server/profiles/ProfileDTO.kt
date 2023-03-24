@@ -6,5 +6,6 @@ data class ProfileDTO(
     val surname: String
 )
 
-fun Profile.toDTO(): ProfileDTO = ProfileDTO(this.email, this.name, this.surname)
-
+fun Profile.toDTO(): ProfileDTO {
+    return ProfileDTO(email, name, surname)
+}

@@ -9,10 +9,11 @@ class ProductServiceImpl(private val productRepository: ProductRepository) : Pro
         return productRepository.findAll().map { it.toDTO() }
     }
 
-    override fun getProduct(ean: String): ProductDTO? {
-        return productRepository
+    override fun getProduct(ean: String): ProductDTO {
+        val product = productRepository
             .findByIdOrNull(ean)
-            ?.toDTO()
+            ?: throw ProductNotFoundException()
+        return product.toDTO()
     }
 
 
