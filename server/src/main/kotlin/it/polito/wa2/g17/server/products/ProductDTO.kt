@@ -6,7 +6,6 @@ data class ProductDTO(
     val brand: String
 )
 
-
 fun Product.toDTO(): ProductDTO {
     return ProductDTO(ean, name, brand)
 }
