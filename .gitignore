@@ -1,0 +1,66 @@
+#projects files
+.idea
+*.iml
+client.iml
+
+#client files
+# dependencies
+/client/node_modules
+/client/.pnp
+.pnp.js
+
+# testing
+/client/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# server files
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+/server/bin/
+!**/server/src/main/**/bin/
+!**/server/src/test/**/bin/
+
+### IntelliJ IDEA ###
+/server/.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/server/src/main/**/out/
+!**/server/src/test/**/out/
+
+### NetBeans ###
+/server/nbproject/private/
+/server/nbbuild/
+/server/dist/
+/server/nbdist/
+/server/.nb-gradle/
+
+### VS Code ###
+.vscode/
