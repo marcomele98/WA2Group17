@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, Row, Col, InputGroup, FormControl, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { PlusSquareFill } from "react-bootstrap-icons";
-import { ClickableOpacity } from './clickableOpacity';
+import { ClickableOpacity } from './ClickableOpacity';
 import { useNavigate } from "react-router-dom";
 
 
