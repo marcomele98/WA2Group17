@@ -37,10 +37,9 @@ function Products({setIsLoading}) {
                 {products
                     .filter(
                         product =>
-                            !filter ||
-                            (product.name.toLowerCase().includes(filter)
+                            product.name.toLowerCase().includes(filter)
                                 || product.brand.toLowerCase().includes(filter)
-                                || product.ean.toLowerCase().includes(filter)))
+                                || product.ean.toLowerCase().includes(filter))
                     .map((product) => {
                         return (
 
