@@ -12,7 +12,7 @@ class ProductServiceImpl(private val productRepository: ProductRepository) : Pro
     override fun getProduct(ean: String): ProductDTO {
         val product = productRepository
             .findByIdOrNull(ean)
-            ?: throw ProductNotFoundException()
+            ?: throw ProductNotFoundException("Product with EAN $ean not found")
         return product.toDTO()
     }
 
