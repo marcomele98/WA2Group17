@@ -39,3 +39,15 @@
   float: right;
   text-decoration: none;
 }
+
+.searchBar {
+  position: fixed;
+  top: 70px;
+  width: 100%;
+  z-index: 1 ;
+}
+
+.products {
+  margin-top: 60px !important;
+  z-index: 0 ;
+}

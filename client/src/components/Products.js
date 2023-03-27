@@ -28,9 +28,12 @@ function Products({setIsLoading}) {
 
     return (
         <>
-            <div>
+
+            <div className="searchBar">
                 <FormControl type="text" placeholder="Search" onChange={ev => setFilter(ev.target.value.toLowerCase())}
                              className="mr-sm-2 mb-3"/>
+            </div>
+            <div className="products">
                 {products
                     .filter(
                         product =>
