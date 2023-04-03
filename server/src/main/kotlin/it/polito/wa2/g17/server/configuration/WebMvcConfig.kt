@@ -1,15 +1,28 @@
 package it.polito.wa2.g17.server.configuration
 
+import org.springframework.boot.web.server.ErrorPage
+import org.springframework.boot.web.server.WebServerFactoryCustomizer
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
+
 @Configuration
-class WebMvcConfig : WebMvcConfigurer {
+public class WebApplicationConfig : WebMvcConfigurer {
 
     override fun addViewControllers(registry: ViewControllerRegistry) {
-        registry.addViewController("/error").setViewName("forward:/index.html")
-        /*registry.addViewController("/{x:[\\w\\-]+}").setViewName("forward:/index.html")
-        registry.addViewController("/{x:[\\w\\-]+}/{y:[\\w\\-]+}").setViewName("forward:/index.html")*/
+        registry.addViewController("/notFound").setViewName("forward:/index.html");
     }
+
+
+    @Bean
+    fun containerCustomizer():WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>  {
+        return WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+                factory -> factory?.addErrorPages(ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
+        };
+    }
+
 }
