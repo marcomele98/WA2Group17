@@ -1,10 +1,8 @@
 package it.polito.wa2.g17.server.profiles
 
-import it.polito.wa2.g17.server.products.ProductNotFoundException
-import it.polito.wa2.g17.server.products.toDTO
-import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProfileServiceImpl(private val profileRepository: ProfileRepository) : ProfileService {
