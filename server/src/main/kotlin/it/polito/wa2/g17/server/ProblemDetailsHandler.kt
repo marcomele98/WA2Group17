@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import it.polito.wa2.g17.server.products.ProductNotFoundException
+import it.polito.wa2.g17.server.profiles.CannotUpdateEmailException
 import it.polito.wa2.g17.server.profiles.DuplicateProfileException
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
 import jakarta.validation.ConstraintViolationException
@@ -31,5 +32,9 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
         }
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, errors!!)
     }
+
+    @ExceptionHandler(CannotUpdateEmailException::class)
+    fun handleProfileNotFound(e: CannotUpdateEmailException) =
+        ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
 }

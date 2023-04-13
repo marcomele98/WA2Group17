@@ -30,6 +30,11 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         if (profileRepository.findByIdOrNull(email) == null) {
             throw ProfileNotFoundException("Profile with email $email not found")
         }
+
+        if (profile.email != email) {
+            throw CannotUpdateEmailException("Impossible to update mail")
+        }
+
         return profileRepository.save(Profile().apply {
             this.email = email
             name = profile.name

@@ -8,20 +8,21 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @Validated
+@RequestMapping("/API/profiles")
 class ProfileController(private val profileService: ProfileService) {
-    @GetMapping("/API/profiles/{email}")
+    @GetMapping("{email}")
     @ResponseStatus(HttpStatus.OK)
     fun getProfile(@PathVariable email: String): ProfileDTO {
         return profileService.getProfile(email)
     }
 
-    @PostMapping("/API/profiles")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@Valid @RequestBody profile: ProfileDTO, br: BindingResult): ProfileDTO {
         return profileService.addProfile(profile)
     }
 
-    @PutMapping("/API/profiles/{email}")
+    @PutMapping("{email}")
     @ResponseStatus(HttpStatus.OK)
     fun editProfile(
         @PathVariable email: String,
