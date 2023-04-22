@@ -59,8 +59,7 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     override fun getTicket(id: Long): TicketDTO {
         val ticket = ticketRepository.findByIdOrNull(id)
             ?: throw TicketNotFoundException("Ticket with ID $id not found")
-        return ticket.toDTO().withMessages(ticket.messages!!.map { it.toDTO() })
-            .withStatusHistory(ticket.statusHistory!!.map { it.toDTO() })
+        return ticket.toDtoComplete()
     }
 
 
