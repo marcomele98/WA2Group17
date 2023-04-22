@@ -10,20 +10,21 @@ import java.util.Date
 class Message(
 
     @Column(nullable = false)
-    var title: String,
-
-    @Column(nullable = false)
     var text: String,
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    var timestamp: Date,
-
-    @OneToMany(mappedBy = "message")
-    val attachments: MutableList<Attachment> = mutableListOf(),
+    var timestamp: Date = Date(),
 
     @ManyToOne
     val ticket: Ticket,
 
-    ): EntityBase<Long>()
+    val userId: Long,
+
+    @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
+    var attachments: MutableList<Attachment> = mutableListOf(),
+
+    ) : EntityBase<Long>() {
+    constructor() : this("", Date(), Ticket(), 0)
+    }
 

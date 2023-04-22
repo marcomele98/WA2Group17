@@ -1,0 +1,67 @@
+package it.polito.wa2.g17.ticketing.tickets;
+
+import it.polito.wa2.g17.ticketing.messages.*
+import it.polito.wa2.g17.ticketing.status.Status
+import it.polito.wa2.g17.ticketing.status.StatusChange
+import it.polito.wa2.g17.ticketing.status.toDTO
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
+
+@Service
+@Transactional
+class TicketServiceImpl(private val ticketRepository: TicketRepository) : TicketService {
+
+
+    //TODO: controllo sul ruolo
+
+
+    override fun createTicket(ticketDTO: TicketDTO): TicketDTO {
+        // chiedere al prof del costruttore
+        return ticketRepository.save(Ticket().apply {
+            customerId = ticketDTO.customerId
+            productEan = ticketDTO.productEan
+            val date = Date()
+            ticketDTO.initialMessage?.withTimestamp(date)?.withUserId(customerId)?.let {
+                messages.add(
+                    it.toEntity(this)
+                )
+            }
+            statusHistory.add(
+                StatusChange(
+                    Status.OPEN,
+                    date,
+                    this.customerId,
+                    this
+                )
+            )
+        }).toDtoComplete()
+    }
+
+    override fun getOpen(): List<TicketDTO> {
+        return ticketRepository.findAllByStatusIn(
+            listOf<Status>(
+                Status.OPEN
+            )
+        ).map { it.toDTO() }
+    }
+
+    override fun getAssigned(): List<TicketDTO> {
+        return ticketRepository.findAllByStatusIn(
+            listOf<Status>(
+                Status.IN_PROGRESS, Status.CLOSED, Status.RESOLVED, Status.REOPEN
+            )
+        ).map { it.toDTO() }
+    }
+
+
+    override fun getTicket(id: Long): TicketDTO {
+        val ticket = ticketRepository.findByIdOrNull(id)
+            ?: throw TicketNotFoundException("Ticket with ID $id not found")
+        return ticket.toDTO().withMessages(ticket.messages!!.map { it.toDTO() })
+            .withStatusHistory(ticket.statusHistory!!.map { it.toDTO() })
+    }
+
+
+}

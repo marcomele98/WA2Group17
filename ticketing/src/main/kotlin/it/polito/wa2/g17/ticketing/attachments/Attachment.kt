@@ -15,12 +15,12 @@ class Attachment(
     @Column(nullable = false)
     var name: String,
 
-    @Column(nullable = false)
+    /*@Column(nullable = false)
     var type: String,
 
     @Lob
     @Column(nullable = false)
-    var content: ByteArray,
+    var content: ByteArray,*/
 
     @ManyToOne
     var message: Message,

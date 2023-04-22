@@ -9,10 +9,12 @@ import java.util.Date
 @Entity
 @Table(name = "status_changes")
 class StatusChange(
+
+    @Enumerated(EnumType.STRING)
     var status: Status,
 
     @Temporal(TemporalType.TIMESTAMP)
-    var timestamp: Date,
+    var timestamp: Date = Date(),
 
     var userId: Long,
 
