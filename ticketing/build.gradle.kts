@@ -6,6 +6,13 @@ plugins {
   kotlin("jvm") version "1.7.22"
   kotlin("plugin.spring") version "1.7.22"
   kotlin("plugin.jpa") version "1.7.22"
+  kotlin("plugin.allopen") version "1.8.20"
+}
+
+allOpen {
+  annotation("jakarta.persistence.Entity")
+  annotation("jakarta.persistence.Embeddable")
+  annotation("jakarta.persistence.MappedSuperclass")
 }
 
 group = "it.polito.wa2.g17"
