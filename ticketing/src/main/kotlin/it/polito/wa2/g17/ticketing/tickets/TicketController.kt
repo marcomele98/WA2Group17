@@ -16,7 +16,7 @@ class TicketController(private val ticketService: TicketService) {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    fun addTicket(@Validated @RequestBody ticket: TicketDTO): TicketDTO {
+    fun addTicket(@Validated @RequestBody ticket: CreateTicketDTO): TicketDTO {
         return ticketService.createTicket(ticket)
     }
 

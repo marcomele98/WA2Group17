@@ -3,7 +3,6 @@ package it.polito.wa2.g17.ticketing.tickets;
 import it.polito.wa2.g17.ticketing.messages.*
 import it.polito.wa2.g17.ticketing.status.Status
 import it.polito.wa2.g17.ticketing.status.StatusChange
-import it.polito.wa2.g17.ticketing.status.toDTO
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional
@@ -17,13 +16,13 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     //TODO: controllo sul ruolo
 
 
-    override fun createTicket(ticketDTO: TicketDTO): TicketDTO {
+    override fun createTicket(createTicketDTO: CreateTicketDTO): TicketDTO {
         // chiedere al prof del costruttore
         return ticketRepository.save(Ticket().apply {
-            customerId = ticketDTO.customerId
-            productEan = ticketDTO.productEan
+            customerId = createTicketDTO.customerId
+            productEan = createTicketDTO.productEan
             val date = Date()
-            ticketDTO.initialMessage?.withTimestamp(date)?.withUserId(customerId)?.let {
+            createTicketDTO.initialMessage?.withTimestamp(date)?.withUserId(customerId)?.let {
                 messages.add(
                     it.toEntity(this)
                 )

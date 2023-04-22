@@ -2,7 +2,7 @@ package it.polito.wa2.g17.ticketing.tickets
 
 interface TicketService {
 
-    fun createTicket(ticketDTO: TicketDTO): TicketDTO
+    fun createTicket(ticketDTO: CreateTicketDTO): TicketDTO
 
     fun getOpen(): List<TicketDTO>
 
