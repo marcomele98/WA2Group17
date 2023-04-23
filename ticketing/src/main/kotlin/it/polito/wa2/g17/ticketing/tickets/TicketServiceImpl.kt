@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.ticketing.tickets;
 
+import it.polito.wa2.g17.ticketing.attachments.toEntity
 import it.polito.wa2.g17.ticketing.messages.*
 import it.polito.wa2.g17.ticketing.status.Status
 import it.polito.wa2.g17.ticketing.status.StatusChange
@@ -15,40 +16,43 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
 
     //TODO: controllo sul ruolo
 
-
     override fun createTicket(createTicketDTO: CreateTicketDTO): TicketDTO {
-        // chiedere al prof del costruttore
-        return ticketRepository.save(Ticket().apply {
-            customerId = createTicketDTO.customerId
-            productEan = createTicketDTO.productEan
-            val date = Date()
-            createTicketDTO.initialMessage?.withTimestamp(date)?.withUserId(customerId)?.let {
-                messages.add(
-                    it.toEntity(this)
-                )
-            }
-            statusHistory.add(
-                StatusChange(
-                    Status.OPEN,
-                    date,
-                    this.customerId,
-                    this
-                )
-            )
-        }).toDtoComplete()
+
+        val date = Date()
+        val ticket = Ticket(createTicketDTO.customerId, createTicketDTO.productEan)
+
+        val message = createTicketDTO.initialMessage
+            .withTimestamp(date)
+            .withUserId(ticket.customerId)
+            .toEntity()
+
+        message.addAttachments(
+            createTicketDTO
+                .initialMessage.attachments
+                .map { it.toEntity() }
+        )
+
+        val status = StatusChange(Status.OPEN, date, ticket.customerId)
+
+        ticket.addMessage(message)
+        ticket.addStatus(status)
+
+        return ticketRepository.save(ticket).toDtoComplete()
     }
+
 
     override fun getOpen(): List<TicketDTO> {
         return ticketRepository.findAllByStatusIn(
-            listOf<Status>(
+            listOf(
                 Status.OPEN
             )
         ).map { it.toDTO() }
     }
 
+
     override fun getAssigned(): List<TicketDTO> {
         return ticketRepository.findAllByStatusIn(
-            listOf<Status>(
+            listOf(
                 Status.IN_PROGRESS, Status.CLOSED, Status.RESOLVED, Status.REOPEN
             )
         ).map { it.toDTO() }

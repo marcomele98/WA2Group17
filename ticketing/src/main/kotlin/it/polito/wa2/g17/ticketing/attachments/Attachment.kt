@@ -23,6 +23,6 @@ class Attachment(
     var content: ByteArray,*/
 
     @ManyToOne
-    var message: Message,
+    var message: Message? = null,
 
-    ): EntityBase<Long>()
+    ) : EntityBase<Long>()

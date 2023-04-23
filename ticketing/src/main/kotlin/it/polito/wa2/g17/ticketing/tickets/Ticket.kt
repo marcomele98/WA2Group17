@@ -12,22 +12,32 @@ class Ticket(
     @Column(nullable = false)
     var customerId: Long,
 
-    var expertId: Long,
-
     @Column(nullable = false)
     var productEan: String,
 
-    var priorityLevel: Long,
+    var priorityLevel: Long? = null,
 
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])
-    val messages: MutableList<Message>,
+    val messages: MutableList<Message> = mutableListOf(),
 
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])
-    val statusHistory: MutableList<StatusChange>,
+    val statusHistory: MutableList<StatusChange> = mutableListOf(),
+
+    var expertId: Long? = null,
 
     @Enumerated(EnumType.STRING)
     val status: Status = Status.OPEN
 
 ) : EntityBase<Long>() {
-    constructor() : this(0, 0, "", 0, mutableListOf(), mutableListOf())
+
+    fun addMessage(m : Message) {
+        m.ticket = this;
+        messages.add(m)
+    }
+
+    fun addStatus(s: StatusChange) {
+        s.ticket = this;
+        statusHistory.add(s)
+    }
+
 }

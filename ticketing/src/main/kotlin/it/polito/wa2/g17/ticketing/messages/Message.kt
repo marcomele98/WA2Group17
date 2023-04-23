@@ -16,15 +16,21 @@ class Message(
     @Column(nullable = false)
     var timestamp: Date = Date(),
 
-    @ManyToOne
-    val ticket: Ticket,
-
+    @Column(nullable = false)
     val userId: Long,
+
+    @ManyToOne
+    var ticket: Ticket? = null,
 
     @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
     var attachments: MutableList<Attachment> = mutableListOf(),
 
     ) : EntityBase<Long>() {
-    constructor() : this("", Date(), Ticket(), 0)
+
+    fun addAttachments(a: List<Attachment>) {
+        a.forEach { it.message = this }
+        attachments.addAll(a)
     }
+
+}
 

@@ -7,5 +7,5 @@ data class CreateTicketDTO(
     val productEan: String,
     val customerId: Long,
     @NotNull(message = "Initial Message field is required")
-    val initialMessage: MessageDTO? = null
+    val initialMessage: MessageDTO
 )

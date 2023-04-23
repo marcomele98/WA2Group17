@@ -26,14 +26,10 @@ fun MessageDTO.withTimestamp(date: Date): MessageDTO {
 fun MessageDTO.withUserId(userId: Long): MessageDTO {
     return this.copy(userId = userId)
 }
-fun MessageDTO.toEntity(ticket : Ticket): Message {
-    val newMessage = Message(
+fun MessageDTO.toEntity(): Message {
+    return Message(
         text,
         timestamp!!,
-        ticket,
         userId!!
     )
-    newMessage.attachments = attachments.map { it.toEntity(newMessage) }.toMutableList()
-
-    return newMessage;
 }

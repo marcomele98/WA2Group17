@@ -12,6 +12,6 @@ fun Attachment.toDTO(): AttachmentDTO {
     return AttachmentDTO(id!!, name)
 }
 
-fun AttachmentDTO.toEntity(message: Message): Attachment {
-    return Attachment(name, message)
+fun AttachmentDTO.toEntity(): Attachment {
+    return Attachment(name)
 }
