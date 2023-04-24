@@ -7,6 +7,7 @@ import it.polito.wa2.g17.server.products.ProductNotFoundException
 import it.polito.wa2.g17.server.profiles.CannotUpdateEmailException
 import it.polito.wa2.g17.server.profiles.DuplicateProfileException
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g17.server.ticketing.tickets.TicketNotFoundException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -36,5 +37,10 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(CannotUpdateEmailException::class)
     fun handleProfileNotFound(e: CannotUpdateEmailException) =
         ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(TicketNotFoundException::class)
+    fun handleProductNotFound(e: TicketNotFoundException) =
+        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
 
 }

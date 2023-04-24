@@ -36,7 +36,7 @@ INSERT INTO products
 VALUES('5052746112566', 'BM Fitting Kit FK80303B for Exhaust Catalytic Converter Bm80303h Fits OPEL', 'BM Catalysts');
 INSERT INTO products
 (ean, name, brand)
-VALUES('4260558857718', '32gb Mini Button Security Camera WiFi WLAN IP Live App Video Tone Recording A106', '');
+VALUES('4260558857718', '32gb Mini Button Security Camera WiFi WLAN IP Live App Video Tone Recording A106', 'IBM');
 INSERT INTO products
 (ean, name, brand)
 VALUES('5905133212661', 'Pipe Connector Exhaust System FA1 913-962', 'FA1');
