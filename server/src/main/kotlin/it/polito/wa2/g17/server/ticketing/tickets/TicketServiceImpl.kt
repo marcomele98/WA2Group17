@@ -101,6 +101,9 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
+        if(ticket.status != Status.OPEN)
+            throw WrongStateException("Ticket with ID $ticketId is not open")
+
         ticket.expertId = expertId
         ticket.addStatus(StatusChange(Status.IN_PROGRESS, expertId))
 
@@ -111,6 +114,9 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
+        if(ticket.status != Status.IN_PROGRESS)
+            throw WrongStateException("Ticket with ID $ticketId is not in progress")
+
         ticket.addStatus(StatusChange(Status.CLOSED, userId))
 
         return ticketRepository.save(ticket).toCompleteDTO()
@@ -119,6 +125,9 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     override fun reopenTicket(ticketId: Long): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        if(ticket.status != Status.CLOSED && ticket.status != Status.RESOLVED)
+            throw WrongStateException("Ticket with ID $ticketId is not closed")
 
         ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.customerId!!))
 

@@ -1,10 +1,7 @@
 package it.polito.wa2.g17.server
 
-import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
-import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
-import it.polito.wa2.g17.server.ticketing.tickets.CreateTicketDTO
 import it.polito.wa2.g17.server.ticketing.tickets.Ticket
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Test
@@ -15,11 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.*
@@ -27,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.concurrent.thread
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,15 +30,10 @@ class ServerApplicationTests {
 
     companion object {
         @Container
-        val postgres = PostgreSQLContainer("postgres:latest")
-
-        @JvmStatic
+        val postgres = PostgresContainer.instance
         @DynamicPropertySource
         fun properties(registry: DynamicPropertyRegistry) {
-            registry.add("spring.datasource.url", postgres::getJdbcUrl)
-            registry.add("spring.datasource.username", postgres::getUsername)
-            registry.add("spring.datasource.password", postgres::getPassword)
-            registry.add("spring.jpa.hibernate.ddl-auto") { "create-drop" }
+            // Properties are loaded from application-test.properties
         }
     }
 
@@ -57,17 +46,8 @@ class ServerApplicationTests {
     @Autowired
     lateinit var ticketRepository: TicketRepository
 
-
     @Test
-    fun TicketResolved100Attempts() {
-
-        /*val completeTicketDTO = CompleteTicketDTO(
-            id = 1,
-            productEan = "4935531461206",
-            customerId = 1,
-            status = Status.IN_PROGRESS,
-            messages = emptyList<MessageDTO>()
-        )*/
+    fun ticketResolved100Attempts() {
 
         var ticket = Ticket(
             customerId = 1,
@@ -96,8 +76,8 @@ class ServerApplicationTests {
         ticketRepository.save(ticket)
 
         var tickets = ticketRepository.findAll()
+
         assertEquals(1, tickets.size)
-        ticket = tickets[0]
 
         val executor = Executors.newFixedThreadPool(100)
         val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
@@ -124,7 +104,7 @@ class ServerApplicationTests {
         executor.shutdown()
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
 
-        tickets = ticketRepository.findAll()
+        tickets = ticketRepository.findAllEager()
         assertEquals(1, tickets.size)
         ticket = tickets[0]
 
@@ -133,56 +113,14 @@ class ServerApplicationTests {
         assertEquals(99, badRequestCounter.get())
         assertTrue(results.values.any { it.statusCode.is2xxSuccessful })
         assertEquals(Status.RESOLVED, ticket.status)
-        /*assertEquals(ticket.statusHistory.size, 3)
-        assertEquals(ticket.statusHistory[2].status, Status.RESOLVED)*/
-
-
- /*       val threads = mutableListOf<Thread>()
-        val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
-
-        //cambiare a 100
-        for (i in 1..5) {
-            threads.add(
-                thread {
-                    results[i] = restTemplate.exchange(
-                        "http://localhost:${port}/API/expert/tickets/resolve/${ticket.id}",
-                        HttpMethod.PUT,
-                        null,
-                        Void::class.java
-                    )
-                }
-            )
-        }
-
-        threads.forEach { it.join() }
-
 
         assertEquals(
-            1,
-            results
-                .filter {
-                    it.value.statusCode == HttpStatus.OK
-                }
-                .count()
+            listOf(Status.OPEN, Status.IN_PROGRESS, Status.RESOLVED),
+            ticket.statusHistory
+                .sortedBy { it.timestamp }
+                .map { it.status }
         )
 
-
-        assertEquals(
-            99,
-            results
-                .filter {
-                    it.value.statusCode == HttpStatus.BAD_REQUEST
-                }
-                .count()
-
-        )
-
-        tickets = ticketRepository.findAll()
-        assertEquals(tickets.size, 1)
-        ticket = tickets[0]
-        assertEquals(ticket.status, Status.RESOLVED)
-        assertEquals(ticket.statusHistory.size, 3)
-        assertEquals(ticket.statusHistory[2].status, Status.RESOLVED)*/
     }
 
 }
