@@ -13,10 +13,10 @@ class StatusChange(
     @Enumerated(EnumType.STRING)
     var status: Status,
 
+    var userId: Long,
+
     @Temporal(TemporalType.TIMESTAMP)
     var timestamp: Date = Date(),
-
-    var userId: Long,
 
     @ManyToOne
     var ticket: Ticket? = null,

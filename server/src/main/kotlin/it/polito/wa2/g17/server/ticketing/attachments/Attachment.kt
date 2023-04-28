@@ -4,6 +4,7 @@ import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.messages.Message
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 
 @Entity
@@ -18,8 +19,5 @@ class Attachment(
     @Lob
     @Column(nullable = false)
     var content: ByteArray,*/
-
-    @ManyToOne
-    var message: Message? = null,
 
     ) : EntityBase<Long>()

@@ -1,6 +1,7 @@
 package it.polito.wa2.g17.server.ticketing.tickets;
 
 import it.polito.wa2.g17.server.ticketing.attachments.toEntity
+import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.messages.toEntity
 import it.polito.wa2.g17.server.ticketing.messages.withTimestamp
 import it.polito.wa2.g17.server.ticketing.messages.withUserId
@@ -36,7 +37,7 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
                 .map { it.toEntity() }
         )
 
-        val status = StatusChange(Status.OPEN, date, ticket.customerId)
+        val status = StatusChange(Status.OPEN, ticket.customerId, date)
 
         ticket.addMessage(message)
         ticket.addStatus(status)
@@ -57,7 +58,7 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     override fun getAllAssigned(): List<PartialTicketDTO> {
         return ticketRepository.findAllByStatusIn(
             listOf(
-                Status.IN_PROGRESS, Status.CLOSED, Status.RESOLVED, Status.REOPEN
+                Status.IN_PROGRESS, Status.CLOSED, Status.RESOLVED
             )
         ).map { it.toPartialDTO() }
     }
@@ -78,7 +79,7 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     override fun getUnresolvedByExpertId(expertId: Long): List<PartialTicketDTO> {
         return ticketRepository.findAllByExpertIdAndStatusIn(
             expertId, listOf(
-                Status.IN_PROGRESS, Status.REOPEN
+                Status.IN_PROGRESS
             )
         ).map { it.toPartialDTO() }
     }
@@ -94,6 +95,62 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
 
     override fun getAllByCustomerId(customerId: Long): List<PartialTicketDTO> {
         return ticketRepository.findAllByCustomerId(customerId).map { it.toPartialDTO() }
+    }
+
+    override fun assignTicket(ticketId: Long, expertId: Long): CompleteTicketDTO {
+        val ticket = ticketRepository.findByIdOrNull(ticketId)
+            ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        ticket.expertId = expertId
+        ticket.addStatus(StatusChange(Status.IN_PROGRESS, expertId))
+
+        return ticketRepository.save(ticket).toCompleteDTO()
+    }
+
+    override fun closeTicket(ticketId: Long, userId: Long): CompleteTicketDTO {
+        val ticket = ticketRepository.findByIdOrNull(ticketId)
+            ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        ticket.addStatus(StatusChange(Status.CLOSED, userId))
+
+        return ticketRepository.save(ticket).toCompleteDTO()
+    }
+
+    override fun reopenTicket(ticketId: Long): CompleteTicketDTO {
+        val ticket = ticketRepository.findByIdOrNull(ticketId)
+            ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.customerId!!))
+
+        return ticketRepository.save(ticket).toCompleteDTO()
+    }
+
+    override fun resolveTicket(ticketId: Long): CompleteTicketDTO {
+        val ticket = ticketRepository.findByIdOrNull(ticketId)
+            ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        ticket.addStatus(StatusChange(Status.RESOLVED, ticket.expertId!!))
+
+        return ticketRepository.save(ticket).toCompleteDTO()
+    }
+
+    override fun addMessage(ticketId: Long, messageDTO: MessageDTO): CompleteTicketDTO {
+        val ticket = ticketRepository.findByIdOrNull(ticketId)
+            ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        val message = messageDTO
+            .withTimestamp(Date())
+            .withUserId(messageDTO.userId!!)
+            .toEntity()
+
+        message.addAttachments(
+            messageDTO.attachments
+                .map { it.toEntity() }
+        )
+
+        ticket.addMessage(message)
+
+        return ticketRepository.save(ticket).toCompleteDTO()
     }
 
 
