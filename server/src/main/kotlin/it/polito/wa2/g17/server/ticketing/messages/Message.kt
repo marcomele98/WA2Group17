@@ -22,7 +22,7 @@ class Message(
     @ManyToOne
     var ticket: Ticket? = null,
 
-    @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
+    @OneToMany(cascade = [CascadeType.ALL])
     var attachments: MutableList<Attachment> = mutableListOf(),
 
     ) : EntityBase<Long>() {

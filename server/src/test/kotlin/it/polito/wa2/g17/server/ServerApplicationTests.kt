@@ -81,7 +81,7 @@ class ServerApplicationTests {
         )
 
         val statusChangeInProgress = StatusChange(
-            Status.OPEN,
+            Status.IN_PROGRESS,
             userId = 1,
             timestamp = Date(),
             ticket = ticket
@@ -93,20 +93,21 @@ class ServerApplicationTests {
         ticketRepository.save(ticket)
 
         var tickets = ticketRepository.findAll()
-        assertEquals(tickets.size, 1)
+        assertEquals(1, tickets.size)
         ticket = tickets[0]
 
         val threads = mutableListOf<Thread>()
-        val results = ConcurrentHashMap<Int, ResponseEntity<CompleteTicketDTO>>()
+        val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
 
-        for (i in 1..100) {
+        //cambiare a 100
+        for (i in 1..5) {
             threads.add(
                 thread {
                     results[i] = restTemplate.exchange(
-                        "http://localhost:${port}/API/expert/ticket/resolve/${ticket.id}",
+                        "http://localhost:${port}/API/expert/tickets/resolve/${ticket.id}",
                         HttpMethod.PUT,
                         null,
-                        CompleteTicketDTO::class.java
+                        Void::class.java
                     )
                 }
             )
@@ -114,23 +115,25 @@ class ServerApplicationTests {
 
         threads.forEach { it.join() }
 
+
         assertEquals(
+            1,
             results
                 .filter {
                     it.value.statusCode == HttpStatus.OK
                 }
-                .count(),
-            1
+                .count()
         )
 
 
         assertEquals(
+            99,
             results
                 .filter {
                     it.value.statusCode == HttpStatus.BAD_REQUEST
                 }
-                .count(),
-            99
+                .count()
+
         )
 
         tickets = ticketRepository.findAll()

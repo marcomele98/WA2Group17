@@ -128,6 +128,8 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     override fun resolveTicket(ticketId: Long): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+        if(ticket.status != Status.IN_PROGRESS)
+            throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
         ticket.addStatus(StatusChange(Status.RESOLVED, ticket.expertId!!))
 

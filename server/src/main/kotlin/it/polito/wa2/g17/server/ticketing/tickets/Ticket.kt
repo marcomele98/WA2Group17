@@ -26,7 +26,7 @@ class Ticket(
     var expertId: Long? = null,
 
     @Enumerated(EnumType.STRING)
-    val status: Status = Status.OPEN
+    var status: Status = Status.OPEN
 
 ) : EntityBase<Long>() {
 
@@ -37,6 +37,7 @@ class Ticket(
 
     fun addStatus(s: StatusChange) {
         s.ticket = this;
+        status = s.status
         statusHistory.add(s)
     }
 

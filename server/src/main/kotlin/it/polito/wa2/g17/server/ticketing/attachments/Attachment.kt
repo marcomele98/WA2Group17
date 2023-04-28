@@ -20,4 +20,5 @@ class Attachment(
     @Column(nullable = false)
     var content: ByteArray,*/
 
+
     ) : EntityBase<Long>()
