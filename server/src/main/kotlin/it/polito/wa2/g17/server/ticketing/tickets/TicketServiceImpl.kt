@@ -9,9 +9,9 @@ import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
 import it.polito.wa2.g17.server.ticketing.status.toDTO
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service

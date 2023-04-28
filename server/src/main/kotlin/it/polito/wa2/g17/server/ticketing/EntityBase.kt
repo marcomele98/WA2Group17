@@ -1,9 +1,6 @@
 package it.polito.wa2.g17.server.ticketing
 
-import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.MappedSuperclass
+import jakarta.persistence.*
 import org.springframework.data.util.ProxyUtils
 import java.io.Serializable
 
@@ -14,6 +11,9 @@ abstract class EntityBase<T : Serializable> {
         private const val serialVersionUID = 1L
     }
 
+
+    @Version
+    var version: Long = 0
     @Id
     @GeneratedValue
     @Column(nullable = false, updatable = false)

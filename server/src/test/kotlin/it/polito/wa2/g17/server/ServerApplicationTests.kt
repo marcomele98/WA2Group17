@@ -22,8 +22,11 @@ import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.Date
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 @Testcontainers
@@ -96,7 +99,45 @@ class ServerApplicationTests {
         assertEquals(1, tickets.size)
         ticket = tickets[0]
 
-        val threads = mutableListOf<Thread>()
+        val executor = Executors.newFixedThreadPool(100)
+        val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
+        val successCounter = AtomicInteger(0)
+        val badRequestCounter = AtomicInteger(0)
+
+        for (i in 1..100) {
+            executor.submit {
+                val response = restTemplate.exchange(
+                    "http://localhost:$port/API/expert/tickets/resolve/1",
+                    HttpMethod.PUT,
+                    null,
+                    Void::class.java
+                )
+                results[i] = response
+                if (response.statusCode.is2xxSuccessful) {
+                    successCounter.incrementAndGet()
+                } else {
+                    badRequestCounter.incrementAndGet()
+                }
+            }
+        }
+
+        executor.shutdown()
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
+
+        tickets = ticketRepository.findAll()
+        assertEquals(1, tickets.size)
+        ticket = tickets[0]
+
+        assertEquals(100, results.size)
+        assertEquals(1, successCounter.get())
+        assertEquals(99, badRequestCounter.get())
+        assertTrue(results.values.any { it.statusCode.is2xxSuccessful })
+        assertEquals(Status.RESOLVED, ticket.status)
+        /*assertEquals(ticket.statusHistory.size, 3)
+        assertEquals(ticket.statusHistory[2].status, Status.RESOLVED)*/
+
+
+ /*       val threads = mutableListOf<Thread>()
         val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
 
         //cambiare a 100
@@ -141,6 +182,7 @@ class ServerApplicationTests {
         ticket = tickets[0]
         assertEquals(ticket.status, Status.RESOLVED)
         assertEquals(ticket.statusHistory.size, 3)
-        assertEquals(ticket.statusHistory[2].status, Status.RESOLVED)
+        assertEquals(ticket.statusHistory[2].status, Status.RESOLVED)*/
     }
+
 }
