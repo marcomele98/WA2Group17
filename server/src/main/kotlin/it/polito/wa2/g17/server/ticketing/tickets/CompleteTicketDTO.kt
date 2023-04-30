@@ -7,8 +7,10 @@ import it.polito.wa2.g17.server.ticketing.status.Status
 
 data class CompleteTicketDTO(
     val id: Long,
-    val customerId: Long,
+    val customerEmail: String,
     val productEan: String,
+    val expertEmail: String?,
+    val problemType: ProblemType,
     val status: Status,
     val priority: Priority? = null,
     val messages: List<MessageDTO> = emptyList()
@@ -17,8 +19,10 @@ data class CompleteTicketDTO(
 fun Ticket.toCompleteDTO(): CompleteTicketDTO {
     return CompleteTicketDTO(
         id!!,
-        customerId,
+        customerEmail,
         productEan,
+        expertEmail,
+        problemType,
         status,
         priorityLevel,
         messages.map { it.toDTO() })

@@ -13,5 +13,9 @@ class Profile {
     var name = ""
     @Column(nullable = false)
     var surname = ""
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = ProblemType::class)
+    val skills: MutableList<ProblemType> = mutableListOf()
 }
 

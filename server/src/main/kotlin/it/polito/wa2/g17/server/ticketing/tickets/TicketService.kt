@@ -31,6 +31,4 @@ interface TicketService {
 
     fun addMessage(ticketId: Long, message: MessageDTO): CompleteTicketDTO
 
-
-
 }

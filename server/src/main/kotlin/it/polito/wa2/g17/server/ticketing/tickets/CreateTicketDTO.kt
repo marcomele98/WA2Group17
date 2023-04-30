@@ -17,7 +17,7 @@ data class CreateTicketDTO(
     )
     val productEan: String,
     @NotBlank(message = "Customer ID field is required")
-    val customerId: Long,
+    val customerEmail: String,
     @NotBlank(message = "Initial Message field is required")
     val initialMessage: MessageDTO,
     @NotBlank(message = "Problem Type field is required")
