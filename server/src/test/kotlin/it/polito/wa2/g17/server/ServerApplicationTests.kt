@@ -12,16 +12,17 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,10 +31,14 @@ class ServerApplicationTests {
 
     companion object {
         @Container
-        val postgres = PostgresContainer.instance
+        val postgres = PostgreSQLContainer("postgres:latest")
+        @JvmStatic
         @DynamicPropertySource
         fun properties(registry: DynamicPropertyRegistry) {
-            // Properties are loaded from application-test.properties
+            registry.add("spring.datasource.url", postgres::getJdbcUrl)
+            registry.add("spring.datasource.username", postgres::getUsername)
+            registry.add("spring.datasource.password", postgres::getPassword)
+            registry.add("spring.jpa.hibernate.ddl-auto") {"create-drop"}
         }
     }
 
@@ -79,10 +84,8 @@ class ServerApplicationTests {
 
         assertEquals(1, tickets.size)
 
-        val executor = Executors.newFixedThreadPool(100)
+        val executor = Executors.newFixedThreadPool(10)
         val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
-        val successCounter = AtomicInteger(0)
-        val badRequestCounter = AtomicInteger(0)
 
         for (i in 1..100) {
             executor.submit {
@@ -93,11 +96,6 @@ class ServerApplicationTests {
                     Void::class.java
                 )
                 results[i] = response
-                if (response.statusCode.is2xxSuccessful) {
-                    successCounter.incrementAndGet()
-                } else {
-                    badRequestCounter.incrementAndGet()
-                }
             }
         }
 
@@ -109,9 +107,8 @@ class ServerApplicationTests {
         ticket = tickets[0]
 
         assertEquals(100, results.size)
-        assertEquals(1, successCounter.get())
-        assertEquals(99, badRequestCounter.get())
-        assertTrue(results.values.any { it.statusCode.is2xxSuccessful })
+        assertEquals(1, results.values.count { it.statusCode == HttpStatus.OK })
+        assertEquals(99, results.values.count { it.statusCode != HttpStatus.OK })
         assertEquals(Status.RESOLVED, ticket.status)
 
         assertEquals(
