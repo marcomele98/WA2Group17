@@ -22,13 +22,13 @@ class Message(
     @ManyToOne
     var ticket: Ticket? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
     var attachments: MutableList<Attachment> = mutableListOf(),
 
     ) : EntityBase<Long>() {
 
     fun addAttachments(a: List<Attachment>) {
-        //a.forEach { it.message = this }
+        a.forEach { it.message = this }
         attachments.addAll(a)
     }
 

@@ -31,7 +31,9 @@ class TicketServiceImpl(
             .withUserEmail(ticket.customerEmail)
             .toEntity()
 
-        message.addAttachments(attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds))
+        message.addAttachments(
+            attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds)
+        )
 
         val status = StatusChange(Status.OPEN, ticket.customerEmail, date)
 

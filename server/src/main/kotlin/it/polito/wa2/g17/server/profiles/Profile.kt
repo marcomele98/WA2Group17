@@ -1,6 +1,6 @@
 package it.polito.wa2.g17.server.profiles
 
-import it.polito.wa2.g17.server.ticketing.ProblemType
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import jakarta.persistence.*
 
 @Entity
@@ -16,6 +16,6 @@ class Profile {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ProblemType::class)
-    val skills: MutableList<ProblemType> = mutableListOf()
+    var skills: MutableList<ProblemType> = mutableListOf()
 }
 

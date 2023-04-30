@@ -1,7 +1,6 @@
 package it.polito.wa2.g17.server.ticketing.tickets
 
 import it.polito.wa2.g17.server.ticketing.EntityBase
-import it.polito.wa2.g17.server.ticketing.ProblemType
 import it.polito.wa2.g17.server.ticketing.messages.Message
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
@@ -19,6 +18,7 @@ class Ticket(
     @Enumerated(EnumType.STRING)
     var problemType: ProblemType,
 
+    @Enumerated(EnumType.STRING)
     var priorityLevel: Priority? = null,
 
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])

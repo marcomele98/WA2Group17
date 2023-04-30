@@ -1,5 +1,7 @@
 package it.polito.wa2.g17.server.profiles
 
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
+
 interface ProfileService {
 
     fun getProfile(email: String): ProfileDTO
@@ -8,6 +10,6 @@ interface ProfileService {
 
     fun editProfile(email :String, profile: ProfileDTO): ProfileDTO
 
-    fun getProfilesBySkill(skill: String): List<ProfileDTO>
+    fun getProfilesBySkill(skill: ProblemType): List<ProfileDTO>
 
 }

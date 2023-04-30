@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.profiles
 
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,6 +23,7 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
             email = profile.email
             name = profile.name
             surname = profile.surname
+            skills = profile.skills.toMutableList()
         }).toDTO()
     }
 
@@ -42,7 +44,7 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         }).toDTO()
     }
 
-    override fun getProfilesBySkill(skill: String): List<ProfileDTO> {
+    override fun getProfilesBySkill(skill: ProblemType): List<ProfileDTO> {
         return profileRepository.findBySkills(skill).map { it.toDTO() }
     }
 

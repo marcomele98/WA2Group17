@@ -20,5 +20,4 @@ class StatusChange(
 
     @ManyToOne
     var ticket: Ticket? = null,
-) : EntityBase<Long>() {
-}
+) : EntityBase<Long>()

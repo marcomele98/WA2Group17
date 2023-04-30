@@ -4,9 +4,8 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
 data class AssignTicketDTO(
-    @Email
-    @NotBlank
+    @field:Email(message = "Email format not valid")
+    @field:NotBlank(message = "Expert Email field is required")
     val expertEmail: String,
-    @NotBlank
     val priority: Priority,
 )

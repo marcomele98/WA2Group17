@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.profiles
 
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
@@ -16,7 +17,7 @@ class ProfileController(private val profileService: ProfileService) {
         return profileService.getProfile(email)
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@Valid @RequestBody profile: ProfileDTO, br: BindingResult): ProfileDTO {
         return profileService.addProfile(profile)
@@ -40,7 +41,7 @@ class ProfileController(private val profileService: ProfileService) {
 class ManagerProfileController(private val profileService: ProfileService) {
     @GetMapping("{skill}")
     @ResponseStatus(HttpStatus.OK)
-    fun getProfilesBySkill(@PathVariable skill: String): List<ProfileDTO> {
+    fun getProfilesBySkill(@PathVariable skill: ProblemType): List<ProfileDTO> {
         return profileService.getProfilesBySkill(skill)
     }
 

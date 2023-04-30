@@ -19,4 +19,8 @@ class Attachment(
     @Lob
     @Column(nullable = false)
     var content: ByteArray,
+
+    @ManyToOne
+    var message: Message? = null,
+
 ): EntityBase<Long>()

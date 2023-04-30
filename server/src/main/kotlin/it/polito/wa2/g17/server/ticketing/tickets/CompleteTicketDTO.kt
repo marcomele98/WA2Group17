@@ -1,6 +1,5 @@
 package it.polito.wa2.g17.server.ticketing.tickets
 
-import it.polito.wa2.g17.server.ticketing.ProblemType
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.messages.toDTO
 import it.polito.wa2.g17.server.ticketing.status.Status

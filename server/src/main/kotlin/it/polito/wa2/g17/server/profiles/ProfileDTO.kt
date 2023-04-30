@@ -1,6 +1,6 @@
 package it.polito.wa2.g17.server.profiles
 
-import it.polito.wa2.g17.server.ticketing.ProblemType
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
@@ -16,9 +16,9 @@ data class ProfileDTO(
     @field:NotBlank(message = "Surname field is required")
     val surname: String,
 
-    val skills: List<ProblemType> = listOf()
+    val skills: List<ProblemType> = emptyList()
 )
 
 fun Profile.toDTO(): ProfileDTO {
-    return ProfileDTO(email, name, surname)
+    return ProfileDTO(email, name, surname, skills)
 }
