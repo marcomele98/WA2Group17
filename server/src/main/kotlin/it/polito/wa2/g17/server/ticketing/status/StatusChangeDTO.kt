@@ -6,9 +6,9 @@ data class StatusChangeDTO(
     val id: Long,
     val status: Status?,
     val timestamp: Date?,
-    val userId: Long?,
+    val userEmail: String?,
 )
 
 fun StatusChange.toDTO(): StatusChangeDTO {
-    return StatusChangeDTO(id!!, status, timestamp, userId)
+    return StatusChangeDTO(id!!, status, timestamp, userEmail)
 }

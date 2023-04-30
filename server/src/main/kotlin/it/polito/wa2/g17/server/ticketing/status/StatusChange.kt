@@ -13,7 +13,7 @@ class StatusChange(
     @Enumerated(EnumType.STRING)
     var status: Status,
 
-    var userId: Long,
+    var userEmail: String,
 
     @Temporal(TemporalType.TIMESTAMP)
     var timestamp: Date = Date(),

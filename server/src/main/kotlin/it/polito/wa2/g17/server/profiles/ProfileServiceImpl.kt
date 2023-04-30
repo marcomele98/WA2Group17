@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class ProfileServiceImpl(private val profileRepository: ProfileRepository) : ProfileService {
     override fun getProfile(email: String): ProfileDTO {
         val profile = profileRepository
@@ -13,7 +14,6 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         return profile.toDTO()
     }
 
-    @Transactional
     override fun addProfile(profile: ProfileDTO): ProfileDTO {
         if (profileRepository.findByIdOrNull(profile.email) != null) {
             throw DuplicateProfileException("Profile with email ${profile.email} already exists")
@@ -40,6 +40,10 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
             name = profile.name
             surname = profile.surname
         }).toDTO()
+    }
+
+    override fun getProfilesBySkill(skill: String): List<ProfileDTO> {
+        return profileRepository.findBySkills(skill).map { it.toDTO() }
     }
 
 }

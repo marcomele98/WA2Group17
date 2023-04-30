@@ -17,7 +17,7 @@ class Message(
     var timestamp: Date = Date(),
 
     @Column(nullable = false)
-    val userId: Long,
+    val userEmail: String,
 
     @ManyToOne
     var ticket: Ticket? = null,

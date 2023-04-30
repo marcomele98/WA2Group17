@@ -13,7 +13,3 @@ data class AttachmentDTO(
 fun Attachment.toDTO(): AttachmentDTO {
     return AttachmentDTO(id!!, name)
 }
-
-fun AttachmentDTO.toEntity(): Attachment {
-    return Attachment(name)
-}

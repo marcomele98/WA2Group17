@@ -13,12 +13,10 @@ class Attachment(
     @Column(nullable = false)
     var name: String,
 
-    /*@Column(nullable = false)
+    @Column(nullable = false)
     var type: String,
 
     @Lob
     @Column(nullable = false)
-    var content: ByteArray,*/
-
-
-    ) : EntityBase<Long>()
+    var content: ByteArray,
+): EntityBase<Long>()

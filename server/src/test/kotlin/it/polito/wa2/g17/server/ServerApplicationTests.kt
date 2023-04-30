@@ -63,14 +63,14 @@ class ServerApplicationTests {
 
         val statusChangeOpen = StatusChange(
             Status.OPEN,
-            userId = 1,
+            userEmail = 1,
             timestamp = Date(),
             ticket = ticket
         )
 
         val statusChangeInProgress = StatusChange(
             Status.IN_PROGRESS,
-            userId = 1,
+            userEmail = 1,
             timestamp = Date(),
             ticket = ticket
         )
@@ -84,6 +84,7 @@ class ServerApplicationTests {
 
         assertEquals(1, tickets.size)
 
+        //100 threads di cui max 10 in parallelo
         val executor = Executors.newFixedThreadPool(10)
         val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
 

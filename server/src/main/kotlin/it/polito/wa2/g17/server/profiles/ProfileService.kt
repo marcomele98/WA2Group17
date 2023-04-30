@@ -8,4 +8,6 @@ interface ProfileService {
 
     fun editProfile(email :String, profile: ProfileDTO): ProfileDTO
 
+    fun getProfilesBySkill(skill: String): List<ProfileDTO>
+
 }

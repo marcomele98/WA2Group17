@@ -2,7 +2,6 @@ package it.polito.wa2.g17.server.ticketing.tickets
 
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
-import jakarta.persistence.Id
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
@@ -17,6 +16,12 @@ class TicketGeneralController(private val ticketService: TicketService) {
     @ResponseStatus(HttpStatus.OK)
     fun getTicket(@PathVariable id: Long): CompleteTicketDTO {
         return ticketService.getTicket(id)
+    }
+
+    @PutMapping("/addMessage/{ticketId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO): CompleteTicketDTO {
+        return ticketService.addMessage(ticketId, message)
     }
 }
 
@@ -45,8 +50,8 @@ class TicketManagerController(private val ticketService: TicketService) {
 
     @PutMapping("/assign/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun assignTicket(@PathVariable ticketId: Long, @Valid @RequestBody expertId: Long): CompleteTicketDTO {
-        return ticketService.assignTicket(ticketId, expertId)
+    fun assignTicket(@PathVariable ticketId: Long, @Valid @RequestBody assignTicketDTO: AssignTicketDTO): CompleteTicketDTO {
+        return ticketService.assignTicket(ticketId, assignTicketDTO.expertEmail, assignTicketDTO.priority)
     }
 
 }
@@ -58,16 +63,16 @@ class TicketManagerController(private val ticketService: TicketService) {
 class TicketExpertController(private val ticketService: TicketService) {
     @GetMapping("/unresolved/{expertId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getAssignedByExpertId(@PathVariable expertId: Long): List<PartialTicketDTO> {
-        return ticketService.getUnresolvedByExpertId(expertId)
+    fun getAssignedByExpertId(@PathVariable expertEmail: String): List<PartialTicketDTO> {
+        return ticketService.getUnresolvedByExpertEmail(expertEmail)
     }
 
 
     //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id del customer
     @GetMapping("/resolved/{expertId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getResolvedByExpertId(@PathVariable expertId: Long): List<PartialTicketDTO> {
-        return ticketService.getResolvedByExpertId(expertId)
+    fun getResolvedByExpertId(@PathVariable expertEmail: String): List<PartialTicketDTO> {
+        return ticketService.getResolvedByExpertEmail(expertEmail)
     }
 
     @PutMapping("/resolve/{ticketId}")
@@ -90,8 +95,8 @@ class TicketCustomerController(private val ticketService: TicketService) {
 
     @GetMapping("/{customerId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getAllByCustomerId(@PathVariable customerId: Long): List<PartialTicketDTO> {
-        return ticketService.getAllByCustomerId(customerId)
+    fun getAllByCustomerId(@PathVariable customerEmail: String): List<PartialTicketDTO> {
+        return ticketService.getAllByCustomerEmail(customerEmail)
     }
 
     @PutMapping("/reopen/{ticketId}")
@@ -104,13 +109,8 @@ class TicketCustomerController(private val ticketService: TicketService) {
     @ResponseStatus(HttpStatus.OK)
     //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id e scopro se è customer o esperto
     //TODO: forse qua sarà necessario il campo @LastModifiedBy
-    fun closeTicket(@PathVariable ticketId: Long, @PathVariable userId: Long): CompleteTicketDTO {
-        return ticketService.closeTicket(ticketId, userId)
+    fun closeTicket(@PathVariable ticketId: Long, @PathVariable userEmail: String): CompleteTicketDTO {
+        return ticketService.closeTicket(ticketId, userEmail)
     }
 
-    @PutMapping("/addMessage/{ticketId}")
-    @ResponseStatus(HttpStatus.OK)
-    fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO): CompleteTicketDTO {
-        return ticketService.addMessage(ticketId, message)
-    }
 }

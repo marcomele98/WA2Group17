@@ -1,11 +1,12 @@
 package it.polito.wa2.g17.server.ticketing.tickets
 
+import it.polito.wa2.g17.server.ticketing.ProblemType
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Length
-import org.springframework.format.annotation.NumberFormat
+
+//TODO length è importato di hibernate e non di jakarta.validation, spacca?
 
 data class CreateTicketDTO(
     @NotBlank(message = "Product EAN field is required")
@@ -18,5 +19,7 @@ data class CreateTicketDTO(
     @NotBlank(message = "Customer ID field is required")
     val customerId: Long,
     @NotBlank(message = "Initial Message field is required")
-    val initialMessage: MessageDTO
+    val initialMessage: MessageDTO,
+    @NotBlank(message = "Problem Type field is required")
+    val problemType: ProblemType
 )

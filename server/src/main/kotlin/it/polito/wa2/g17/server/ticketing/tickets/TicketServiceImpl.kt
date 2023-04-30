@@ -1,10 +1,7 @@
 package it.polito.wa2.g17.server.ticketing.tickets;
 
-import it.polito.wa2.g17.server.ticketing.attachments.toEntity
-import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
-import it.polito.wa2.g17.server.ticketing.messages.toEntity
-import it.polito.wa2.g17.server.ticketing.messages.withTimestamp
-import it.polito.wa2.g17.server.ticketing.messages.withUserId
+import it.polito.wa2.g17.server.ticketing.attachments.AttachmentRepository
+import it.polito.wa2.g17.server.ticketing.messages.*
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
@@ -16,7 +13,10 @@ import java.util.*
 
 @Service
 @Transactional
-class TicketServiceImpl(private val ticketRepository: TicketRepository) : TicketService {
+class TicketServiceImpl(
+    private val ticketRepository: TicketRepository,
+    private val attachmentRepository: AttachmentRepository
+) : TicketService {
 
 
     //TODO: controllo sul ruolo
@@ -24,23 +24,20 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
     override fun createTicket(createTicketDTO: CreateTicketDTO): CompleteTicketDTO {
 
         val date = Date()
-        val ticket = Ticket(createTicketDTO.customerId, createTicketDTO.productEan)
+        val ticket = Ticket(createTicketDTO.customerEmail, createTicketDTO.productEan, createTicketDTO.problemType)
 
         val message = createTicketDTO.initialMessage
             .withTimestamp(date)
-            .withUserId(ticket.customerId)
+            .withUserEmail(ticket.customerEmail)
             .toEntity()
 
-        message.addAttachments(
-            createTicketDTO
-                .initialMessage.attachments
-                .map { it.toEntity() }
-        )
+        message.addAttachments(attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds))
 
-        val status = StatusChange(Status.OPEN, ticket.customerId, date)
+        val status = StatusChange(Status.OPEN, ticket.customerEmail, date)
 
         ticket.addMessage(message)
         ticket.addStatus(status)
+        ticket.problemType = createTicketDTO.problemType
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
@@ -76,48 +73,49 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
         return ticket.statusHistory.map { it.toDTO() }
     }
 
-    override fun getUnresolvedByExpertId(expertId: Long): List<PartialTicketDTO> {
-        return ticketRepository.findAllByExpertIdAndStatusIn(
-            expertId, listOf(
+    override fun getUnresolvedByExpertEmail(expertEmail: String): List<PartialTicketDTO> {
+        return ticketRepository.findAllByExpertEmailAndStatusIn(
+            expertEmail, listOf(
                 Status.IN_PROGRESS
             )
         ).map { it.toPartialDTO() }
     }
 
-    override fun getResolvedByExpertId(expertId: Long): List<PartialTicketDTO> {
-        return ticketRepository.findAllByExpertIdAndStatusIn(
-            expertId, listOf(
+    override fun getResolvedByExpertEmail(expertEmail: String): List<PartialTicketDTO> {
+        return ticketRepository.findAllByExpertEmailAndStatusIn(
+            expertEmail, listOf(
                 Status.CLOSED, Status.RESOLVED,
             )
         ).map { it.toPartialDTO() }
     }
 
 
-    override fun getAllByCustomerId(customerId: Long): List<PartialTicketDTO> {
-        return ticketRepository.findAllByCustomerId(customerId).map { it.toPartialDTO() }
+    override fun getAllByCustomerEmail(customerEmail: String): List<PartialTicketDTO> {
+        return ticketRepository.findAllByCustomerEmail(customerEmail).map { it.toPartialDTO() }
     }
 
-    override fun assignTicket(ticketId: Long, expertId: Long): CompleteTicketDTO {
+    override fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
         if(ticket.status != Status.OPEN)
             throw WrongStateException("Ticket with ID $ticketId is not open")
 
-        ticket.expertId = expertId
-        ticket.addStatus(StatusChange(Status.IN_PROGRESS, expertId))
+        ticket.expertEmail = expertEmail
+        ticket.priorityLevel = priority
+        ticket.addStatus(StatusChange(Status.IN_PROGRESS, expertEmail))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
-    override fun closeTicket(ticketId: Long, userId: Long): CompleteTicketDTO {
+    override fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
         if(ticket.status != Status.IN_PROGRESS)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
-        ticket.addStatus(StatusChange(Status.CLOSED, userId))
+        ticket.addStatus(StatusChange(Status.CLOSED, userEmail))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
@@ -129,7 +127,7 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
         if(ticket.status != Status.CLOSED && ticket.status != Status.RESOLVED)
             throw WrongStateException("Ticket with ID $ticketId is not closed")
 
-        ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.customerId!!))
+        ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.customerEmail!!))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
@@ -140,7 +138,7 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
         if(ticket.status != Status.IN_PROGRESS)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
-        ticket.addStatus(StatusChange(Status.RESOLVED, ticket.expertId!!))
+        ticket.addStatus(StatusChange(Status.RESOLVED, ticket.expertEmail!!))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
@@ -151,13 +149,10 @@ class TicketServiceImpl(private val ticketRepository: TicketRepository) : Ticket
 
         val message = messageDTO
             .withTimestamp(Date())
-            .withUserId(messageDTO.userId!!)
+            .withUserEmail(messageDTO.userEmail!!)
             .toEntity()
 
-        message.addAttachments(
-            messageDTO.attachments
-                .map { it.toEntity() }
-        )
+        message.addAttachments(attachmentRepository.findAllByIdIn(messageDTO.attachmentIds))
 
         ticket.addMessage(message)
 

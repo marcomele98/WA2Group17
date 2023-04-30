@@ -15,15 +15,15 @@ interface TicketService {
 
     fun getStatusHistory(id: Long): List<StatusChangeDTO>
 
-    fun getUnresolvedByExpertId(id: Long): List<PartialTicketDTO>
+    fun getUnresolvedByExpertEmail(email: String): List<PartialTicketDTO>
 
-    fun getResolvedByExpertId(id: Long): List<PartialTicketDTO>
+    fun getResolvedByExpertEmail(email: String): List<PartialTicketDTO>
 
-    fun getAllByCustomerId(customerId: Long): List<PartialTicketDTO>
+    fun getAllByCustomerEmail(customerEmail: String): List<PartialTicketDTO>
 
-    fun assignTicket(ticketId: Long, expertId: Long): CompleteTicketDTO
+    fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): CompleteTicketDTO
 
-    fun closeTicket(ticketId: Long, userId:Long): CompleteTicketDTO
+    fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO
 
     fun reopenTicket(ticketId: Long): CompleteTicketDTO
 

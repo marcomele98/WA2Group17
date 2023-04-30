@@ -1,6 +1,7 @@
 package it.polito.wa2.g17.server.ticketing.tickets
 
 import it.polito.wa2.g17.server.ticketing.EntityBase
+import it.polito.wa2.g17.server.ticketing.ProblemType
 import it.polito.wa2.g17.server.ticketing.messages.Message
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
@@ -10,12 +11,15 @@ import jakarta.persistence.*
 @Table(name = "tickets")
 class Ticket(
     @Column(nullable = false)
-    var customerId: Long,
+    var customerEmail: String,
 
     @Column(nullable = false)
     var productEan: String,
 
-    var priorityLevel: Long? = null,
+    @Enumerated(EnumType.STRING)
+    var problemType: ProblemType,
+
+    var priorityLevel: Priority? = null,
 
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])
     val messages: MutableList<Message> = mutableListOf(),
@@ -23,10 +27,11 @@ class Ticket(
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])
     val statusHistory: MutableList<StatusChange> = mutableListOf(),
 
-    var expertId: Long? = null,
+    var expertEmail: String? = null,
 
     @Enumerated(EnumType.STRING)
     var status: Status = Status.OPEN
+
 
 ) : EntityBase<Long>() {
 

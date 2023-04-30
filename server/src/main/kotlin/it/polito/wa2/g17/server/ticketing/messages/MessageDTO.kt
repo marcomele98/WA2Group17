@@ -8,28 +8,36 @@ import java.util.Date
 data class MessageDTO(
     val id: Long?,
     @NotBlank(message = "User ID field is required")
-    val userId: Long?,
+    val userEmail: String?,
     @NotBlank(message = "Text field is required")
     val text: String,
-    var attachments: List<AttachmentDTO> = emptyList(),
-    val timestamp: Date?
+    val timestamp: Date?,
+    var attachmentIds: List<Long> = emptyList()
 )
 
 fun Message.toDTO(): MessageDTO {
-    return MessageDTO(id!!, userId, text, attachments.map { it.toDTO() }, timestamp)
+    return MessageDTO(id!!, userEmail, text, timestamp)
+}
+
+fun MessageDTO.withAttachmentIds(attachments: List<Long>): MessageDTO {
+    return this.copy(attachmentIds = attachments)
+}
+
+fun MessageDTO.withUserEmail(userEmail: String): MessageDTO {
+    return this.copy(userEmail = userEmail)
 }
 
 fun MessageDTO.withTimestamp(date: Date): MessageDTO {
     return this.copy(timestamp = date)
 }
 
-fun MessageDTO.withUserId(userId: Long): MessageDTO {
-    return this.copy(userId = userId)
+fun MessageDTO.withUserId(userEmail: String): MessageDTO {
+    return this.copy(userEmail = userEmail)
 }
 fun MessageDTO.toEntity(): Message {
     return Message(
         text,
         timestamp!!,
-        userId!!
+        userEmail!!
     )
 }

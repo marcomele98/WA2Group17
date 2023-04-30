@@ -1,9 +1,7 @@
 package it.polito.wa2.g17.server.ticketing.attachments
 
+import org.springframework.web.multipart.MultipartFile
+
 interface AttachmentService {
-
-    fun addAttachment(attachmentDTO: AttachmentDTO): AttachmentDTO
-
-    fun getAttachment(id: Long): AttachmentDTO
-
+    fun uploadAttachment(file: MultipartFile)
 }

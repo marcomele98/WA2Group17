@@ -33,3 +33,16 @@ class ProfileController(private val profileService: ProfileService) {
     }
 
 }
+
+@RestController
+@Validated
+@RequestMapping("/API/manager/profiles")
+class ManagerProfileController(private val profileService: ProfileService) {
+    @GetMapping("{skill}")
+    @ResponseStatus(HttpStatus.OK)
+    fun getProfilesBySkill(@PathVariable skill: String): List<ProfileDTO> {
+        return profileService.getProfilesBySkill(skill)
+    }
+
+}
+
