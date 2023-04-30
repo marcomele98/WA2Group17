@@ -2,6 +2,8 @@ package it.polito.wa2.g17.server
 
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
+import it.polito.wa2.g17.server.ticketing.tickets.Priority
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.Ticket
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Test
@@ -55,28 +57,29 @@ class ServerApplicationTests {
     fun ticketResolved100Attempts() {
 
         var ticket = Ticket(
-            customerId = 1,
+            customerEmail = "customer@gmail.com",
             productEan = "4935531461206",
-            priorityLevel = 2,
-            expertId = 1
+            priorityLevel = Priority.LOW,
+            problemType = ProblemType.HARDWARE
         )
 
         val statusChangeOpen = StatusChange(
             Status.OPEN,
-            userEmail = 1,
+            userEmail = "customer@gmail.com",
             timestamp = Date(),
             ticket = ticket
         )
 
         val statusChangeInProgress = StatusChange(
             Status.IN_PROGRESS,
-            userEmail = 1,
+            userEmail = "manager@gmail.com",
             timestamp = Date(),
             ticket = ticket
         )
 
         ticket.addStatus(statusChangeOpen)
         ticket.addStatus(statusChangeInProgress)
+        ticket.expertEmail = "expert@gmail.com"
 
         ticketRepository.save(ticket)
 
