@@ -1,8 +1,6 @@
 package it.polito.wa2.g17.server
 
-import it.polito.wa2.g17.server.tests.ticketClosed100Attempts
-import it.polito.wa2.g17.server.tests.ticketReopen100Attempts
-import it.polito.wa2.g17.server.tests.ticketResolved100Attempts
+import it.polito.wa2.g17.server.tests.*
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -66,5 +64,15 @@ class ServerApplicationTests {
     fun test3() {
         ticketClosed100Attempts(ticketRepository, restTemplate, port)
     }
+
+    @Test
+    fun test4() {
+        ticketAssigned100Attempts(ticketRepository, restTemplate, port)
+    }
+    @Test
+    fun test5() {
+        getAllByCustomerEmail(ticketRepository, restTemplate, port)
+    }
+
 
 }

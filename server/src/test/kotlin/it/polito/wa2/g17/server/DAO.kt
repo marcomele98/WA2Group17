@@ -2,9 +2,7 @@ package it.polito.wa2.g17.server
 
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
-import it.polito.wa2.g17.server.ticketing.tickets.Priority
-import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
-import it.polito.wa2.g17.server.ticketing.tickets.Ticket
+import it.polito.wa2.g17.server.ticketing.tickets.*
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import jakarta.transaction.Transactional
@@ -33,6 +31,17 @@ class DAO() {
       timestamp = Date(),
       ticket = ticket
     )
+  }
+
+  fun getAssignedTicketDTO(): AssignTicketDTO {
+    return AssignTicketDTO(
+      expertEmail = "exper@gmail.com",
+      priority = Priority.LOW
+    )
+  }
+
+  fun getPartialTicketDTO(ticket: Ticket): PartialTicketDTO {
+    return ticket.toPartialDTO()
   }
 
   @Transactional
