@@ -50,7 +50,6 @@ fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: 
   tickets = ticketRepository.findAllEager()
   Assertions.assertEquals(1, tickets.size)
   ticket = tickets[0]
-  println(ticket.id)
 
   Assertions.assertEquals(100, results.size)
   Assertions.assertEquals(1, results.values.count { it.statusCode == HttpStatus.OK })

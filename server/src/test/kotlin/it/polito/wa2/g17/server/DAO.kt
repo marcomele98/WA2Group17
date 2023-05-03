@@ -41,10 +41,10 @@ class DAO() {
     entityManager.createNativeQuery("DELETE FROM message").executeUpdate()
     entityManager.createNativeQuery("DELETE FROM tickets").executeUpdate()
     entityManager.createNativeQuery("DELETE FROM attachment").executeUpdate()
-    //entityManager.createNativeQuery("DROP SEQUENCE IF EXISTS tickets_seq CASCADE").executeUpdate()
-    //entityManager.createNativeQuery("CREATE SEQUENCE tickets_seq INCREMENT BY 50 START 1 OWNED BY tickets.id").executeUpdate()
-    //entityManager.createNativeQuery("ALTER TABLE tickets ALTER COLUMN id RESTART WITH 1").executeUpdate()
-    //entityManager.createNativeQuery("SELECT setval('tickets_seq', 1, false);").executeUpdate()
+    /*entityManager.createNativeQuery("DROP SEQUENCE IF EXISTS tickets_seq CASCADE").executeUpdate()
+    entityManager.createNativeQuery("CREATE SEQUENCE tickets_seq INCREMENT BY 50 START 50 OWNED BY tickets.id").executeUpdate()*/
+    //entityManager.createNativeQuery("ALTER TABLE tickets ALTER COLUMN id RESTART WITH 50").executeUpdate()
+    //entityManager.createNativeQuery("SELECT setval('tickets_seq', 50, false);").executeUpdate()
     entityManager.createNativeQuery("ALTER SEQUENCE tickets_seq RESTART WITH 50").executeUpdate()
   }
 }

@@ -35,10 +35,14 @@ fun ticketClosed100Attempts(ticketRepository: TicketRepository, restTemplate: Te
 
   for (i in 1..100) {
     executor.submit {
+      /*val requestBody = "{\"userEmail\":\"customer@gmail.com\"}"
+      val requestHeaders = HttpHeaders()
+      requestHeaders.contentType = MediaType.APPLICATION_JSON
+      val requestEntity = HttpEntity(requestBody, requestHeaders)*/
       val response = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets/close/1",
+        "http://localhost:$port/API/customer/tickets/close/1?userEmail=customer@gmail.com",
         HttpMethod.PUT,
-        null,
+        null, //requestEntity
         Void::class.java
       )
       results[i] = response
@@ -53,10 +57,9 @@ fun ticketClosed100Attempts(ticketRepository: TicketRepository, restTemplate: Te
   ticket = tickets[0]
 
   Assertions.assertEquals(100, results.size)
-  println(ticket.id)
   Assertions.assertEquals(1, results.values.count { it.statusCode == HttpStatus.OK })
   Assertions.assertEquals(99, results.values.count { it.statusCode != HttpStatus.OK })
-  Assertions.assertEquals(Status.IN_PROGRESS, ticket.status)
+  Assertions.assertEquals(Status.CLOSED, ticket.status)
 
   Assertions.assertEquals(
     listOf(Status.OPEN, Status.IN_PROGRESS, Status.CLOSED),
