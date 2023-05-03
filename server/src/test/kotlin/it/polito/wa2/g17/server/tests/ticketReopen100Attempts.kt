@@ -12,15 +12,19 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
+fun ticketReopen100Attempts(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
 
-  var ticket = DAO().getTicket()
-  val statusChangeOpen = DAO().getStatusChange(ticket, Status.OPEN)
-  val statusChangeInProgress = DAO().getStatusChange(ticket, Status.IN_PROGRESS)
+  //ticketRepository.deleteAll()
+  val dao = DAO()
+
+  var ticket = dao.getTicket()
+  val statusChangeOpen = dao.getStatusChange(ticket, Status.OPEN)
+  val statusChangeInProgress = dao.getStatusChange(ticket, Status.IN_PROGRESS)
+  val statusChangeClosed = dao.getStatusChange(ticket, Status.CLOSED)
 
   ticket.addStatus(statusChangeOpen)
   ticket.addStatus(statusChangeInProgress)
-  ticket.apply { expertEmail = "expert@gmail.com" }
+  ticket.addStatus(statusChangeClosed)
 
   ticketRepository.save(ticket)
 
@@ -35,7 +39,7 @@ fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: 
   for (i in 1..100) {
     executor.submit {
       val response = restTemplate.exchange(
-        "http://localhost:$port/API/expert/tickets/resolve/1",
+        "http://localhost:$port/API/customer/tickets/reopen/1",
         HttpMethod.PUT,
         null,
         Void::class.java
@@ -55,10 +59,10 @@ fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: 
   Assertions.assertEquals(100, results.size)
   Assertions.assertEquals(1, results.values.count { it.statusCode == HttpStatus.OK })
   Assertions.assertEquals(99, results.values.count { it.statusCode != HttpStatus.OK })
-  Assertions.assertEquals(Status.RESOLVED, ticket.status)
+  Assertions.assertEquals(Status.IN_PROGRESS, ticket.status)
 
   Assertions.assertEquals(
-    listOf(Status.OPEN, Status.IN_PROGRESS, Status.RESOLVED),
+    listOf(Status.OPEN, Status.IN_PROGRESS, Status.CLOSED, Status.IN_PROGRESS),
     ticket.statusHistory
       .sortedBy { it.timestamp }
       .map { it.status }

@@ -1,7 +1,10 @@
 package it.polito.wa2.g17.server
 
+import it.polito.wa2.g17.server.tests.ticketClosed100Attempts
+import it.polito.wa2.g17.server.tests.ticketReopen100Attempts
 import it.polito.wa2.g17.server.tests.ticketResolved100Attempts
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -41,9 +44,27 @@ class ServerApplicationTests {
     @Autowired
     lateinit var ticketRepository: TicketRepository
 
+    @Autowired
+    lateinit var dao: DAO
+
+    @AfterEach
+    fun setUp() {
+        dao.clearDB()
+    }
+
     @Test
-    fun tests() {
+    fun test1() {
         ticketResolved100Attempts(ticketRepository, restTemplate, port)
+    }
+
+    @Test
+    fun test2() {
+        ticketReopen100Attempts(ticketRepository, restTemplate, port)
+    }
+
+    @Test
+    fun test3() {
+        ticketClosed100Attempts(ticketRepository, restTemplate, port)
     }
 
 }

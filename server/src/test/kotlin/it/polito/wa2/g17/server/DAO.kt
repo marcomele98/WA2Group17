@@ -5,9 +5,17 @@ import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.tickets.Priority
 import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.Ticket
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
+import jakarta.transaction.Transactional
+import org.springframework.stereotype.Component
 import java.util.*
 
-class DAO {
+@Component
+class DAO() {
+
+  @PersistenceContext
+  private lateinit var entityManager: EntityManager
 
   fun getTicket(): Ticket {
     return Ticket(
@@ -25,5 +33,18 @@ class DAO {
       timestamp = Date(),
       ticket = ticket
     )
+  }
+
+  @Transactional
+  fun clearDB() {
+    entityManager.createNativeQuery("DELETE FROM status_changes").executeUpdate()
+    entityManager.createNativeQuery("DELETE FROM message").executeUpdate()
+    entityManager.createNativeQuery("DELETE FROM tickets").executeUpdate()
+    entityManager.createNativeQuery("DELETE FROM attachment").executeUpdate()
+    //entityManager.createNativeQuery("DROP SEQUENCE IF EXISTS tickets_seq CASCADE").executeUpdate()
+    //entityManager.createNativeQuery("CREATE SEQUENCE tickets_seq INCREMENT BY 50 START 1 OWNED BY tickets.id").executeUpdate()
+    //entityManager.createNativeQuery("ALTER TABLE tickets ALTER COLUMN id RESTART WITH 1").executeUpdate()
+    //entityManager.createNativeQuery("SELECT setval('tickets_seq', 1, false);").executeUpdate()
+    entityManager.createNativeQuery("ALTER SEQUENCE tickets_seq RESTART WITH 50").executeUpdate()
   }
 }
