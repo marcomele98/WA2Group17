@@ -41,36 +41,44 @@ fun getAllAssigned(
   var ticket4 = dao.getTicket(customer, product)
     .apply { problemType = ProblemType.SOFTWARE; priorityLevel = Priority.LOW }
 
-  val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
-  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
-  val statusChangeResolved = dao.getStatusChange(Status.RESOLVED, customer)
-  val statusChangeClosed = dao.getStatusChange(Status.CLOSED, customer)
+  val statusChangeOpen1 = dao.getStatusChange(Status.OPEN, customer)
+  val statusChangeInProgress1 = dao.getStatusChange(Status.IN_PROGRESS, customer)
+  val statusChangeResolved1 = dao.getStatusChange(Status.RESOLVED, customer)
 
-  ticket1.addStatus(statusChangeOpen)
-  ticket1.addStatus(statusChangeInProgress)
-  ticket1.addStatus(statusChangeResolved)
+  ticket1.addStatus(statusChangeOpen1)
+  ticket1.addStatus(statusChangeInProgress1)
+  ticket1.addStatus(statusChangeResolved1)
   ticketRepository.save(ticket1)
 
-  ticket2.addStatus(statusChangeOpen)
-  ticket2.addStatus(statusChangeInProgress)
-  ticket2.addStatus(statusChangeClosed)
+  val statusChangeOpen2 = dao.getStatusChange(Status.OPEN, customer)
+  val statusChangeInProgress2 = dao.getStatusChange(Status.IN_PROGRESS, customer)
+  val statusChangeClosed2 = dao.getStatusChange(Status.CLOSED, customer)
+
+  ticket2.addStatus(statusChangeOpen2)
+  ticket2.addStatus(statusChangeInProgress2)
+  ticket2.addStatus(statusChangeClosed2)
   ticketRepository.save(ticket2)
 
-  ticket3.addStatus(statusChangeOpen)
-  ticket3.addStatus(statusChangeInProgress)
+  val statusChangeOpen3 = dao.getStatusChange(Status.OPEN, customer)
+  val statusChangeInProgress3 = dao.getStatusChange(Status.IN_PROGRESS, customer)
+
+  ticket3.addStatus(statusChangeOpen3)
+  ticket3.addStatus(statusChangeInProgress3)
   ticketRepository.save(ticket3)
 
-  ticket4.addStatus(statusChangeOpen)
+  val statusChangeOpen4 = dao.getStatusChange(Status.OPEN, customer)
+
+  ticket4.addStatus(statusChangeOpen4)
   ticketRepository.save(ticket4)
 
   var tickets = ticketRepository.findAll()
   Assertions.assertEquals(4, tickets.size)
 
-  tickets = ticketRepository.findAllByStatusIn(listOf(Status.IN_PROGRESS, Status.RESOLVED, Status.CLOSED))
-  Assertions.assertEquals(3, tickets.size)
-
   tickets = ticketRepository.findAllByStatusIn(listOf(Status.OPEN))
   Assertions.assertEquals(1, tickets.size)
+
+  tickets = ticketRepository.findAllByStatusIn(listOf(Status.IN_PROGRESS, Status.RESOLVED, Status.CLOSED))
+  Assertions.assertEquals(3, tickets.size)
 
   val partialTicket1 = dao.getPartialTicketDTO(tickets[0])
   val partialTicket2 = dao.getPartialTicketDTO(tickets[1])

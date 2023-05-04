@@ -4,12 +4,16 @@ import it.polito.wa2.g17.server.products.Product
 import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.ticketing.attachments.Attachment
 import it.polito.wa2.g17.server.ticketing.messages.Message
+import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
+import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
+import it.polito.wa2.g17.server.ticketing.status.toDTO
 import it.polito.wa2.g17.server.ticketing.tickets.*
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime.now
 import java.util.*
 
 @Component
@@ -27,12 +31,20 @@ class DAO() {
     )
   }
 
-  fun getMessage(/*user: Profile,*/ ticket: Ticket): Message {
+  fun getMessage(user: Profile, ticket: Ticket): Message {
     return Message(
       text = "This is a message",
-      timestamp = Date(),
-      //user = user,
+      user = user,
       ticket = ticket
+    )
+  }
+
+  fun getMessageDTO(email: String): MessageDTO {
+    return MessageDTO(
+      null,
+      userEmail = email,
+      text = "This is a message",
+      null
     )
   }
 
@@ -52,6 +64,10 @@ class DAO() {
       timestamp = Date(),
       //ticket = ticket
     )
+  }
+
+  fun getStatusChangeDTO(statusChange: StatusChange): StatusChangeDTO {
+    return statusChange.toDTO()
   }
 
   fun getAssignedTicketDTO(): AssignTicketDTO {

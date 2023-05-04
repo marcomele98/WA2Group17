@@ -32,6 +32,8 @@ class ServerApplicationTests {
             registry.add("spring.datasource.username", postgres::getUsername)
             registry.add("spring.datasource.password", postgres::getPassword)
             registry.add("spring.jpa.hibernate.ddl-auto") {"create-drop"}
+            //registry.add("spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation") {true}
+            registry.add("spring.datasource.autoCommit") {false}
         }
     }
 
@@ -53,8 +55,6 @@ class ServerApplicationTests {
     @Autowired
     lateinit var dao: DAO
 
-    /*
-    //failed, I think the problem is in the timestamp field of message
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test1() {
@@ -66,14 +66,11 @@ class ServerApplicationTests {
             port
         )
     }
-     */
 
-    /*
-    //same problem of test1
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test2() {
-        createMessage(
+        getTicketByIdWrong(
             ticketRepository,
             profileRepository,
             productRepository,
@@ -81,13 +78,11 @@ class ServerApplicationTests {
             port
         )
     }
-    */
 
-    //failed, addStatus() update ticket but the change doesn't propagate to tickets
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test3() {
-        getAllOpen(
+        createMessage(
             ticketRepository,
             profileRepository,
             productRepository,
@@ -99,6 +94,18 @@ class ServerApplicationTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test4() {
+        getAllOpen(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test5() {
         getAllAssigned(
             ticketRepository,
             profileRepository,
@@ -111,6 +118,18 @@ class ServerApplicationTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test6() {
+        getStatusHistory(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test7() {
         ticketAssigned100Attempts(
             ticketRepository,
             profileRepository,
@@ -122,7 +141,7 @@ class ServerApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test9() {
+    fun test8() {
         ticketResolved100Attempts(
             ticketRepository,
             profileRepository,
@@ -134,7 +153,18 @@ class ServerApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test11() {
+    fun test9() {
+        createTicket(
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test10() {
         getAllByCustomerEmail(
             ticketRepository,
             profileRepository,
@@ -146,7 +176,7 @@ class ServerApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test12() {
+    fun test11() {
         ticketReopen100Attempts(
             ticketRepository,
             profileRepository,
@@ -158,8 +188,117 @@ class ServerApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test13() {
+    fun test12() {
         ticketClosed100Attempts(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+    
+    
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+
+    fun test13() {
+        createTicketProductDoesNotExist(
+            profileRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test14() {
+        createTicketWrongEanWithLetter(
+            profileRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test15() {
+        createTicketWrongEanLength14(
+            profileRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test16() {
+        createTicketWrongEanLength12(
+            profileRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test17() {
+        createTicketCustomerEmptyString(
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test18() {
+        createTicketProfileNotFound(
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test19() {
+        createTicketWrongEmailFormat(
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test20() {
+        closeTicketWhenOpen(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test21() {
+        closeTicketWhenClosed(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test22() {
+        closeTicketWhenResolved(
             ticketRepository,
             profileRepository,
             productRepository,

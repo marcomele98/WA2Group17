@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.ticketing.messages
 
+import it.polito.wa2.g17.server.profiles.Profile
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import java.util.Date
@@ -20,20 +21,13 @@ fun Message.toDTO(): MessageDTO {
     return MessageDTO(id!!, user!!.email, text, timestamp, attachmentIds = list)
 }
 
-fun MessageDTO.withUserEmail(userEmail: String): MessageDTO {
-    return this.copy(userEmail = userEmail)
-}
-
 fun MessageDTO.withTimestamp(date: Date): MessageDTO {
     return this.copy(timestamp = date)
 }
 
-fun MessageDTO.withUserId(userEmail: String): MessageDTO {
-    return this.copy(userEmail = userEmail)
-}
 fun MessageDTO.toEntity(): Message {
     return Message(
         text,
-        timestamp!!,
+        timestamp!!
     )
 }

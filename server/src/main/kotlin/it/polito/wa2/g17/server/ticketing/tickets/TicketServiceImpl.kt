@@ -29,12 +29,10 @@ class TicketServiceImpl(
     //TODO: controllo sul ruolo
 
     override fun createTicket(createTicketDTO: CreateTicketDTO): CompleteTicketDTO {
-        
         val profile = profileRepository.findByIdOrNull(createTicketDTO.customerEmail)
             ?: throw ProfileNotFoundException("Customer with email ${createTicketDTO.customerEmail} not found")
 
-        val product = productRepository.findByIdOrNull(createTicketDTO.productEan)
-            ?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
+        val product = productRepository.findByIdOrNull(createTicketDTO.productEan)?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
 
         val date = Date()
         val ticket = Ticket(profile, product, createTicketDTO.problemType)
@@ -174,10 +172,13 @@ class TicketServiceImpl(
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
+        val profile = profileRepository.findByIdOrNull(messageDTO.userEmail)
+            ?: throw ProfileNotFoundException("User with email ${messageDTO.userEmail} not found")
+
         val message = messageDTO
             .withTimestamp(Date())
-            .withUserEmail(messageDTO.userEmail!!)
             .toEntity()
+            .withUser(profile)
 
         message.addAttachments(attachmentRepository.findAllByIdIn(messageDTO.attachmentIds))
 

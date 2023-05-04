@@ -3,13 +3,17 @@ package it.polito.wa2.g17.server.tests
 import it.polito.wa2.g17.server.DAO
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
-import it.polito.wa2.g17.server.ticketing.attachments.Attachment
+import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
+import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
+import it.polito.wa2.g17.server.ticketing.tickets.CreateTicketDTO
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.*
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 
 fun createMessage(
   ticketRepository: TicketRepository,
@@ -21,49 +25,40 @@ fun createMessage(
 
   val dao = DAO()
 
-  val customer = dao.getProfileCustomer()
-  val product = dao.getProduct()
+  var customer = dao.getProfileCustomer()
+  var product = dao.getProduct()
 
-  profileRepository.save(customer)
-  productRepository.save(product)
+  customer = profileRepository.save(customer)
+  product = productRepository.save(product)
 
   var ticket = dao.getTicket(customer, product)
-
   val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
-  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
-
   ticket.addStatus(statusChangeOpen)
-  ticket.addStatus(statusChangeInProgress)
+  ticket = ticketRepository.save(ticket)
 
-  val message = dao.getMessage(ticket)
+  val id = ticket.id
 
-  val attachment = dao.getAttachment()
-  val attachments = listOf<Attachment>(attachment)
+  var messageDTO : MessageDTO = dao.getMessageDTO(customer.email)
 
-  message.addAttachments(attachments)
-  ticket.addMessage(message)
+  val objectMapper = ObjectMapper()
 
-  ticketRepository.save(ticket)
+  val addRequestBody = objectMapper.writeValueAsString(messageDTO)
+  val addRequestHeaders = HttpHeaders()
+  addRequestHeaders.contentType = MediaType.APPLICATION_JSON
+  val addRequestEntity = HttpEntity(addRequestBody, addRequestHeaders)
 
-  val messages = ticketRepository.findAllMessagesWithAttachments()
-  Assertions.assertEquals(1, messages.size)
-
-  val tickets = ticketRepository.findAllWithMessages()
-  Assertions.assertEquals(1, tickets.size)
-
-  val id = tickets[0].id
-
-  val response = restTemplate.exchange(
+  val putResponse = restTemplate.exchange(
     "http://localhost:$port/API/tickets/message/$id",
     HttpMethod.PUT,
-    null,
-    Void::class.java
+    addRequestEntity,
+    object : ParameterizedTypeReference<CompleteTicketDTO>() {}
   )
 
-  ticket = ticketRepository.findById(id!!).get()
+  Assertions.assertEquals(HttpStatus.OK, putResponse.statusCode)
 
-  Assertions.assertEquals(1, ticket.messages.size)
+  Assertions.assertEquals(1, putResponse.body!!.messages.size)
 
-  Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+  }
 
-}
+
+
