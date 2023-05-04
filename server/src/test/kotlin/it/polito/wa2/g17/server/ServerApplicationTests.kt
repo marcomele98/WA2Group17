@@ -53,7 +53,9 @@ class ServerApplicationTests {
     @Autowired
     lateinit var dao: DAO
 
-    /*@Test
+    /*
+    //failed, I think the problem is in the timestamp field of message
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test1() {
         getTicketById(
@@ -63,7 +65,48 @@ class ServerApplicationTests {
             restTemplate,
             port
         )
-    }*/
+    }
+     */
+
+    /*
+    //same problem of test1
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test2() {
+        createMessage(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+    */
+
+    //failed, addStatus() update ticket but the change doesn't propagate to tickets
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test3() {
+        getAllOpen(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test4() {
+        getAllAssigned(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)

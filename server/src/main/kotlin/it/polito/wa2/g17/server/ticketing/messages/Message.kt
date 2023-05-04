@@ -5,9 +5,10 @@ import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.attachments.Attachment
 import it.polito.wa2.g17.server.ticketing.tickets.Ticket
 import jakarta.persistence.*
-import java.util.Date
+import java.util.*
 
 @Entity
+//@Table(name = "messages")
 class Message(
 
     @Column(nullable = false)
@@ -18,7 +19,7 @@ class Message(
     var timestamp: Date = Date(),
 
     @ManyToOne
-    @JoinColumn(name = "user_email", nullable = false, referencedColumnName = "email")
+    @JoinColumn(name = "user_email", referencedColumnName = "email")
     var user: Profile? = null,
 
     @ManyToOne

@@ -8,6 +8,7 @@ import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 
 @Entity
+//@Table(name = "attachments")
 class Attachment(
 
     @Column(nullable = false)

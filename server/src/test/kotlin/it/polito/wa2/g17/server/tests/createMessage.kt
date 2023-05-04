@@ -5,15 +5,13 @@ import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.ticketing.attachments.Attachment
 import it.polito.wa2.g17.server.ticketing.status.Status
-import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-fun getTicketById(
+fun createMessage(
   ticketRepository: TicketRepository,
   profileRepository: ProfileRepository,
   productRepository: ProductRepository,
@@ -29,7 +27,7 @@ fun getTicketById(
   profileRepository.save(customer)
   productRepository.save(product)
 
-  val ticket = dao.getTicket(customer, product)
+  var ticket = dao.getTicket(customer, product)
 
   val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
   val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
@@ -43,14 +41,9 @@ fun getTicketById(
   val attachments = listOf<Attachment>(attachment)
 
   message.addAttachments(attachments)
-
   ticket.addMessage(message)
 
   ticketRepository.save(ticket)
-
-  val ticket1 = ticketRepository.findById(ticket.id!!).get()
-
-  Assertions.assertEquals(ticket1, ticket)
 
   val messages = ticketRepository.findAllMessagesWithAttachments()
   Assertions.assertEquals(1, messages.size)
@@ -58,18 +51,19 @@ fun getTicketById(
   val tickets = ticketRepository.findAllWithMessages()
   Assertions.assertEquals(1, tickets.size)
 
-  val partialTicket = dao.getCompleteTicketDTO(tickets[0])
-
-  val id = ticket1.id
+  val id = tickets[0].id
 
   val response = restTemplate.exchange(
-    "http://localhost:$port/API/$id",
-    HttpMethod.GET,
+    "http://localhost:$port/API/tickets/message/$id",
+    HttpMethod.PUT,
     null,
-    object : ParameterizedTypeReference<CompleteTicketDTO>() {}
+    Void::class.java
   )
 
+  ticket = ticketRepository.findById(id!!).get()
+
+  Assertions.assertEquals(1, ticket.messages.size)
+
   Assertions.assertEquals(HttpStatus.OK, response.statusCode)
-  Assertions.assertEquals(partialTicket, response.body)
 
 }
