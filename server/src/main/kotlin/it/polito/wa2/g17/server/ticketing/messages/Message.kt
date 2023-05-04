@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.ticketing.messages
 
+import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.attachments.Attachment
 import it.polito.wa2.g17.server.ticketing.tickets.Ticket
@@ -16,8 +17,9 @@ class Message(
     @Column(nullable = false)
     var timestamp: Date = Date(),
 
-    @Column(nullable = false)
-    val userEmail: String,
+    @ManyToOne
+    @JoinColumn(name = "user_email", nullable = false, referencedColumnName = "email")
+    var user: Profile? = null,
 
     @ManyToOne
     var ticket: Ticket? = null,
@@ -32,5 +34,10 @@ class Message(
         attachments.addAll(a)
     }
 
+}
+
+fun Message.withUser(p: Profile): Message {
+    this.user = p
+    return this
 }
 

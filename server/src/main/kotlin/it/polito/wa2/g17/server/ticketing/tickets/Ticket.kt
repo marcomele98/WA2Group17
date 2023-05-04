@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.ticketing.tickets
 
+import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.messages.Message
 import it.polito.wa2.g17.server.ticketing.status.Status
@@ -9,8 +10,9 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "tickets")
 class Ticket(
-    @Column(nullable = false)
-    var customerEmail: String,
+    @ManyToOne
+    @JoinColumn(name = "customer_email", nullable = false, referencedColumnName = "email")
+    var customer: Profile,
 
     @Column(nullable = false)
     var productEan: String,
@@ -27,7 +29,9 @@ class Ticket(
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])
     val statusHistory: MutableList<StatusChange> = mutableListOf(),
 
-    var expertEmail: String? = null,
+    @ManyToOne
+    @JoinColumn(name = "expert_email", referencedColumnName = "email")
+    var expert: Profile? = null,
 
     @Enumerated(EnumType.STRING)
     var status: Status = Status.OPEN

@@ -13,7 +13,7 @@ data class PartialTicketDTO(
 )
 
 fun Ticket.toPartialDTO(): PartialTicketDTO {
-    return PartialTicketDTO(id!!, customerEmail, productEan, expertEmail, problemType, status, priorityLevel)
+    return PartialTicketDTO(id!!, customer.email, productEan, expert?.email, problemType, status, priorityLevel)
 }
 
 

@@ -1,5 +1,8 @@
 package it.polito.wa2.g17.server.ticketing.tickets;
 
+import it.polito.wa2.g17.server.profiles.Profile
+import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.ticketing.attachments.AttachmentRepository
 import it.polito.wa2.g17.server.ticketing.messages.*
 import it.polito.wa2.g17.server.ticketing.status.Status
@@ -15,27 +18,31 @@ import java.util.*
 @Transactional
 class TicketServiceImpl(
     private val ticketRepository: TicketRepository,
-    private val attachmentRepository: AttachmentRepository
+    private val attachmentRepository: AttachmentRepository,
+    private val profileRepository: ProfileRepository,
 ) : TicketService {
 
 
     //TODO: controllo sul ruolo
 
     override fun createTicket(createTicketDTO: CreateTicketDTO): CompleteTicketDTO {
+        
+        val profile = profileRepository.findByIdOrNull(createTicketDTO.customerEmail)
+            ?: throw ProfileNotFoundException("Customer with email ${createTicketDTO.customerEmail} not found")
 
         val date = Date()
-        val ticket = Ticket(createTicketDTO.customerEmail, createTicketDTO.productEan, createTicketDTO.problemType)
+        val ticket = Ticket(profile, createTicketDTO.productEan, createTicketDTO.problemType)
 
         val message = createTicketDTO.initialMessage
             .withTimestamp(date)
-            .withUserEmail(ticket.customerEmail)
             .toEntity()
+            .withUser(profile)
 
         message.addAttachments(
             attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds)
         )
 
-        val status = StatusChange(Status.OPEN, ticket.customerEmail, date)
+        val status = StatusChange(Status.OPEN, profile, date)
 
         ticket.addMessage(message)
         ticket.addStatus(status)
@@ -75,17 +82,17 @@ class TicketServiceImpl(
         return ticket.statusHistory.map { it.toDTO() }
     }
 
-    override fun getUnresolvedByExpertEmail(expertEmail: String): List<PartialTicketDTO> {
+    override fun getUnresolvedByExpertEmail(email: String): List<PartialTicketDTO> {
         return ticketRepository.findAllByExpertEmailAndStatusIn(
-            expertEmail, listOf(
+            email, listOf(
                 Status.IN_PROGRESS
             )
         ).map { it.toPartialDTO() }
     }
 
-    override fun getResolvedByExpertEmail(expertEmail: String): List<PartialTicketDTO> {
+    override fun getResolvedByExpertEmail(email: String): List<PartialTicketDTO> {
         return ticketRepository.findAllByExpertEmailAndStatusIn(
-            expertEmail, listOf(
+            email, listOf(
                 Status.CLOSED, Status.RESOLVED,
             )
         ).map { it.toPartialDTO() }
@@ -97,39 +104,48 @@ class TicketServiceImpl(
     }
 
     override fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): CompleteTicketDTO {
+
+        val expert = profileRepository.findByIdOrNull(expertEmail)
+            ?: throw ProfileNotFoundException("Expert with email $expertEmail not found")
+
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
         if(ticket.status != Status.OPEN)
             throw WrongStateException("Ticket with ID $ticketId is not open")
 
-        ticket.expertEmail = expertEmail
+        ticket.expert = expert
         ticket.priorityLevel = priority
-        ticket.addStatus(StatusChange(Status.IN_PROGRESS, expertEmail))
+        ticket.addStatus(StatusChange(Status.IN_PROGRESS, expert))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
     override fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO {
+        val user: Profile = profileRepository.findByIdOrNull(userEmail)
+            ?: throw ProfileNotFoundException("User with email $userEmail not found")
+
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
         if(ticket.status != Status.IN_PROGRESS)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
-        ticket.addStatus(StatusChange(Status.CLOSED, userEmail))
+        ticket.addStatus(StatusChange(Status.CLOSED, user))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
     override fun reopenTicket(ticketId: Long): CompleteTicketDTO {
+
+
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
         if(ticket.status != Status.CLOSED && ticket.status != Status.RESOLVED)
             throw WrongStateException("Ticket with ID $ticketId is not closed")
 
-        ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.customerEmail!!))
+        ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.customer))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
@@ -140,7 +156,7 @@ class TicketServiceImpl(
         if(ticket.status != Status.IN_PROGRESS)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
-        ticket.addStatus(StatusChange(Status.RESOLVED, ticket.expertEmail!!))
+        ticket.addStatus(StatusChange(Status.RESOLVED, ticket.expert!!))
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }

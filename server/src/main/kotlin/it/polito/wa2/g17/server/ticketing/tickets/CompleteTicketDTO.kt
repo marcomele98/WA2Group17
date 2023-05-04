@@ -18,9 +18,9 @@ data class CompleteTicketDTO(
 fun Ticket.toCompleteDTO(): CompleteTicketDTO {
     return CompleteTicketDTO(
         id!!,
-        customerEmail,
+        customer.email,
         productEan,
-        expertEmail,
+        expert?.email,
         problemType,
         status,
         priorityLevel,
