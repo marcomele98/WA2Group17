@@ -52,27 +52,32 @@ class ServerApplicationTests {
 
     @Test
     fun test1() {
+        getTicketById(ticketRepository, restTemplate, port)
+    }
+
+    @Test
+    fun test6() {
+        ticketAssigned100Attempts(ticketRepository, restTemplate, port)
+    }
+
+    @Test
+    fun test9() {
         ticketResolved100Attempts(ticketRepository, restTemplate, port)
     }
 
     @Test
-    fun test2() {
+    fun test11() {
+        getAllByCustomerEmail(ticketRepository, restTemplate, port)
+    }
+
+    @Test
+    fun test12() {
         ticketReopen100Attempts(ticketRepository, restTemplate, port)
     }
 
     @Test
-    fun test3() {
+    fun test13() {
         ticketClosed100Attempts(ticketRepository, restTemplate, port)
     }
-
-    @Test
-    fun test4() {
-        ticketAssigned100Attempts(ticketRepository, restTemplate, port)
-    }
-    @Test
-    fun test5() {
-        getAllByCustomerEmail(ticketRepository, restTemplate, port)
-    }
-
 
 }

@@ -1,5 +1,7 @@
 package it.polito.wa2.g17.server
 
+import it.polito.wa2.g17.server.ticketing.attachments.Attachment
+import it.polito.wa2.g17.server.ticketing.messages.Message
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.tickets.*
@@ -24,6 +26,24 @@ class DAO() {
     )
   }
 
+  fun getMessage(ticket: Ticket): Message {
+    return Message(
+      text = "This is a message",
+      timestamp = Date(),
+      userEmail = "customer@gmail.com",
+      ticket = ticket,
+    )
+  }
+
+  fun getAttachment(message: Message) : Attachment {
+    return Attachment(
+      name = "attachment1",
+      type = "pdf",
+      content = "content".toByteArray(),
+      message = message
+    )
+  }
+
   fun getStatusChange(ticket: Ticket, status: Status): StatusChange {
     return StatusChange(
       status = status,
@@ -44,12 +64,16 @@ class DAO() {
     return ticket.toPartialDTO()
   }
 
+  fun getCompleteTicketDTO(ticket: Ticket): CompleteTicketDTO {
+    return ticket.toCompleteDTO()
+  }
+
   @Transactional
   fun clearDB() {
     entityManager.createNativeQuery("DELETE FROM status_changes").executeUpdate()
+    entityManager.createNativeQuery("DELETE FROM attachment").executeUpdate()
     entityManager.createNativeQuery("DELETE FROM message").executeUpdate()
     entityManager.createNativeQuery("DELETE FROM tickets").executeUpdate()
-    entityManager.createNativeQuery("DELETE FROM attachment").executeUpdate()
     /*entityManager.createNativeQuery("DROP SEQUENCE IF EXISTS tickets_seq CASCADE").executeUpdate()
     entityManager.createNativeQuery("CREATE SEQUENCE tickets_seq INCREMENT BY 50 START 50 OWNED BY tickets.id").executeUpdate()*/
     //entityManager.createNativeQuery("ALTER TABLE tickets ALTER COLUMN id RESTART WITH 50").executeUpdate()

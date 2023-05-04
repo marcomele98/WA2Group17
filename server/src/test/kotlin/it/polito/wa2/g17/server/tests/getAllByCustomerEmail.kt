@@ -23,14 +23,16 @@ fun getAllByCustomerEmail(ticketRepository: TicketRepository, restTemplate: Test
 
   val statusChangeOpen = dao.getStatusChange(ticket1, Status.OPEN)
   val statusChangeInProgress = dao.getStatusChange(ticket1, Status.IN_PROGRESS)
-  val statusChangeClose = dao.getStatusChange(ticket1, Status.CLOSED)
+  val statusChangeOpen2 = dao.getStatusChange(ticket2, Status.OPEN)
+  val statusChangeInProgress2 = dao.getStatusChange(ticket2, Status.IN_PROGRESS)
+  val statusChangeClose2 = dao.getStatusChange(ticket2, Status.CLOSED)
 
   ticket1.addStatus(statusChangeOpen)
   ticket1.addStatus(statusChangeInProgress)
   ticket1.apply { expertEmail = "expert@gmail.com" }
-  ticket2.addStatus(statusChangeOpen)
-  ticket2.addStatus(statusChangeInProgress)
-  ticket2.addStatus(statusChangeClose)
+  ticket2.addStatus(statusChangeOpen2)
+  ticket2.addStatus(statusChangeInProgress2)
+  ticket2.addStatus(statusChangeClose2)
   ticket2.apply { expertEmail = "expert@gmail.com" }
 
   var tickets = ticketRepository.findAll()
