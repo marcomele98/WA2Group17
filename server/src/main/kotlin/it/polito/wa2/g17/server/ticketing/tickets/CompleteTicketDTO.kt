@@ -19,7 +19,7 @@ fun Ticket.toCompleteDTO(): CompleteTicketDTO {
     return CompleteTicketDTO(
         id!!,
         customer.email,
-        productEan,
+        product.ean,
         expert?.email,
         problemType,
         status,

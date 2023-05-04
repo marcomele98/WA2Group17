@@ -8,6 +8,7 @@ import it.polito.wa2.g17.server.profiles.CannotUpdateEmailException
 import it.polito.wa2.g17.server.profiles.DuplicateProfileException
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g17.server.ticketing.tickets.TicketNotFoundException
+import it.polito.wa2.g17.server.ticketing.tickets.WrongSkillsException
 import it.polito.wa2.g17.server.ticketing.tickets.WrongStateException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
@@ -47,5 +48,8 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     fun handleProductNotFound(e: WrongStateException) =
         ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message!!)
 
+    @ExceptionHandler(WrongSkillsException::class)
+    fun handleProductNotFound(e: WrongSkillsException) =
+        ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
 }

@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.ticketing.tickets
 
+import it.polito.wa2.g17.server.products.Product
 import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.messages.Message
@@ -14,8 +15,9 @@ class Ticket(
     @JoinColumn(name = "customer_email", nullable = false, referencedColumnName = "email")
     var customer: Profile,
 
-    @Column(nullable = false)
-    var productEan: String,
+    @ManyToOne
+    @JoinColumn(name = "product_ean", nullable = false, referencedColumnName = "ean")
+    var product: Product,
 
     @Enumerated(EnumType.STRING)
     var problemType: ProblemType,

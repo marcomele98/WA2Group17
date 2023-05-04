@@ -1,5 +1,7 @@
 package it.polito.wa2.g17.server.ticketing.tickets;
 
+import it.polito.wa2.g17.server.products.ProductNotFoundException
+import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g17.server.profiles.ProfileRepository
@@ -20,6 +22,7 @@ class TicketServiceImpl(
     private val ticketRepository: TicketRepository,
     private val attachmentRepository: AttachmentRepository,
     private val profileRepository: ProfileRepository,
+    private val productRepository: ProductRepository
 ) : TicketService {
 
 
@@ -30,8 +33,11 @@ class TicketServiceImpl(
         val profile = profileRepository.findByIdOrNull(createTicketDTO.customerEmail)
             ?: throw ProfileNotFoundException("Customer with email ${createTicketDTO.customerEmail} not found")
 
+        val product = productRepository.findByIdOrNull(createTicketDTO.productEan)
+            ?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
+
         val date = Date()
-        val ticket = Ticket(profile, createTicketDTO.productEan, createTicketDTO.problemType)
+        val ticket = Ticket(profile, product, createTicketDTO.problemType)
 
         val message = createTicketDTO.initialMessage
             .withTimestamp(date)
@@ -110,6 +116,9 @@ class TicketServiceImpl(
 
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        if(!expert.skills.contains(ticket.problemType))
+            throw WrongSkillsException("Expert with email $expertEmail is not skilled for problem type ${ticket.problemType}")
 
         if(ticket.status != Status.OPEN)
             throw WrongStateException("Ticket with ID $ticketId is not open")
