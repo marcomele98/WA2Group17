@@ -1,7 +1,10 @@
 package it.polito.wa2.g17.server.tests
 
 import it.polito.wa2.g17.server.DAO
+import it.polito.wa2.g17.server.products.ProductRepository
+import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.ticketing.status.Status
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -12,17 +15,35 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
+fun ticketResolved100Attempts(
+  ticketRepository: TicketRepository,
+  profileRepository: ProfileRepository,
+  productRepository: ProductRepository,
+  restTemplate: TestRestTemplate,
+  port: Int
+) {
 
   val dao = DAO()
 
-  var ticket = dao.getTicket()
-  val statusChangeOpen = dao.getStatusChange(ticket, Status.OPEN)
-  val statusChangeInProgress = dao.getStatusChange(ticket, Status.IN_PROGRESS)
+  val customer = dao.getProfileCustomer()
+  val product = dao.getProduct()
+  var expert = dao.getProfileExpert()
+
+  expert.apply { skills = mutableListOf(ProblemType.HARDWARE) }
+
+  profileRepository.save(customer)
+  profileRepository.save(expert)
+  productRepository.save(product)
+
+  var ticket = dao.getTicket(customer, product)
+
+  val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
+  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
 
   ticket.addStatus(statusChangeOpen)
   ticket.addStatus(statusChangeInProgress)
-  ticket.apply { expertEmail = "expert@gmail.com" }
+
+  ticket.apply { this.expert = expert }
 
   ticketRepository.save(ticket)
 

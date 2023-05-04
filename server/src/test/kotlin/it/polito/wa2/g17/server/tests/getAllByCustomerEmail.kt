@@ -1,9 +1,12 @@
 package it.polito.wa2.g17.server.tests
 
 import it.polito.wa2.g17.server.DAO
+import it.polito.wa2.g17.server.products.ProductRepository
+import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.tickets.PartialTicketDTO
 import it.polito.wa2.g17.server.ticketing.tickets.Priority
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -11,29 +14,38 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-fun getAllByCustomerEmail(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
+fun getAllByCustomerEmail(
+  ticketRepository: TicketRepository,
+  profileRepository: ProfileRepository,
+  productRepository: ProductRepository,
+  restTemplate: TestRestTemplate,
+  port: Int
+) {
 
   val dao = DAO()
 
-  var ticket1 = dao.getTicket()
+  var customer = dao.getProfileCustomer()
+  val product = dao.getProduct()
+
+  profileRepository.save(customer)
+  productRepository.save(product)
+
+  var ticket1 = dao.getTicket(customer, product)
   ticketRepository.save(ticket1)
 
-  var ticket2 = dao.getTicket().apply { productEan = "1234567890123"; priorityLevel = Priority.HIGH }
+  var ticket2 = dao.getTicket(customer, product)
+    .apply { problemType = ProblemType.SOFTWARE; priorityLevel = Priority.HIGH }
   ticketRepository.save(ticket2)
 
-  val statusChangeOpen = dao.getStatusChange(ticket1, Status.OPEN)
-  val statusChangeInProgress = dao.getStatusChange(ticket1, Status.IN_PROGRESS)
-  val statusChangeOpen2 = dao.getStatusChange(ticket2, Status.OPEN)
-  val statusChangeInProgress2 = dao.getStatusChange(ticket2, Status.IN_PROGRESS)
-  val statusChangeClose2 = dao.getStatusChange(ticket2, Status.CLOSED)
+  val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
+  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
+  val statusChangeClosed = dao.getStatusChange(Status.CLOSED, customer)
 
   ticket1.addStatus(statusChangeOpen)
   ticket1.addStatus(statusChangeInProgress)
-  ticket1.apply { expertEmail = "expert@gmail.com" }
-  ticket2.addStatus(statusChangeOpen2)
-  ticket2.addStatus(statusChangeInProgress2)
-  ticket2.addStatus(statusChangeClose2)
-  ticket2.apply { expertEmail = "expert@gmail.com" }
+  ticket2.addStatus(statusChangeOpen)
+  ticket2.addStatus(statusChangeInProgress)
+  ticket2.addStatus(statusChangeClosed)
 
   var tickets = ticketRepository.findAll()
   Assertions.assertEquals(2, tickets.size)
@@ -41,8 +53,13 @@ fun getAllByCustomerEmail(ticketRepository: TicketRepository, restTemplate: Test
   tickets = ticketRepository.findAllByCustomerEmail("customer@gmail.com")
   Assertions.assertEquals(2, tickets.size)
 
-  var ticket3 = dao.getTicket()
-    .apply { customerEmail = "costumer2@gmail.com"; productEan = "1234567833123"; priorityLevel = Priority.MEDIUM }
+  var customer2 = dao.getProfileCustomer()
+    .apply { email = "customer2@gmail.com" }
+
+  profileRepository.save(customer2)
+
+  var ticket3 = dao.getTicket(customer, product)
+    .apply { this.customer = customer2; priorityLevel = Priority.MEDIUM }
 
   ticketRepository.save(ticket3)
 

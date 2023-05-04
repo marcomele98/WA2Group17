@@ -1,6 +1,8 @@
 package it.polito.wa2.g17.server.tests
 
 import it.polito.wa2.g17.server.DAO
+import it.polito.wa2.g17.server.products.ProductRepository
+import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.ticketing.attachments.Attachment
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
@@ -11,21 +13,32 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
-fun getTicketById(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
+fun getTicketById(
+  ticketRepository: TicketRepository,
+  profileRepository: ProfileRepository,
+  productRepository: ProductRepository,
+  restTemplate: TestRestTemplate,
+  port: Int
+) {
 
   val dao = DAO()
 
-  var ticket = dao.getTicket()
+  val customer = dao.getProfileCustomer()
+  val product = dao.getProduct()
 
-  val statusChangeOpen = dao.getStatusChange(ticket, Status.OPEN)
-  val statusChangeInProgress = dao.getStatusChange(ticket, Status.IN_PROGRESS)
+  profileRepository.save(customer)
+  productRepository.save(product)
+
+  var ticket = dao.getTicket(customer, product)
+
+  val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
+  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
 
   ticket.addStatus(statusChangeOpen)
   ticket.addStatus(statusChangeInProgress)
-  ticket.apply { expertEmail = "expert@gmail.com" }
 
   val message = dao.getMessage(ticket)
-  val attachment = dao.getAttachment(message)
+  val attachment = dao.getAttachment()
   val attachments = listOf<Attachment>(attachment)
 
   message.addAttachments(attachments)

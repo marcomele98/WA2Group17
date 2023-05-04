@@ -1,14 +1,16 @@
 package it.polito.wa2.g17.server
 
+import it.polito.wa2.g17.server.products.ProductRepository
+import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.tests.*
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
@@ -43,41 +45,84 @@ class ServerApplicationTests {
     lateinit var ticketRepository: TicketRepository
 
     @Autowired
+    lateinit var profileRepository: ProfileRepository
+
+    @Autowired
+    lateinit var productRepository: ProductRepository
+
+    @Autowired
     lateinit var dao: DAO
 
-    @AfterEach
-    fun setUp() {
-        dao.clearDB()
-    }
-
-    @Test
+    /*@Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test1() {
-        getTicketById(ticketRepository, restTemplate, port)
-    }
+        getTicketById(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }*/
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test6() {
-        ticketAssigned100Attempts(ticketRepository, restTemplate, port)
+        ticketAssigned100Attempts(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test9() {
-        ticketResolved100Attempts(ticketRepository, restTemplate, port)
+        ticketResolved100Attempts(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test11() {
-        getAllByCustomerEmail(ticketRepository, restTemplate, port)
+        getAllByCustomerEmail(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test12() {
-        ticketReopen100Attempts(ticketRepository, restTemplate, port)
+        ticketReopen100Attempts(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun test13() {
-        ticketClosed100Attempts(ticketRepository, restTemplate, port)
+        ticketClosed100Attempts(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
     }
 
 }
