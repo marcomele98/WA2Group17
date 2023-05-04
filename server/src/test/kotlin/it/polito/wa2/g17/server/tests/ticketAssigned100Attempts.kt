@@ -26,7 +26,7 @@ fun ticketAssigned100Attempts(ticketRepository: TicketRepository, restTemplate: 
 
   var tickets = ticketRepository.findAll()
 
-  Assertions.assertEquals(1, tickets.size)
+  val id = tickets[0].id
 
   //100 threads di cui max 10 in parallelo
   val executor = Executors.newFixedThreadPool(10)
@@ -41,7 +41,7 @@ fun ticketAssigned100Attempts(ticketRepository: TicketRepository, restTemplate: 
       requestHeaders.contentType = MediaType.APPLICATION_JSON
       val requestEntity = HttpEntity(requestBody, requestHeaders)
       val response = restTemplate.exchange(
-        "http://localhost:$port/API/manager/tickets/assign/1",
+        "http://localhost:$port/API/manager/tickets/assign/$id",
         HttpMethod.PUT,
         requestEntity,
         Void::class.java

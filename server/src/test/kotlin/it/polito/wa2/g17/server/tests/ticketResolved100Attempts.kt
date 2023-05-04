@@ -14,9 +14,11 @@ import java.util.concurrent.TimeUnit
 
 fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
 
-  var ticket = DAO().getTicket()
-  val statusChangeOpen = DAO().getStatusChange(ticket, Status.OPEN)
-  val statusChangeInProgress = DAO().getStatusChange(ticket, Status.IN_PROGRESS)
+  val dao = DAO()
+
+  var ticket = dao.getTicket()
+  val statusChangeOpen = dao.getStatusChange(ticket, Status.OPEN)
+  val statusChangeInProgress = dao.getStatusChange(ticket, Status.IN_PROGRESS)
 
   ticket.addStatus(statusChangeOpen)
   ticket.addStatus(statusChangeInProgress)
@@ -28,6 +30,8 @@ fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: 
 
   Assertions.assertEquals(1, tickets.size)
 
+  val id = tickets[0].id
+
   //100 threads di cui max 10 in parallelo
   val executor = Executors.newFixedThreadPool(10)
   val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
@@ -35,7 +39,7 @@ fun ticketResolved100Attempts(ticketRepository: TicketRepository, restTemplate: 
   for (i in 1..100) {
     executor.submit {
       val response = restTemplate.exchange(
-        "http://localhost:$port/API/expert/tickets/resolve/1",
+        "http://localhost:$port/API/expert/tickets/resolve/$id",
         HttpMethod.PUT,
         null,
         Void::class.java

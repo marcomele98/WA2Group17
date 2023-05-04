@@ -13,15 +13,17 @@ import org.springframework.http.HttpStatus
 
 fun getAllByCustomerEmail(ticketRepository: TicketRepository, restTemplate: TestRestTemplate, port: Int) {
 
-  var ticket1 = DAO().getTicket()
+  val dao = DAO()
+
+  var ticket1 = dao.getTicket()
   ticketRepository.save(ticket1)
 
-  var ticket2 = DAO().getTicket().apply { productEan = "1234567890123"; priorityLevel = Priority.HIGH }
+  var ticket2 = dao.getTicket().apply { productEan = "1234567890123"; priorityLevel = Priority.HIGH }
   ticketRepository.save(ticket2)
 
-  val statusChangeOpen = DAO().getStatusChange(ticket1, Status.OPEN)
-  val statusChangeInProgress = DAO().getStatusChange(ticket1, Status.IN_PROGRESS)
-  val statusChangeClose = DAO().getStatusChange(ticket1, Status.CLOSED)
+  val statusChangeOpen = dao.getStatusChange(ticket1, Status.OPEN)
+  val statusChangeInProgress = dao.getStatusChange(ticket1, Status.IN_PROGRESS)
+  val statusChangeClose = dao.getStatusChange(ticket1, Status.CLOSED)
 
   ticket1.addStatus(statusChangeOpen)
   ticket1.addStatus(statusChangeInProgress)
@@ -37,7 +39,7 @@ fun getAllByCustomerEmail(ticketRepository: TicketRepository, restTemplate: Test
   tickets = ticketRepository.findAllByCustomerEmail("customer@gmail.com")
   Assertions.assertEquals(2, tickets.size)
 
-  var ticket3 = DAO().getTicket()
+  var ticket3 = dao.getTicket()
     .apply { customerEmail = "costumer2@gmail.com"; productEan = "1234567833123"; priorityLevel = Priority.MEDIUM }
 
   ticketRepository.save(ticket3)
@@ -48,8 +50,8 @@ fun getAllByCustomerEmail(ticketRepository: TicketRepository, restTemplate: Test
   tickets = ticketRepository.findAllByCustomerEmail("customer@gmail.com")
   Assertions.assertEquals(2, tickets.size)
 
-  val partialTicket1 = DAO().getPartialTicketDTO(tickets[0])
-  var partialTicket2 = DAO().getPartialTicketDTO(tickets[1])
+  val partialTicket1 = dao.getPartialTicketDTO(tickets[0])
+  var partialTicket2 = dao.getPartialTicketDTO(tickets[1])
 
   val partialTickets = listOf<PartialTicketDTO>(partialTicket1, partialTicket2)
 

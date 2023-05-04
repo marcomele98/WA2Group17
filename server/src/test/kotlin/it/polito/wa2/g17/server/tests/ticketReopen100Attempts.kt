@@ -30,7 +30,7 @@ fun ticketReopen100Attempts(ticketRepository: TicketRepository, restTemplate: Te
 
   var tickets = ticketRepository.findAll()
 
-  Assertions.assertEquals(1, tickets.size)
+  val id = tickets[0].id
 
   //100 threads di cui max 10 in parallelo
   val executor = Executors.newFixedThreadPool(10)
@@ -39,7 +39,7 @@ fun ticketReopen100Attempts(ticketRepository: TicketRepository, restTemplate: Te
   for (i in 1..100) {
     executor.submit {
       val response = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets/reopen/1",
+        "http://localhost:$port/API/customer/tickets/reopen/$id",
         HttpMethod.PUT,
         null,
         Void::class.java

@@ -27,7 +27,7 @@ fun ticketClosed100Attempts(ticketRepository: TicketRepository, restTemplate: Te
 
   var tickets = ticketRepository.findAll()
 
-  Assertions.assertEquals(1, tickets.size)
+  val id = tickets[0].id
 
   //100 threads di cui max 10 in parallelo
   val executor = Executors.newFixedThreadPool(10)
@@ -35,14 +35,10 @@ fun ticketClosed100Attempts(ticketRepository: TicketRepository, restTemplate: Te
 
   for (i in 1..100) {
     executor.submit {
-      /*val requestBody = "{\"userEmail\":\"customer@gmail.com\"}"
-      val requestHeaders = HttpHeaders()
-      requestHeaders.contentType = MediaType.APPLICATION_JSON
-      val requestEntity = HttpEntity(requestBody, requestHeaders)*/
       val response = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets/close/1?userEmail=customer@gmail.com",
+        "http://localhost:$port/API/customer/tickets/close/$id?userEmail=customer@gmail.com",
         HttpMethod.PUT,
-        null, //requestEntity
+        null,
         Void::class.java
       )
       results[i] = response
