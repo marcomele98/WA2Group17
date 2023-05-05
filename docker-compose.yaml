@@ -1,0 +1,38 @@
+services:
+  server:
+    build: ./server
+    image: server
+    container_name: serverContainer
+    ports:
+        - "8080:8080"
+    networks:
+        - app_net
+    depends_on:
+        - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/products
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: true
+
+  database:
+    image: postgres
+    container_name: databaseContainer
+    ports:
+      - "5432:5432"
+    networks:
+      - app_net
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: products
+    volumes:
+      - /db_volume
+
+
+networks:
+  app_net:
+
+volumes:
+  db_volume:
