@@ -3,10 +3,17 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "3.0.5"
 	id("io.spring.dependency-management") version "1.1.0"
+	id("com.google.cloud.tools.jib") version "3.3.1"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
 	kotlin("plugin.allopen") version "1.8.20"
+}
+
+jib{
+	to{
+		image = "server"
+	}
 }
 
 allOpen {
