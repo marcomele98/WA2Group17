@@ -14,7 +14,6 @@ create table if not exists profiles
     surname varchar(127)
 );
 
-insert into profiles (email, name, surname) values ('marcomele18@gmail.com', 'Marco', 'Mele');
 
 INSERT INTO products
 (ean, name, brand)
