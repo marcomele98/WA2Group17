@@ -12,7 +12,10 @@ import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
 import it.polito.wa2.g17.server.ticketing.status.toDTO
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.access.prepost.PostAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service;
 import java.util.*
 
@@ -28,9 +31,11 @@ class TicketServiceImpl(
 
     //TODO: controllo sul ruolo
 
-    override fun createTicket(createTicketDTO: CreateTicketDTO): CompleteTicketDTO {
-        val profile = profileRepository.findByIdOrNull(createTicketDTO.customerEmail)
-            ?: throw ProfileNotFoundException("Customer with email ${createTicketDTO.customerEmail} not found")
+    override fun createTicket(createTicketDTO: CreateTicketDTO, email: String): CompleteTicketDTO {
+        val profile = profileRepository.findByIdOrNull(email)
+            ?: throw ProfileNotFoundException("Customer with email $email not found")
+
+        println(profile)
 
         val product = productRepository.findByIdOrNull(createTicketDTO.productEan)?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
 
@@ -80,6 +85,7 @@ class TicketServiceImpl(
         return ticket.toCompleteDTO()
     }
 
+
     override fun getStatusHistory(id: Long): List<StatusChangeDTO> {
         val ticket = ticketRepository.findByIdOrNull(id)
             ?: throw TicketNotFoundException("Ticket with ID $id not found")
@@ -128,10 +134,14 @@ class TicketServiceImpl(
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
+
+    @PostAuthorize("returnObject.customerEmail == authentication.name || returnObject.expertEmail == authentication.name || hasRole('MANAGER')")
     override fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO {
         val user: Profile = profileRepository.findByIdOrNull(userEmail)
             ?: throw ProfileNotFoundException("User with email $userEmail not found")
+    //TODO: controllo sul profile non 404
 
+        println(userEmail)
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
@@ -142,6 +152,8 @@ class TicketServiceImpl(
 
         return ticketRepository.save(ticket).toCompleteDTO()
     }
+
+
 
     override fun reopenTicket(ticketId: Long): CompleteTicketDTO {
 

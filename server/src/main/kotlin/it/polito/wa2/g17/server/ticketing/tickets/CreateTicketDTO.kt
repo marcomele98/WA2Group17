@@ -13,10 +13,6 @@ data class CreateTicketDTO(
     )
     val productEan: String,
 
-    @field:Email(message = "Email format not valid")
-    @field:NotBlank(message = "Customer Email field is required")
-    val customerEmail: String,
-
     val initialMessage: MessageDTO,
 
     val problemType: ProblemType

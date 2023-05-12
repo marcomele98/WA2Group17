@@ -4,9 +4,13 @@ import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @Validated
@@ -23,6 +27,14 @@ class TicketGeneralController(private val ticketService: TicketService) {
     @ResponseStatus(HttpStatus.OK)
     fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO, br: BindingResult): CompleteTicketDTO {
         return ticketService.addMessage(ticketId, message)
+    }
+
+    @PutMapping("close/{ticketId}")
+    @ResponseStatus(HttpStatus.OK)
+    //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id e scopro se è customer o esperto
+    //TODO: forse qua sarà necessario il campo @LastModifiedBy
+    fun closeTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
+        return ticketService.closeTicket(ticketId, principal.name)
     }
 }
 
@@ -90,14 +102,14 @@ class TicketCustomerController(private val ticketService: TicketService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun addTicket(@Valid @RequestBody ticket: CreateTicketDTO, br: BindingResult): CompleteTicketDTO {
-        return ticketService.createTicket(ticket)
+    fun addTicket(@Valid @RequestBody ticket: CreateTicketDTO, br: BindingResult,  principal: Authentication): CompleteTicketDTO {
+        return ticketService.createTicket(ticket, principal.name)
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    fun getAllByCustomerId(@RequestParam customerEmail: String): List<PartialTicketDTO> {
-        return ticketService.getAllByCustomerEmail(customerEmail)
+    fun getAllByCustomerId(principal: Authentication): List<PartialTicketDTO> {
+        return ticketService.getAllByCustomerEmail(principal.name)
     }
 
     @PutMapping("reopen/{ticketId}")
@@ -106,12 +118,5 @@ class TicketCustomerController(private val ticketService: TicketService) {
         return ticketService.reopenTicket(ticketId)
     }
 
-    @PutMapping("close/{ticketId}")
-    @ResponseStatus(HttpStatus.OK)
-    //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id e scopro se è customer o esperto
-    //TODO: forse qua sarà necessario il campo @LastModifiedBy
-    fun closeTicket(@PathVariable ticketId: Long, @RequestParam userEmail: String): CompleteTicketDTO {
-        return ticketService.closeTicket(ticketId, userEmail)
-    }
 
 }
