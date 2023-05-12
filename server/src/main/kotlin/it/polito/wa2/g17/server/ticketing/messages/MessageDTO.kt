@@ -1,15 +1,11 @@
 package it.polito.wa2.g17.server.ticketing.messages
 
-import it.polito.wa2.g17.server.profiles.Profile
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
-import java.util.Date
+import java.util.*
 
 data class MessageDTO(
     val id: Long?,
-    @field:Email(message = "Email format not valid")
-    @field:NotBlank(message = "User ID field is required")
-    val userEmail: String?,
+    val userEmail: String? = null,
     @field:NotBlank(message = "Text field is required")
     val text: String,
     val timestamp: Date?,

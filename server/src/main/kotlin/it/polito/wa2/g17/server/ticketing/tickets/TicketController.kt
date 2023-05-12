@@ -2,6 +2,7 @@ package it.polito.wa2.g17.server.ticketing.tickets
 
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
@@ -25,8 +26,8 @@ class TicketGeneralController(private val ticketService: TicketService) {
 
     @PutMapping("message/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO, br: BindingResult): CompleteTicketDTO {
-        return ticketService.addMessage(ticketId, message)
+    fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO, principal: Authentication, br: BindingResult): CompleteTicketDTO {
+        return ticketService.addMessage(ticketId, message, principal.name)
     }
 
     @PutMapping("close/{ticketId}")
@@ -76,22 +77,22 @@ class TicketManagerController(private val ticketService: TicketService) {
 class TicketExpertController(private val ticketService: TicketService) {
     @GetMapping("unresolved")
     @ResponseStatus(HttpStatus.OK)
-    fun getAssignedByExpertId(@RequestParam expertEmail: String): List<PartialTicketDTO> {
-        return ticketService.getUnresolvedByExpertEmail(expertEmail)
+    fun getAssignedByExpertId(principal: Authentication): List<PartialTicketDTO> {
+        return ticketService.getUnresolvedByExpertEmail(principal.name)
     }
 
 
     //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id del customer
     @GetMapping("resolved")
     @ResponseStatus(HttpStatus.OK)
-    fun getResolvedByExpertId(@RequestParam expertEmail: String): List<PartialTicketDTO> {
-        return ticketService.getResolvedByExpertEmail(expertEmail)
+    fun getResolvedByExpertId(principal: Authentication): List<PartialTicketDTO> {
+        return ticketService.getResolvedByExpertEmail(principal.name)
     }
 
     @PutMapping("resolve/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun resolveTicket(@PathVariable ticketId: Long): CompleteTicketDTO {
-        return ticketService.resolveTicket(ticketId)
+    fun resolveTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
+        return ticketService.resolveTicket(ticketId, principal.name)
     }
 }
 
@@ -114,9 +115,7 @@ class TicketCustomerController(private val ticketService: TicketService) {
 
     @PutMapping("reopen/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun reopenTicket(@PathVariable ticketId: Long): CompleteTicketDTO {
-        return ticketService.reopenTicket(ticketId)
+    fun reopenTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
+        return ticketService.reopenTicket(ticketId, principal.name)
     }
-
-
 }

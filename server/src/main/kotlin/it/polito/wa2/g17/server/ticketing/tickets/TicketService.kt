@@ -13,7 +13,9 @@ interface TicketService {
 
     fun getAllAssigned(): List<PartialTicketDTO>
 
+    @PostAuthorize("returnObject.expertEmail == authentication.name || hasRole('MANAGER') || returnObject.customerEmail == authentication.name")
     fun getTicket(id: Long): CompleteTicketDTO
+
 
     fun getStatusHistory(id: Long): List<StatusChangeDTO>
 
@@ -25,13 +27,12 @@ interface TicketService {
 
     fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): CompleteTicketDTO
 
-    @PostAuthorize("returnObject.customerEmail == authentication.name || returnObject.expertEmail == authentication.name || hasRole('MANAGER')")
     fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO
 
-    fun reopenTicket(ticketId: Long): CompleteTicketDTO
+    fun reopenTicket(ticketId: Long, email: String): CompleteTicketDTO
 
-    fun resolveTicket(ticketId: Long): CompleteTicketDTO
+    fun resolveTicket(ticketId: Long, email: String): CompleteTicketDTO
 
-    fun addMessage(ticketId: Long, message: MessageDTO): CompleteTicketDTO
+    fun addMessage(ticketId: Long, message: MessageDTO, email: String): CompleteTicketDTO
 
 }

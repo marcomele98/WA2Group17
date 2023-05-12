@@ -135,15 +135,16 @@ class TicketServiceImpl(
     }
 
 
-    @PostAuthorize("returnObject.customerEmail == authentication.name || returnObject.expertEmail == authentication.name || hasRole('MANAGER')")
     override fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO {
         val user: Profile = profileRepository.findByIdOrNull(userEmail)
             ?: throw ProfileNotFoundException("User with email $userEmail not found")
-    //TODO: controllo sul profile non 404
+        //TODO: controllo sul profile non 404
 
-        println(userEmail)
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        if(ticket.customer.email != userEmail && ticket.expert?.email != userEmail)
+            throw WrongUserException("You are not allowed to close this ticket")
 
         if(ticket.status != Status.IN_PROGRESS)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
@@ -155,11 +156,12 @@ class TicketServiceImpl(
 
 
 
-    override fun reopenTicket(ticketId: Long): CompleteTicketDTO {
-
-
+    override fun reopenTicket(ticketId: Long, email: String): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        if(ticket.customer.email != email)
+            throw WrongUserException("You are not allowed to reopen this ticket")
 
         if(ticket.status != Status.CLOSED && ticket.status != Status.RESOLVED)
             throw WrongStateException("Ticket with ID $ticketId is not closed")
@@ -169,9 +171,13 @@ class TicketServiceImpl(
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
-    override fun resolveTicket(ticketId: Long): CompleteTicketDTO {
+    override fun resolveTicket(ticketId: Long, email: String): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
+
+        if(ticket.expert?.email != email)
+            throw WrongUserException("You are not allowed to resolve this ticket")
+
         if(ticket.status != Status.IN_PROGRESS)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
@@ -180,12 +186,15 @@ class TicketServiceImpl(
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
-    override fun addMessage(ticketId: Long, messageDTO: MessageDTO): CompleteTicketDTO {
+    override fun addMessage(ticketId: Long, messageDTO: MessageDTO, email: String): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
-        val profile = profileRepository.findByIdOrNull(messageDTO.userEmail)
-            ?: throw ProfileNotFoundException("User with email ${messageDTO.userEmail} not found")
+        val profile = profileRepository.findByIdOrNull(email)
+            ?: throw ProfileNotFoundException("User with email ${email} not found")
+
+        if(ticket.customer.email != email && ticket.expert?.email != email)
+            throw WrongUserException("You are not allowed to add a message to this ticket")
 
         val message = messageDTO
             .withTimestamp(Date())
