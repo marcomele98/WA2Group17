@@ -3,6 +3,7 @@ package it.polito.wa2.g17.server.tests
 import it.polito.wa2.g17.server.DAO
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
@@ -24,13 +25,15 @@ fun ticketAssigned100Attempts(
 
   val dao = DAO()
 
-  val customer = dao.getProfileCustomer()
-  val product = dao.getProduct()
+  val customer = dao.getProfileClient()
+  val manager = dao.getProfileManager()
   var expert = dao.getProfileExpert()
+  val product = dao.getProduct()
 
   expert.apply { skills = mutableListOf(ProblemType.HARDWARE) }
 
   profileRepository.save(customer)
+  profileRepository.save(manager)
   profileRepository.save(expert)
   productRepository.save(product)
 
@@ -53,12 +56,16 @@ fun ticketAssigned100Attempts(
 
   val objectMapper = ObjectMapper()
 
+  val token : AuthenticationResponseDTO = getToken("manager", "password", restTemplate, port)
+
+  val requestBody = objectMapper.writeValueAsString(assignedTicketDTO)
+  val requestHeaders = HttpHeaders()
+  requestHeaders.contentType = MediaType.APPLICATION_JSON
+  requestHeaders.setBearerAuth(token.accessToken)
+  val requestEntity = HttpEntity(requestBody, requestHeaders)
+
   for (i in 1..100) {
     executor.submit {
-      val requestBody = objectMapper.writeValueAsString(assignedTicketDTO)
-      val requestHeaders = HttpHeaders()
-      requestHeaders.contentType = MediaType.APPLICATION_JSON
-      val requestEntity = HttpEntity(requestBody, requestHeaders)
       val response = restTemplate.exchange(
         "http://localhost:$port/API/manager/tickets/assign/$id",
         HttpMethod.PUT,

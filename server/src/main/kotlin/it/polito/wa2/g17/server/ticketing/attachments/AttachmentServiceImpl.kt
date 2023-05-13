@@ -1,5 +1,8 @@
 package it.polito.wa2.g17.server.ticketing.attachments
 
+import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.ticketing.tickets.WrongUserException
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -8,17 +11,27 @@ import java.io.File
 
 @Service
 @Transactional
-class AttachmentServiceImpl(private val attachmentRepository: AttachmentRepository): AttachmentService {
-    override fun uploadAttachment(file: MultipartFile): Long {
+class AttachmentServiceImpl(private val attachmentRepository: AttachmentRepository, private val profileRepository: ProfileRepository): AttachmentService {
+
+    override fun uploadAttachment(file: MultipartFile, email : String, role: String): Long {
         val fileName = file.originalFilename!!
         val fileType = file.contentType!!
         val fileContent = file.bytes
 
-        val newAttachment = Attachment(fileName, fileType, fileContent)
+        val profile = profileRepository.findByIdOrNull(email)
+            ?: throw ProfileNotFoundException("User with email $email not found")
+
+        if(role == "ROLE_MANAGER") {
+            throw WrongUserException("You are not allowed to upload attachments")
+        }
+
+        val newAttachment = Attachment(fileName, profile, fileType, fileContent)
         return attachmentRepository.save(newAttachment).id!!
     }
+
+
      override fun downloadAttachment(id: Long): Attachment {
         val attachment = attachmentRepository.findByIdOrNull(id)
-        return Attachment(attachment!!.name, attachment.type, attachment.content)
+        return Attachment(attachment!!.name, attachment!!.user, attachment.type, attachment.content)
     }
 }

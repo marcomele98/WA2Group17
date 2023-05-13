@@ -3,14 +3,13 @@ package it.polito.wa2.g17.server.tests
 import it.polito.wa2.g17.server.DAO
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -25,20 +24,22 @@ fun ticketResolved100Attempts(
 
   val dao = DAO()
 
-  val customer = dao.getProfileCustomer()
+  val customer = dao.getProfileClient()
   val product = dao.getProduct()
   var expert = dao.getProfileExpert()
+  val manager = dao.getProfileManager()
 
   expert.apply { skills = mutableListOf(ProblemType.HARDWARE) }
 
   profileRepository.save(customer)
   profileRepository.save(expert)
+  profileRepository.save(manager)
   productRepository.save(product)
 
   var ticket = dao.getTicket(customer, product)
 
   val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
-  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
+  val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, manager)
 
   ticket.addStatus(statusChangeOpen)
   ticket.addStatus(statusChangeInProgress)
@@ -57,12 +58,19 @@ fun ticketResolved100Attempts(
   val executor = Executors.newFixedThreadPool(10)
   val results = ConcurrentHashMap<Int, ResponseEntity<Void>>()
 
+  val token : AuthenticationResponseDTO = getToken("expert", "password", restTemplate, port)
+
+  val requestHeaders = HttpHeaders()
+  requestHeaders.contentType = MediaType.APPLICATION_JSON
+  requestHeaders.setBearerAuth(token.accessToken)
+  val requestEntity = HttpEntity(null, requestHeaders)
+
   for (i in 1..100) {
     executor.submit {
       val response = restTemplate.exchange(
         "http://localhost:$port/API/expert/tickets/resolve/$id",
         HttpMethod.PUT,
-        null,
+        requestEntity,
         Void::class.java
       )
       results[i] = response

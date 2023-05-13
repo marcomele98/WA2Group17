@@ -32,7 +32,6 @@ class ServerApplicationTests {
             registry.add("spring.datasource.username", postgres::getUsername)
             registry.add("spring.datasource.password", postgres::getPassword)
             registry.add("spring.jpa.hibernate.ddl-auto") {"create-drop"}
-            //registry.add("spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation") {true}
             registry.add("spring.datasource.autoCommit") {false}
         }
     }
@@ -240,19 +239,11 @@ class ServerApplicationTests {
         )
     }
 
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test17() {
-        createTicketCustomerEmptyString(
-            productRepository,
-            restTemplate,
-            port
-        )
-    }
+
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test18() {
+    fun test17() {
         createTicketProfileNotFound(
             productRepository,
             restTemplate,
@@ -260,20 +251,10 @@ class ServerApplicationTests {
         )
     }
 
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test19() {
-        createTicketWrongEmailFormat(
-            productRepository,
-            restTemplate,
-            port
-        )
-    }
-
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test20() {
+    fun test18() {
         closeTicketWhenOpen(
             ticketRepository,
             profileRepository,
@@ -285,7 +266,7 @@ class ServerApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test21() {
+    fun test19() {
         closeTicketWhenClosed(
             ticketRepository,
             profileRepository,
@@ -297,7 +278,7 @@ class ServerApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun test22() {
+    fun test20() {
         closeTicketWhenResolved(
             ticketRepository,
             profileRepository,
@@ -307,4 +288,51 @@ class ServerApplicationTests {
         )
     }
 
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test21() {
+        getAllOpenNoManager(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test22() {
+        getAllAssignedNoManager(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test23() {
+        getTicketByIdWrongUser(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun test24() {
+        createMessageWrongUser(
+            ticketRepository,
+            profileRepository,
+            productRepository,
+            restTemplate,
+            port
+        )
+    }
 }

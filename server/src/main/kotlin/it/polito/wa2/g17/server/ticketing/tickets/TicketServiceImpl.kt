@@ -5,6 +5,7 @@ import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.ticketing.attachments.Attachment
 import it.polito.wa2.g17.server.ticketing.attachments.AttachmentRepository
 import it.polito.wa2.g17.server.ticketing.messages.*
 import it.polito.wa2.g17.server.ticketing.status.Status
@@ -35,9 +36,8 @@ class TicketServiceImpl(
         val profile = profileRepository.findByIdOrNull(email)
             ?: throw ProfileNotFoundException("Customer with email $email not found")
 
-        println(profile)
-
-        val product = productRepository.findByIdOrNull(createTicketDTO.productEan)?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
+        val product = productRepository.findByIdOrNull(createTicketDTO.productEan)
+            ?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
 
         val date = Date()
         val ticket = Ticket(profile, product, createTicketDTO.problemType)
@@ -47,9 +47,12 @@ class TicketServiceImpl(
             .toEntity()
             .withUser(profile)
 
-        message.addAttachments(
-            attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds)
-        )
+
+        val attachments = attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds)
+
+        checkAttachments(attachments, email)
+
+        message.addAttachments(attachments)
 
         val status = StatusChange(Status.OPEN, profile, date)
 
@@ -135,7 +138,7 @@ class TicketServiceImpl(
     }
 
 
-    override fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO {
+    override fun closeTicket(ticketId: Long, userEmail: String, role: String): CompleteTicketDTO {
         val user: Profile = profileRepository.findByIdOrNull(userEmail)
             ?: throw ProfileNotFoundException("User with email $userEmail not found")
         //TODO: controllo sul profile non 404
@@ -143,7 +146,7 @@ class TicketServiceImpl(
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
-        if(ticket.customer.email != userEmail && ticket.expert?.email != userEmail)
+        if((ticket.customer.email != userEmail && ticket.expert?.email != userEmail ) || role == "ROLE_MANAGER")
             throw WrongUserException("You are not allowed to close this ticket")
 
         if(ticket.status != Status.IN_PROGRESS)
@@ -186,14 +189,15 @@ class TicketServiceImpl(
         return ticketRepository.save(ticket).toCompleteDTO()
     }
 
-    override fun addMessage(ticketId: Long, messageDTO: MessageDTO, email: String): CompleteTicketDTO {
+    override fun addMessage(ticketId: Long, messageDTO: MessageDTO, email: String, role: String): CompleteTicketDTO {
+
         val ticket = ticketRepository.findByIdOrNull(ticketId)
             ?: throw TicketNotFoundException("Ticket with ID $ticketId not found")
 
         val profile = profileRepository.findByIdOrNull(email)
             ?: throw ProfileNotFoundException("User with email ${email} not found")
 
-        if(ticket.customer.email != email && ticket.expert?.email != email)
+        if((ticket.customer.email != email && ticket.expert?.email != email) || role == "ROLE_MANAGER")
             throw WrongUserException("You are not allowed to add a message to this ticket")
 
         val message = messageDTO
@@ -201,11 +205,24 @@ class TicketServiceImpl(
             .toEntity()
             .withUser(profile)
 
-        message.addAttachments(attachmentRepository.findAllByIdIn(messageDTO.attachmentIds))
+
+        val attachments = attachmentRepository.findAllByIdIn(messageDTO.attachmentIds)
+
+        checkAttachments(attachments, email)
+
+        message.addAttachments(attachments)
 
         ticket.addMessage(message)
 
         return ticketRepository.save(ticket).toCompleteDTO()
+    }
+
+    private fun checkAttachments(
+        attachments: List<Attachment>,
+        email: String
+    ) {
+        if (attachments.any { attachment -> attachment.user!!.email != email })
+            throw WrongAttachmentsException("You are not allowed to add the selected attachments to this message")
     }
 
 

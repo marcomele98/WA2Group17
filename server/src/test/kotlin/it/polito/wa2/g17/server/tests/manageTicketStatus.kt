@@ -3,10 +3,13 @@ package it.polito.wa2.g17.server.tests
 import it.polito.wa2.g17.server.DAO
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
@@ -20,13 +23,13 @@ fun closeTicketWhenOpen(
 
     val dao = DAO()
 
-    val customer = dao.getProfileCustomer()
+    val customer = dao.getProfileClient()
     val product = dao.getProduct()
 
     profileRepository.save(customer)
     productRepository.save(product)
 
-    var ticket = dao.getTicket(customer, product)
+    val ticket = dao.getTicket(customer, product)
 
     val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
 
@@ -34,15 +37,20 @@ fun closeTicketWhenOpen(
 
     ticketRepository.save(ticket)
 
-    var tickets = ticketRepository.findAll()
+    val tickets = ticketRepository.findAll()
 
     val id = tickets[0].id
 
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
+
+    val requestHeaders = HttpHeaders()
+    requestHeaders.setBearerAuth(token.accessToken)
+    val requestEntity = HttpEntity(null, requestHeaders)
 
     val response = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets/close/$id?userEmail=customer@gmail.com",
+        "http://localhost:$port/API/tickets/close/$id",
         HttpMethod.PUT,
-        null,
+        requestEntity,
         Void::class.java
     )
     Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
@@ -59,13 +67,13 @@ fun closeTicketWhenClosed(
 
     val dao = DAO()
 
-    val customer = dao.getProfileCustomer()
+    val customer = dao.getProfileClient()
     val product = dao.getProduct()
 
     profileRepository.save(customer)
     productRepository.save(product)
 
-    var ticket = dao.getTicket(customer, product)
+    val ticket = dao.getTicket(customer, product)
 
     val statusChangeClosed = dao.getStatusChange(Status.CLOSED, customer)
 
@@ -73,15 +81,20 @@ fun closeTicketWhenClosed(
 
     ticketRepository.save(ticket)
 
-    var tickets = ticketRepository.findAll()
+    val tickets = ticketRepository.findAll()
 
     val id = tickets[0].id
 
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
+
+    val requestHeaders = HttpHeaders()
+    requestHeaders.setBearerAuth(token.accessToken)
+    val requestEntity = HttpEntity(null, requestHeaders)
 
     val response = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets/close/$id?userEmail=customer@gmail.com",
+        "http://localhost:$port/API/tickets/close/$id",
         HttpMethod.PUT,
-        null,
+        requestEntity,
         Void::class.java
     )
     Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
@@ -98,13 +111,13 @@ fun closeTicketWhenResolved(
 
     val dao = DAO()
 
-    val customer = dao.getProfileCustomer()
+    val customer = dao.getProfileClient()
     val product = dao.getProduct()
 
     profileRepository.save(customer)
     productRepository.save(product)
 
-    var ticket = dao.getTicket(customer, product)
+    val ticket = dao.getTicket(customer, product)
 
     val statusChangeResolved = dao.getStatusChange(Status.RESOLVED, customer)
 
@@ -112,15 +125,21 @@ fun closeTicketWhenResolved(
 
     ticketRepository.save(ticket)
 
-    var tickets = ticketRepository.findAll()
+    val tickets = ticketRepository.findAll()
 
     val id = tickets[0].id
 
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
+
+    val requestHeaders = HttpHeaders()
+    requestHeaders.setBearerAuth(token.accessToken)
+    val requestEntity = HttpEntity(null, requestHeaders)
+
 
     val response = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets/close/$id?userEmail=customer@gmail.com",
+        "http://localhost:$port/API/tickets/close/$id",
         HttpMethod.PUT,
-        null,
+        requestEntity,
         Void::class.java
     )
     Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)

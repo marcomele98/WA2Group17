@@ -3,6 +3,7 @@ package it.polito.wa2.g17.server.tests
 import it.polito.wa2.g17.server.DAO
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
@@ -22,20 +23,19 @@ fun createTicket(
 ) {
 
     val dao = DAO()
-
-    var customer = dao.getProfileCustomer()
+    var client = dao.getProfileClient()
     var product = dao.getProduct()
 
-    customer = profileRepository.save(customer)
+    client = profileRepository.save(client)
     product = productRepository.save(product)
 
-    var messageDTO : MessageDTO = dao.getMessageDTO(customer.email)
+    val messageDTO: MessageDTO = dao.getMessageDTO(client.email)
 
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO(product.ean, customer.email, messageDTO, ProblemType.HARDWARE)
+    val createTicketDTO: CreateTicketDTO = CreateTicketDTO(product.ean, messageDTO, ProblemType.HARDWARE)
 
-    var completeTicketDTO = CompleteTicketDTO(
+    val completeTicketDTO = CompleteTicketDTO(
         1,
-        customer.email,
+        client.email,
         product.ean,
         null,
         ProblemType.HARDWARE,
@@ -44,22 +44,25 @@ fun createTicket(
         listOf(messageDTO)
     )
 
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
+
     val objectMapper = ObjectMapper()
     val requestBody = objectMapper.writeValueAsString(createTicketDTO)
     val requestHeaders = HttpHeaders()
     requestHeaders.contentType = MediaType.APPLICATION_JSON
+    requestHeaders.setBearerAuth(token.accessToken)
     val requestEntity = HttpEntity(requestBody, requestHeaders)
 
-    var postResponse = restTemplate.exchange(
-      "http://localhost:$port/API/customer/tickets",
-      HttpMethod.POST,
-      requestEntity,
-      object : ParameterizedTypeReference<CompleteTicketDTO>() {}
+    val postResponse = restTemplate.exchange(
+        "http://localhost:$port/API/customer/tickets",
+        HttpMethod.POST,
+        requestEntity,
+        object : ParameterizedTypeReference<CompleteTicketDTO>() {}
     )
     Assertions.assertEquals(HttpStatus.CREATED, postResponse.statusCode)
 
     val id = postResponse.body!!.id
-    Assertions.assertEquals(1,id)
+    Assertions.assertEquals(1, id)
     Assertions.assertEquals(completeTicketDTO.id, postResponse.body!!.id)
     Assertions.assertEquals(completeTicketDTO.customerEmail, postResponse.body!!.customerEmail)
     Assertions.assertEquals(completeTicketDTO.productEan, postResponse.body!!.productEan)
@@ -67,7 +70,6 @@ fun createTicket(
     Assertions.assertEquals(completeTicketDTO.status, postResponse.body!!.status)
     Assertions.assertEquals(completeTicketDTO.messages.size, postResponse.body!!.messages.size)
 }
-
 
 
 fun createTicketProductDoesNotExist(
@@ -78,21 +80,24 @@ fun createTicketProductDoesNotExist(
 
     val dao = DAO()
 
-    var customer = dao.getProfileCustomer()
+    var customer = dao.getProfileClient()
 
     customer = profileRepository.save(customer)
 
-    var messageDTO : MessageDTO = dao.getMessageDTO(customer.email)
+    val messageDTO: MessageDTO = dao.getMessageDTO(customer.email)
 
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO("1234567890123", customer.email, messageDTO, ProblemType.HARDWARE)
+    val createTicketDTO: CreateTicketDTO = CreateTicketDTO("1234567890123", messageDTO, ProblemType.HARDWARE)
+
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
 
     val objectMapper = ObjectMapper()
     val requestBody = objectMapper.writeValueAsString(createTicketDTO)
     val requestHeaders = HttpHeaders()
     requestHeaders.contentType = MediaType.APPLICATION_JSON
+    requestHeaders.setBearerAuth(token.accessToken)
     val requestEntity = HttpEntity(requestBody, requestHeaders)
 
-    var postResponse = restTemplate.exchange(
+    val postResponse = restTemplate.exchange(
         "http://localhost:$port/API/customer/tickets",
         HttpMethod.POST,
         requestEntity,
@@ -109,26 +114,29 @@ fun createTicketWrongEanWithLetter(
 
     val dao = DAO()
 
-    var customer = dao.getProfileCustomer()
+    var customer = dao.getProfileClient()
 
     customer = profileRepository.save(customer)
 
-    var messageDTO : MessageDTO = dao.getMessageDTO(customer.email)
+    val messageDTO: MessageDTO = dao.getMessageDTO(customer.email)
 
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO("12345678AA123", customer.email, messageDTO, ProblemType.HARDWARE)
+    val createTicketDTO: CreateTicketDTO = CreateTicketDTO("12345678AA123", messageDTO, ProblemType.HARDWARE)
+
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
 
     val objectMapper = ObjectMapper()
     val requestBody = objectMapper.writeValueAsString(createTicketDTO)
     val requestHeaders = HttpHeaders()
     requestHeaders.contentType = MediaType.APPLICATION_JSON
+    requestHeaders.setBearerAuth(token.accessToken)
     val requestEntity = HttpEntity(requestBody, requestHeaders)
 
-    var postResponse = restTemplate.exchange(
+    val postResponse = restTemplate.exchange(
         "http://localhost:$port/API/customer/tickets",
         HttpMethod.POST,
         requestEntity,
         Void::class.java
-        )
+    )
     Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, postResponse.statusCode)
 }
 
@@ -141,21 +149,24 @@ fun createTicketWrongEanLength14(
 
     val dao = DAO()
 
-    var customer = dao.getProfileCustomer()
+    var customer = dao.getProfileClient()
 
     customer = profileRepository.save(customer)
 
-    var messageDTO : MessageDTO = dao.getMessageDTO(customer.email)
+    val messageDTO: MessageDTO = dao.getMessageDTO(customer.email)
 
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO("12345678123456", customer.email, messageDTO, ProblemType.HARDWARE)
+    val createTicketDTO: CreateTicketDTO = CreateTicketDTO("12345678123456", messageDTO, ProblemType.HARDWARE)
+
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
 
     val objectMapper = ObjectMapper()
     val requestBody = objectMapper.writeValueAsString(createTicketDTO)
     val requestHeaders = HttpHeaders()
     requestHeaders.contentType = MediaType.APPLICATION_JSON
+    requestHeaders.setBearerAuth(token.accessToken)
     val requestEntity = HttpEntity(requestBody, requestHeaders)
 
-    var postResponse = restTemplate.exchange(
+    val postResponse = restTemplate.exchange(
         "http://localhost:$port/API/customer/tickets",
         HttpMethod.POST,
         requestEntity,
@@ -172,22 +183,24 @@ fun createTicketWrongEanLength12(
 
     val dao = DAO()
 
-    var customer = dao.getProfileCustomer()
+    var customer = dao.getProfileClient()
 
     customer = profileRepository.save(customer)
 
-    var messageDTO : MessageDTO = dao.getMessageDTO(customer.email)
+    val messageDTO: MessageDTO = dao.getMessageDTO(customer.email)
 
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO("123456789012", customer.email, messageDTO, ProblemType.HARDWARE)
+    val createTicketDTO: CreateTicketDTO = CreateTicketDTO("123456789012", messageDTO, ProblemType.HARDWARE)
 
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
 
     val objectMapper = ObjectMapper()
     val requestBody = objectMapper.writeValueAsString(createTicketDTO)
     val requestHeaders = HttpHeaders()
     requestHeaders.contentType = MediaType.APPLICATION_JSON
+    requestHeaders.setBearerAuth(token.accessToken)
     val requestEntity = HttpEntity(requestBody, requestHeaders)
 
-    var postResponse = restTemplate.exchange(
+    val postResponse = restTemplate.exchange(
         "http://localhost:$port/API/customer/tickets",
         HttpMethod.POST,
         requestEntity,
@@ -196,68 +209,7 @@ fun createTicketWrongEanLength12(
     Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, postResponse.statusCode)
 }
 
-fun createTicketCustomerEmptyString(
-    productRepository: ProductRepository,
-    restTemplate: TestRestTemplate,
-    port: Int
-) {
 
-    val dao = DAO()
-
-    var product = dao.getProduct()
-
-    product = productRepository.save(product)
-
-    var messageDTO : MessageDTO = dao.getMessageDTO("")
-
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO(product.ean, "", messageDTO, ProblemType.HARDWARE)
-
-    val objectMapper = ObjectMapper()
-    val requestBody = objectMapper.writeValueAsString(createTicketDTO)
-    val requestHeaders = HttpHeaders()
-    requestHeaders.contentType = MediaType.APPLICATION_JSON
-    val requestEntity = HttpEntity(requestBody, requestHeaders)
-
-    var postResponse = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets",
-        HttpMethod.POST,
-        requestEntity,
-        Void::class.java
-    )
-    Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, postResponse.statusCode)
-
-}
-
-fun createTicketWrongEmailFormat(
-    productRepository: ProductRepository,
-    restTemplate: TestRestTemplate,
-    port: Int
-) {
-
-    val dao = DAO()
-
-    var product = dao.getProduct()
-
-    product = productRepository.save(product)
-
-    var messageDTO : MessageDTO = dao.getMessageDTO("aaabbbb.it")
-
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO(product.ean, "aaabbbb.it", messageDTO, ProblemType.HARDWARE)
-
-    val objectMapper = ObjectMapper()
-    val requestBody = objectMapper.writeValueAsString(createTicketDTO)
-    val requestHeaders = HttpHeaders()
-    requestHeaders.contentType = MediaType.APPLICATION_JSON
-    val requestEntity = HttpEntity(requestBody, requestHeaders)
-
-    var postResponse = restTemplate.exchange(
-        "http://localhost:$port/API/customer/tickets",
-        HttpMethod.POST,
-        requestEntity,
-        Void::class.java
-    )
-    Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, postResponse.statusCode)
-}
 
 fun createTicketProfileNotFound(
     productRepository: ProductRepository,
@@ -270,17 +222,20 @@ fun createTicketProfileNotFound(
     var product = dao.getProduct()
     product = productRepository.save(product)
 
-    var messageDTO : MessageDTO = dao.getMessageDTO("cus@test.com")
+    val messageDTO: MessageDTO = dao.getMessageDTO("cus@test.com")
 
-    var createTicketDTO : CreateTicketDTO = CreateTicketDTO(product.ean, "cus@test.com", messageDTO, ProblemType.HARDWARE)
+    val createTicketDTO: CreateTicketDTO = CreateTicketDTO(product.ean, messageDTO, ProblemType.HARDWARE)
+
+    val token : AuthenticationResponseDTO = getToken("client", "password", restTemplate, port)
 
     val objectMapper = ObjectMapper()
     val requestBody = objectMapper.writeValueAsString(createTicketDTO)
     val requestHeaders = HttpHeaders()
     requestHeaders.contentType = MediaType.APPLICATION_JSON
+    requestHeaders.setBearerAuth(token.accessToken)
     val requestEntity = HttpEntity(requestBody, requestHeaders)
 
-    var postResponse = restTemplate.exchange(
+    val postResponse = restTemplate.exchange(
         "http://localhost:$port/API/customer/tickets",
         HttpMethod.POST,
         requestEntity,

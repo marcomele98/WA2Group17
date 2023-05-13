@@ -27,15 +27,13 @@ class TicketGeneralController(private val ticketService: TicketService) {
     @PutMapping("message/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO, principal: Authentication, br: BindingResult): CompleteTicketDTO {
-        return ticketService.addMessage(ticketId, message, principal.name)
+        return ticketService.addMessage(ticketId, message, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString() )
     }
 
     @PutMapping("close/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id e scopro se è customer o esperto
-    //TODO: forse qua sarà necessario il campo @LastModifiedBy
     fun closeTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
-        return ticketService.closeTicket(ticketId, principal.name)
+        return ticketService.closeTicket(ticketId, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString())
     }
 }
 
@@ -82,7 +80,6 @@ class TicketExpertController(private val ticketService: TicketService) {
     }
 
 
-    //TODO: qui quando avrò il modulo della sicurezza avrò un Principal da cui mi vado a prendere l'id del customer
     @GetMapping("resolved")
     @ResponseStatus(HttpStatus.OK)
     fun getResolvedByExpertId(principal: Authentication): List<PartialTicketDTO> {

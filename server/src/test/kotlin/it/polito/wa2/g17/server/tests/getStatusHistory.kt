@@ -3,12 +3,15 @@ package it.polito.wa2.g17.server.tests
 import it.polito.wa2.g17.server.DAO
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
@@ -22,16 +25,18 @@ fun getStatusHistory(
 
     val dao = DAO()
 
-    val customer = dao.getProfileCustomer()
+    val manager = dao.getProfileManager()
+    val customer = dao.getProfileClient()
     val product = dao.getProduct()
 
+    profileRepository.save(manager)
     profileRepository.save(customer)
     productRepository.save(product)
 
-    var ticket = dao.getTicket(customer, product)
+    var ticket = dao.getTicket(manager, product)
 
     val statusChangeOpen = dao.getStatusChange(Status.OPEN, customer)
-    val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, customer)
+    val statusChangeInProgress = dao.getStatusChange(Status.IN_PROGRESS, manager)
     val statusChangeClosed= dao.getStatusChange(Status.CLOSED, customer)
 
     ticket.addStatus(statusChangeOpen)
@@ -40,7 +45,7 @@ fun getStatusHistory(
 
     ticketRepository.save(ticket)
 
-    var tickets = ticketRepository.findAllEager()
+    val tickets = ticketRepository.findAllEager()
 
     ticket = tickets[0]
 
@@ -52,10 +57,16 @@ fun getStatusHistory(
 
     val id = ticket.id
 
+    val token : AuthenticationResponseDTO = getToken("manager", "password", restTemplate, port)
+
+    val requestHeaders = HttpHeaders()
+    requestHeaders.setBearerAuth(token.accessToken)
+    val requestEntity = HttpEntity(null, requestHeaders)
+
     val response = restTemplate.exchange(
         "http://localhost:$port/API/manager/tickets/statusHistory/$id",
         HttpMethod.GET,
-        null,
+        requestEntity,
         object : ParameterizedTypeReference<List<StatusChangeDTO>>() {}
     )
 

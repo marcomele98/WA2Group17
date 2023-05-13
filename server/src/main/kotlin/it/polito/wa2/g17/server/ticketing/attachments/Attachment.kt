@@ -1,11 +1,9 @@
 package it.polito.wa2.g17.server.ticketing.attachments
 
+import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.messages.Message
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Lob
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 
 @Entity
 //@Table(name = "attachments")
@@ -13,6 +11,10 @@ class Attachment(
 
     @Column(nullable = false)
     var name: String,
+
+    @ManyToOne
+    @JoinColumn(name = "user_email", referencedColumnName = "email")
+    var user: Profile? = null,
 
     @Column(nullable = false)
     var type: String,
@@ -24,4 +26,4 @@ class Attachment(
     @ManyToOne
     var message: Message? = null,
 
-): EntityBase<Long>()
+    ): EntityBase<Long>()

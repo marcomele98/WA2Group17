@@ -3,7 +3,7 @@ package it.polito.wa2.g17.server.security
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -19,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableMethodSecurity(prePostEnabled=true)
 class SecurityConfig {
 
 
@@ -50,13 +50,9 @@ class SecurityConfig {
             val clientAccess = resourceAccess["wa2g17-keycloak-client"]
             val roles = clientAccess?.let { it1 -> (it1 as Map<String, Any>)["roles"] as List<String>}
                 ?.map { "ROLE_${it}" }
-            println(roles)
-            val a = roles!!.map { GrantedAuthority({it}) }
-            println(a)
-            a
+            roles!!.map { GrantedAuthority({it}) }
         }
         converter.setPrincipalClaimName("email")
         return converter
     }
-
 }

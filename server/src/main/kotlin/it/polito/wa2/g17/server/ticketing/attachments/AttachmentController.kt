@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -20,8 +21,8 @@ import java.io.ByteArrayInputStream
 class AttachmentController(private val attachmentService: AttachmentService) {
     @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
-    fun uploadFile(@RequestPart("file") file: MultipartFile): Long {
-        return attachmentService.uploadAttachment(file)
+    fun uploadFile(@RequestPart("file") file: MultipartFile, principal: Authentication): Long {
+        return attachmentService.uploadAttachment(file, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString())
     }
 
     @GetMapping("/download/{id}")

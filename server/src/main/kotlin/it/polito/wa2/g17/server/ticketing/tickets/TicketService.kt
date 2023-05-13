@@ -27,12 +27,12 @@ interface TicketService {
 
     fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): CompleteTicketDTO
 
-    fun closeTicket(ticketId: Long, userEmail: String): CompleteTicketDTO
+    fun closeTicket(ticketId: Long, userEmail: String, role: String): CompleteTicketDTO
 
     fun reopenTicket(ticketId: Long, email: String): CompleteTicketDTO
 
     fun resolveTicket(ticketId: Long, email: String): CompleteTicketDTO
 
-    fun addMessage(ticketId: Long, message: MessageDTO, email: String): CompleteTicketDTO
+    fun addMessage(ticketId: Long, message: MessageDTO, email: String, role: String): CompleteTicketDTO
 
 }

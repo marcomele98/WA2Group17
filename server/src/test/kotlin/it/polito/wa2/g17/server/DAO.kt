@@ -13,7 +13,6 @@ import it.polito.wa2.g17.server.ticketing.tickets.*
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime.now
 import java.util.*
 
 @Component
@@ -72,7 +71,7 @@ class DAO() {
 
   fun getAssignedTicketDTO(): AssignTicketDTO {
     return AssignTicketDTO(
-      expertEmail = "expert@gmail.com",
+      expertEmail = "expert@mail.com",
       priority = Priority.LOW
     )
   }
@@ -85,21 +84,39 @@ class DAO() {
     return ticket.toCompleteDTO()
   }
 
-  fun getProfileCustomer(): Profile {
+  fun getProfileManager(): Profile {
     var profile = Profile()
     return profile.apply {
-      email = "customer@gmail.com"
-      name = "Mario"
-      surname = "Rossi"
+      email = "manager@mail.com"
+      name = "Marco"
+      surname = "Mele"
+    }
+  }
+
+  fun getProfileClient(): Profile {
+    var profile = Profile()
+    return profile.apply {
+      email = "client@mail.com"
+      name = "Francesco"
+      surname = "Russo"
+    }
+  }
+
+  fun getProfileClient1(): Profile {
+    var profile = Profile()
+    return profile.apply {
+      email = "client1@mail.com"
+      name = "Leonardo"
+      surname = "Volpini"
     }
   }
 
   fun getProfileExpert(): Profile {
     var profile = Profile()
     return profile.apply {
-      email = "expert@gmail.com"
-      name = "Giacomo"
-      surname = "Verdi"
+      email = "expert@mail.com"
+      name = "Federico"
+      surname = "Rinaudi"
     }
   }
 
