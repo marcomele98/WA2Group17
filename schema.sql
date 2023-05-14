@@ -1,17 +1,3 @@
--- public.message_attachments definition
-
--- Drop table
-
--- DROP TABLE public.message_attachments;
-
-CREATE TABLE IF NOT EXISTS public.message_attachments
-(
-    message_id     int8 NOT NULL,
-    attachments_id int8 NOT NULL,
-    CONSTRAINT uk_2hg4j1pg3d54lsls07ydkg4ix UNIQUE (attachments_id)
-);
-
-
 -- public.products definition
 
 -- Drop table

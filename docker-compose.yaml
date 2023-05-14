@@ -4,11 +4,11 @@ services:
     image: server
     container_name: serverContainer
     ports:
-        - "8081:8081"
+      - "8081:8081"
     networks:
-        - app_net
+      - app_net
     depends_on:
-        - database
+      - database
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/products
       SPRING_DATASOURCE_USERNAME: postgres
@@ -23,13 +23,12 @@ services:
     networks:
       - app_net
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: password
-        POSTGRES_DB: products
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products
     volumes:
-      - /db_volume
-        # copy the sql script to create tables
-      - ./server/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - db_volume:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
 
 networks:
