@@ -28,6 +28,7 @@ class SecurityConfig {
         http.csrf().disable() //TODO: cos'è il CSRF? Se è abilitato non funziona un cazzo... da approfondire
         http.authorizeHttpRequests()
             .requestMatchers(HttpMethod.POST, "/API/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/API/refresh").permitAll()
             .requestMatchers(HttpMethod.POST, "/API/profiles").permitAll()
             .requestMatchers("/API/manager/**").hasRole("MANAGER")
             .requestMatchers("API/expert/**").hasRole("EXPERT")

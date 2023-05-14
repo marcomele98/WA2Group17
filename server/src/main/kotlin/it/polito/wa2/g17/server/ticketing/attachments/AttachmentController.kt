@@ -22,13 +22,13 @@ class AttachmentController(private val attachmentService: AttachmentService) {
     @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
     fun uploadFile(@RequestPart("file") file: MultipartFile, principal: Authentication): Long {
-        return attachmentService.uploadAttachment(file, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString())
+        return attachmentService.uploadAttachment(file, principal.name, principal.authorities.map{ it.authority.toString() }.first())
     }
 
     @GetMapping("/download/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun downloadFile(@PathVariable id: Long, response: HttpServletResponse): ResponseEntity<InputStreamResource> {
-        val attachment = attachmentService.downloadAttachment(id)
+    fun downloadFile(@PathVariable id: Long, response: HttpServletResponse, principal: Authentication): ResponseEntity<InputStreamResource> {
+        val attachment = attachmentService.downloadAttachment(id, principal.name)
         val inputStream = ByteArrayInputStream(attachment.content)
         val headers = HttpHeaders()
         headers.add("Content-Disposition", "attachment; filename=${attachment.name}")

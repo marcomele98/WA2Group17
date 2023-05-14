@@ -39,5 +39,29 @@ class AuthServiceImpl: AuthService {
         return AuthenticationResponseDTO(responseEntity.body!!.access_token, responseEntity.body!!.refresh_token)
     }
 
+    override fun refresh(refreshToken: String): AuthenticationResponseDTO {
+        val url = "http://localhost:8080/realms/WA2G17/protocol/openid-connect/token"
+
+        val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
+        formData.add("grant_type", "refresh_token")
+        formData.add("client_id", "wa2g17-keycloak-client")
+        formData.add("refresh_token", refreshToken)
+        val headers = HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
+
+        val requestEntity = HttpEntity(formData, headers)
+
+        val responseEntity: ResponseEntity<AuthenticationResponseKeyClockDTO> = restTemplate.exchange(
+            url, HttpMethod.POST, requestEntity,
+            AuthenticationResponseKeyClockDTO::class.java
+        )
+
+        if (!responseEntity.statusCode.is2xxSuccessful) {
+            println("Error: " + responseEntity.statusCode)
+            throw Exception("Error: " + responseEntity.statusCode)
+        }
+        return AuthenticationResponseDTO(responseEntity.body!!.access_token, responseEntity.body!!.refresh_token)
+    }
+
 
 }

@@ -59,5 +59,9 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     fun handleWrongAttachments(e: WrongAttachmentsException) =
         ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
+    @ExceptionHandler(AttachmentNotFoundException::class)
+    fun handleAttachmentsNotFound(e: AttachmentNotFoundException) =
+        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
 
 }

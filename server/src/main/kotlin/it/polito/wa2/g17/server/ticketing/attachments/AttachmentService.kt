@@ -4,5 +4,5 @@ import org.springframework.web.multipart.MultipartFile
 
 interface AttachmentService {
     fun uploadAttachment(file: MultipartFile, email: String, role: String) : Long
-    fun downloadAttachment(id: Long): Attachment
+    fun downloadAttachment(id: Long, email: String): Attachment
 }
