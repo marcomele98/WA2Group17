@@ -35,7 +35,7 @@ services:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   keycloak:
-    image: marcomele98/keycloak_wa2g17
+    image: marcomele98/wa2g17:keycloak
     container_name: keycloakContainer
     ports:
       - "8080:8080"
