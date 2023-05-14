@@ -29,8 +29,6 @@ class SecurityConfig {
         http.authorizeHttpRequests()
             .requestMatchers(HttpMethod.POST, "/API/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/API/refresh").permitAll()
-            .requestMatchers("/API/profiles/**").permitAll()
-            .requestMatchers( "/API/products/**").permitAll()
             .requestMatchers("/API/manager/**").hasRole("MANAGER")
             .requestMatchers("API/expert/**").hasRole("EXPERT")
             .requestMatchers("/API/customer/**").hasRole("CLIENT")
