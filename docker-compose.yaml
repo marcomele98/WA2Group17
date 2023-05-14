@@ -9,11 +9,15 @@ services:
       - app_net
     depends_on:
       - database
+      - keycloak
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/products
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/WA2G17
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/WA2G17/protocol/openid-connect/certs
+
 
   database:
     image: postgres
@@ -29,6 +33,15 @@ services:
     volumes:
       - db_volume:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  keycloak:
+    image: marcomele98/keycloak_wa2g17
+    container_name: keycloakContainer
+    ports:
+      - "8080:8080"
+    networks:
+      - app_net
+
 
 
 networks:
