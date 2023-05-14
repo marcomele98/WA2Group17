@@ -12,7 +12,7 @@ plugins {
 
 jib{
 	to{
-		image = "marcomele98/wa2g17:server"
+		image = "server"
 	}
 }
 
