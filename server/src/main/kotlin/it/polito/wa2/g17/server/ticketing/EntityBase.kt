@@ -11,7 +11,6 @@ abstract class EntityBase<T : Serializable> {
         private const val serialVersionUID = 1L
     }
 
-
     @Version
     var version: Long = 0
     @Id
