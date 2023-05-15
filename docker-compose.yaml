@@ -22,8 +22,6 @@ services:
   database:
     image: postgres
     container_name: databaseContainer
-    ports:
-      - "5432:5432"
     networks:
       - app_net
     environment:
@@ -37,8 +35,6 @@ services:
   keycloak:
     image: marcomele98/wa2g17:keycloak
     container_name: keycloakContainer
-    ports:
-      - "8080:8080"
     networks:
       - app_net
 
