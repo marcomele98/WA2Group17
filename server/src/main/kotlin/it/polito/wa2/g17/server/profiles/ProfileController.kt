@@ -33,6 +33,12 @@ class ProfileController(private val profileService: ProfileService) {
         return profileService.editProfile(email, profile)
     }
 
+    @PostMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun signup(@Valid @RequestBody request: SignupDTO, br: BindingResult): ProfileDTO {
+        return profileService.createCustomer(request)
+    }
+
 }
 
 @RestController
@@ -43,6 +49,12 @@ class ManagerProfileController(private val profileService: ProfileService) {
     @ResponseStatus(HttpStatus.OK)
     fun getProfilesBySkill(@PathVariable skill: ProblemType): List<ProfileDTO> {
         return profileService.getProfilesBySkill(skill)
+    }
+
+    @PostMapping("/create-expert")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createExpert(@Valid @RequestBody request: SignupExpertDTO, br: BindingResult): ProfileDTO {
+        return profileService.createExpert(request)
     }
 
 }

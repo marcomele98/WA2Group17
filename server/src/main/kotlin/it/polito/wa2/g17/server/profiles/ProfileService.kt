@@ -12,4 +12,8 @@ interface ProfileService {
 
     fun getProfilesBySkill(skill: ProblemType): List<ProfileDTO>
 
+    fun createCustomer(request: SignupDTO): ProfileDTO
+
+    fun createExpert(request: SignupExpertDTO): ProfileDTO
+
 }
