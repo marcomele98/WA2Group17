@@ -10,6 +10,10 @@ services:
     depends_on:
       - database
       - keycloak
+      - tempo
+      - loki
+      - prometheus
+      - grafana
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/products
       SPRING_DATASOURCE_USERNAME: postgres
@@ -17,7 +21,10 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/WA2G17
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/WA2G17/protocol/openid-connect/certs
-
+      KEYCLOAK_SERVER_URL: http://keycloak:8080
+      LOKI: loki
+      #LOKI: localhost
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://tempo:9411/api/v2/spans
 
   database:
     image: postgres
@@ -38,6 +45,66 @@ services:
     networks:
       - app_net
 
+  tempo:
+    image: grafana/tempo
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./docker/tempo/tempo-local.yaml:/etc/tempo.yaml:ro
+      - ./tempo-data:/tmp/tempo
+    ports:
+      - "14268"  # jaeger ingest
+      - "9411:9411" # zipkin
+    networks:
+      - app_net
+
+
+  loki:
+    image: grafana/loki
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100" # loki needs to be exposed so it receives logs
+    environment:
+      - JAEGER_AGENT_HOST=tempo
+      - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
+      - JAEGER_SAMPLER_TYPE=const
+      - JAEGER_SAMPLER_PARAM=1
+    networks:
+      - app_net
+
+
+  prometheus:
+    image: prom/prometheus
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - app_net
+
+
+  grafana:
+    image: grafana/grafana
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    volumes:
+      - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
+    networks:
+      - app_net
+
+# Prometheus: http://localhost:9090/
+# Grafana: http://localhost:3000/
 
 
 networks:
