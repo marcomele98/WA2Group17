@@ -4,7 +4,6 @@ plugins {
 	id("org.springframework.boot") version "3.0.5"
 	id("io.spring.dependency-management") version "1.1.0"
 	id("com.google.cloud.tools.jib") version "3.3.1"
-	id("io.freefair.lombok") version "5.3.0"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
@@ -60,8 +59,6 @@ dependencies {
 	implementation ("io.zipkin.reporter2:zipkin-reporter-brave")
 	// send logs by log Appender through URL
 	implementation ("com.github.loki4j:loki-logback-appender:1.4.0-rc2")
-
-	implementation ("org.projectlombok:lombok:1.18.20")
 
 }
 

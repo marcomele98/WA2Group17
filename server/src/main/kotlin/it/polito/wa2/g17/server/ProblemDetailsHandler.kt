@@ -22,72 +22,72 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     private val log: Logger = LoggerFactory.getLogger(ProblemDetailsHandler::class.java)
 
     @ExceptionHandler(ProductNotFoundException::class)
-    fun handleProductNotFound(e: ProductNotFoundException) {
+    fun handleProductNotFound(e: ProductNotFoundException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
     }
 
     @ExceptionHandler(DuplicateProfileException::class)
-    fun handleDuplicateProfile(e: DuplicateProfileException) {
+    fun handleDuplicateProfile(e: DuplicateProfileException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
     }
 
     @ExceptionHandler(ProfileNotFoundException::class)
-    fun handleProfileNotFound(e: ProfileNotFoundException) {
+    fun handleProfileNotFound(e: ProfileNotFoundException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleValidationException(ex: ConstraintViolationException): ProblemDetail {
         val errors = ex.constraintViolations.joinToString("; ") {
-                it.messageTemplate
+            it.messageTemplate
         }
         log.error(ex.toString())
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, errors!!)
     }
 
     @ExceptionHandler(CannotUpdateEmailException::class)
-    fun handleEmailException(e: CannotUpdateEmailException) {
+    fun handleEmailException(e: CannotUpdateEmailException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
     }
 
     @ExceptionHandler(TicketNotFoundException::class)
-    fun handleTicketNotFound(e: TicketNotFoundException) {
+    fun handleTicketNotFound(e: TicketNotFoundException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
     }
 
     @ExceptionHandler(WrongStateException::class)
-    fun handleWrongState(e: WrongStateException) {
+    fun handleWrongState(e: WrongStateException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message!!)
     }
 
     @ExceptionHandler(WrongSkillsException::class)
-    fun handleWrongSkills(e: WrongSkillsException) {
+    fun handleWrongSkills(e: WrongSkillsException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
     }
 
     @ExceptionHandler(WrongUserException::class)
-    fun handleWrongUser(e: WrongUserException) {
+    fun handleWrongUser(e: WrongUserException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.message!!)
     }
 
     @ExceptionHandler(WrongAttachmentsException::class)
-    fun handleWrongAttachments(e: WrongAttachmentsException) {
+    fun handleWrongAttachments(e: WrongAttachmentsException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
     }
 
     @ExceptionHandler(AttachmentNotFoundException::class)
-    fun handleAttachmentsNotFound(e: AttachmentNotFoundException) {
+    fun handleAttachmentsNotFound(e: AttachmentNotFoundException): ProblemDetail {
         log.error(e.toString())
-        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
     }
 
 }
