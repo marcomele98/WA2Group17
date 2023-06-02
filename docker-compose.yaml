@@ -42,6 +42,8 @@ services:
   keycloak:
     image: marcomele98/wa2g17:keycloak
     container_name: keycloakContainer
+    ports:
+      - "8080:8080"
     networks:
       - app_net
 
