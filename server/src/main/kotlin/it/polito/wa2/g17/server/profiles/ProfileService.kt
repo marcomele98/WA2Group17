@@ -16,4 +16,5 @@ interface ProfileService {
 
     fun createExpert(request: SignupExpertDTO): ProfileDTO
 
+    fun createCashier(request: SignupDTO): ProfileDTO
 }

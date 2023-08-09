@@ -2,16 +2,12 @@ package it.polito.wa2.g17.server.ticketing.tickets
 
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
-import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 
 @RestController
 @Validated

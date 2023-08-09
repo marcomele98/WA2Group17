@@ -42,6 +42,21 @@ CREATE TABLE IF NOT EXISTS public.profile_skills
 );
 
 
+CREATE TABLE IF NOT EXISTS public.warranties
+(
+    id             int8         NOT NULL,
+    start_date     date         NOT NULL,
+    end_date       date         NOT NULL,
+    product_ean    varchar(255) NOT NULL,
+    typology       varchar(255) NOT NULL,
+    customer_email varchar(255) NOT NULL,
+    "version"      int8         NOT NULL,
+    CONSTRAINT warranties_pkey PRIMARY KEY (id),
+    FOREIGN KEY (product_ean) REFERENCES products (ean),
+    FOREIGN KEY (customer_email) REFERENCES profiles (email)
+);
+
+
 -- public.tickets definition
 
 -- Drop table
@@ -58,10 +73,12 @@ CREATE TABLE IF NOT EXISTS public.tickets
     customer_email varchar(255) NOT NULL,
     expert_email   varchar(255) NULL,
     product_ean    varchar(255) NOT NULL,
+    warranty_id    int8         NOT NULL,
     CONSTRAINT tickets_pkey PRIMARY KEY (id),
     CONSTRAINT fk9m28r3wh8pt856v8w9r7we969 FOREIGN KEY (product_ean) REFERENCES products (ean),
     CONSTRAINT fkpxhaghy083e9rjplpcxa3vaoh FOREIGN KEY (customer_email) REFERENCES profiles (email),
-    CONSTRAINT fkqu447rw3ykl5bgwxgn4lalgb9 FOREIGN KEY (expert_email) REFERENCES profiles (email)
+    CONSTRAINT fkqu447rw3ykl5bgwxgn4lalgb9 FOREIGN KEY (expert_email) REFERENCES profiles (email),
+    FOREIGN KEY (warranty_id) REFERENCES warranties (id)
 );
 
 
@@ -137,8 +154,13 @@ VALUES ('expert@mail.com', 'Federico', 'Rinaudi');
 INSERT INTO profiles (email, name, surname)
 VALUES ('client1@mail.com', 'Leonardo', 'Volpini');
 
+INSERT INTO profiles (email, name, surname)
+VALUES ('cashier@mail.com', 'Francesco', 'Totti');
+
 INSERT INTO profile_skills (profile_email, skills)
 VALUES ('expert@mail.com', 'HARDWARE');
+
+
 
 
 INSERT INTO products
@@ -179,3 +201,4 @@ CREATE SEQUENCE IF NOT EXISTS message_seq INCREMENT BY 50;
 --CREATE SEQUENCE IF NOT EXISTS profiles_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS status_changes_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS tickets_seq INCREMENT BY 50;
+CREATE SEQUENCE IF NOT EXISTS warranties_seq INCREMENT BY 50;

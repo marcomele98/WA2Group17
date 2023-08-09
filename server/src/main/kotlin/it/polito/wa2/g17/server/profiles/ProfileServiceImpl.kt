@@ -86,6 +86,19 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         }
     }
 
+    override fun createCashier(request: SignupDTO): ProfileDTO {
+        return when (createUserOnKeycloak(request, "APP_CASHIER")) {
+            201 -> profileRepository.save(Profile().apply {
+                email = request.email
+                name = request.name
+                surname = request.surname
+            }).toDTO()
+
+            409 -> throw DuplicateProfileException("Profile with email ${request.email} already exists")
+            else -> throw InternalError("Error creating user")
+        }
+    }
+
 
     private fun createUserOnKeycloak(request: SignupDTO, role: String): Int {
         val keycloak: Keycloak = KeycloakBuilder

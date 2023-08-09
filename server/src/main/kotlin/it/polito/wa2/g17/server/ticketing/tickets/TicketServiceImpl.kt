@@ -1,6 +1,5 @@
 package it.polito.wa2.g17.server.ticketing.tickets;
 
-import it.polito.wa2.g17.server.products.ProductNotFoundException
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
@@ -12,11 +11,10 @@ import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
 import it.polito.wa2.g17.server.ticketing.status.toDTO
+import it.polito.wa2.g17.server.ticketing.warranties.WarrantyNotFoundException
+import it.polito.wa2.g17.server.ticketing.warranties.WarrantyRepository
 import jakarta.transaction.Transactional
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.access.prepost.PostAuthorize
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service;
 import java.util.*
 
@@ -26,7 +24,8 @@ class TicketServiceImpl(
     private val ticketRepository: TicketRepository,
     private val attachmentRepository: AttachmentRepository,
     private val profileRepository: ProfileRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val warrantyRepository: WarrantyRepository
 ) : TicketService {
 
 
@@ -36,17 +35,19 @@ class TicketServiceImpl(
         val profile = profileRepository.findByIdOrNull(email)
             ?: throw ProfileNotFoundException("Customer with email $email not found")
 
-        val product = productRepository.findByIdOrNull(createTicketDTO.productEan)
-            ?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")
+        /*val product = productRepository.findByIdOrNull(createTicketDTO.productEan)
+            ?: throw ProductNotFoundException("Product with EAN ${createTicketDTO.productEan} not found")*/
+
+        val warranty = warrantyRepository.findById(createTicketDTO.warrantyId).orElseThrow { WarrantyNotFoundException("Warranty with ID ${createTicketDTO.warrantyId} not found") }
 
         val date = Date()
-        val ticket = Ticket(profile, product, createTicketDTO.problemType)
+        val ticket = Ticket(profile, warranty.product, createTicketDTO.problemType, warranty)
+        warranty.tickets.add(ticket)
 
         val message = createTicketDTO.initialMessage
             .withTimestamp(date)
             .toEntity()
             .withUser(profile)
-
 
         val attachments = attachmentRepository.findAllByIdIn(createTicketDTO.initialMessage.attachmentIds)
 

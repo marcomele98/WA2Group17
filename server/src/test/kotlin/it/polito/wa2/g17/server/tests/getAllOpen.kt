@@ -15,7 +15,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import kotlin.math.exp
 
 fun getAllOpen(
   ticketRepository: TicketRepository,

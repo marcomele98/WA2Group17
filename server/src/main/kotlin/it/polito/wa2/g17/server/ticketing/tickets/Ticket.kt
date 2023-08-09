@@ -6,21 +6,29 @@ import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.messages.Message
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
+import it.polito.wa2.g17.server.ticketing.warranties.Warranty
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "tickets")
 class Ticket(
+
+    //TODO: lo tolgo, sarà contenuto in warranty
     @ManyToOne
     @JoinColumn(name = "customer_email", nullable = false, referencedColumnName = "email")
     var customer: Profile,
 
+    //TODO: lo tolgo, sarà contenuto in warranty
     @ManyToOne
     @JoinColumn(name = "product_ean", nullable = false, referencedColumnName = "ean")
     var product: Product,
 
     @Enumerated(EnumType.STRING)
     var problemType: ProblemType,
+
+    @ManyToOne
+    @JoinColumn(name = "warranty_id", referencedColumnName = "id")
+    val warranty: Warranty,
 
     @Enumerated(EnumType.STRING)
     var priorityLevel: Priority? = null,

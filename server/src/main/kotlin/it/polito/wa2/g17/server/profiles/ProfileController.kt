@@ -17,28 +17,27 @@ class ProfileController(private val profileService: ProfileService) {
         return profileService.getProfile(email)
     }
 
-    @PostMapping
+    /*@PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@Valid @RequestBody profile: ProfileDTO, br: BindingResult): ProfileDTO {
         return profileService.addProfile(profile)
-    }
+    }*/
 
-    @PutMapping("{email}")
-    @ResponseStatus(HttpStatus.OK)
-    fun editProfile(
-        @PathVariable email: String,
-        @Valid @RequestBody profile: ProfileDTO,
-        br: BindingResult
-    ): ProfileDTO {
-        return profileService.editProfile(email, profile)
-    }
+}
 
-    @PostMapping("/signup")
+@RestController
+@Validated
+@RequestMapping("/API/signup")
+class SignupController(private val profileService: ProfileService) {
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@Valid @RequestBody request: SignupDTO, br: BindingResult): ProfileDTO {
         return profileService.createCustomer(request)
     }
 
+    //TODO: prevedo cambio password? (soprattutto per expert e cashier per cui la sceglie il manager)
+    // potrebbe essere che loro creano i loro profili e poi il manager li approva
+    //TODO: password dimenticata?
 }
 
 @RestController
@@ -54,7 +53,25 @@ class ManagerProfileController(private val profileService: ProfileService) {
     @PostMapping("/create-expert")
     @ResponseStatus(HttpStatus.CREATED)
     fun createExpert(@Valid @RequestBody request: SignupExpertDTO, br: BindingResult): ProfileDTO {
+        println("aaa")
         return profileService.createExpert(request)
+    }
+
+    @PostMapping("/create-cashier")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createCashier(@Valid @RequestBody request: SignupDTO, br: BindingResult): ProfileDTO {
+        println("aaaa")
+        return profileService.createCashier(request)
+    }
+
+    @PutMapping("{email}")
+    @ResponseStatus(HttpStatus.OK)
+    fun editProfile(
+        @PathVariable email: String,
+        @Valid @RequestBody profile: ProfileDTO,
+        br: BindingResult
+    ): ProfileDTO {
+        return profileService.editProfile(email, profile)
     }
 
 }

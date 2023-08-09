@@ -29,9 +29,11 @@ class SecurityConfig {
         http.authorizeHttpRequests()
             .requestMatchers(HttpMethod.POST, "/API/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/API/refresh").permitAll()
-            .requestMatchers("/API/profiles/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/API/signup").permitAll()
+            .requestMatchers(HttpMethod.GET, "/API/profiles/{email}").hasAnyRole("CASHIER", "CLIENT")
             .requestMatchers("/API/manager/**").hasRole("MANAGER")
             .requestMatchers("API/expert/**").hasRole("EXPERT")
+            .requestMatchers("/API/cashier/**").hasRole("CASHIER")
             .requestMatchers("/API/customer/**").hasRole("CLIENT")
             .anyRequest().authenticated();
         http.oauth2ResourceServer()
