@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 class ProductController(private val productService: ProductService) {
 
 
-    @GetMapping("/")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     fun getAll(): List<ProductDTO>{
         return productService.getAll()

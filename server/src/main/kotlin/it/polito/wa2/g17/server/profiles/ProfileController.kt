@@ -52,15 +52,13 @@ class ManagerProfileController(private val profileService: ProfileService) {
 
     @PostMapping("/create-expert")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createExpert(@Valid @RequestBody request: SignupExpertDTO, br: BindingResult): ProfileDTO {
-        println("aaa")
+    fun createExpert(@Valid @RequestBody request: SignupDTO, br: BindingResult): ProfileDTO {
         return profileService.createExpert(request)
     }
 
     @PostMapping("/create-cashier")
     @ResponseStatus(HttpStatus.CREATED)
     fun createCashier(@Valid @RequestBody request: SignupDTO, br: BindingResult): ProfileDTO {
-        println("aaaa")
         return profileService.createCashier(request)
     }
 

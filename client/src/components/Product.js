@@ -1,4 +1,3 @@
-import '../App.css';
 import API from '../API';
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";

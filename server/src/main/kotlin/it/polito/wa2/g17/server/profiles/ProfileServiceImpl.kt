@@ -72,8 +72,8 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         }
     }
 
-    override fun createExpert(request: SignupExpertDTO): ProfileDTO {
-        return when (createUserOnKeycloak(request.toSignupDTO(), "APP_EXPERT")) {
+    override fun createExpert(request: SignupDTO): ProfileDTO {
+        return when (createUserOnKeycloak(request, "APP_EXPERT")) {
             201 -> profileRepository.save(Profile().apply {
                 email = request.email
                 name = request.name
@@ -121,6 +121,7 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         user.realmRoles = listOf(role)
         user.isEmailVerified = true
         user.isEnabled = true
+        user.attributes = mapOf("skills" to request.skills.map { it.name })
 
         // Create a CredentialRepresentation object and set the password
         val password = CredentialRepresentation()

@@ -1,11 +1,10 @@
-import '../App.css';
 import API from '../API';
 import {toast} from "react-toastify";
 import {useEffect, useState} from "react";
 import {Card, FormControl} from "react-bootstrap";
 import {Link} from "react-router-dom";
 
-function Products({setIsLoading}) {
+function Products() {
 
     const [products, setProducts] = useState([]);
     const [filter, setFilter] = useState("");
@@ -13,13 +12,10 @@ function Products({setIsLoading}) {
     useEffect(() => {
         const getProductsFromServer = async () => {
             try {
-                setIsLoading(true);
                 const res = await API.getProducts();
                 setProducts(res);
-                setIsLoading(false);
             } catch (err) {
                 toast.error("Server error.", {position: "top-center"}, {toastId: 4});
-                setIsLoading(false);
             }
         };
         getProductsFromServer()

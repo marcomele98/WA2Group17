@@ -1,5 +1,6 @@
 package it.polito.wa2.g17.server.profiles
 
+import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
@@ -20,4 +21,5 @@ data class SignupDTO(
     @field:Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
     @field:Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).*$", message = "Password must contain at least one lowercase letter, one uppercase letter, one digit and one special character")
     val password: String,
+    val skills: List<ProblemType> = emptyList()
 )
