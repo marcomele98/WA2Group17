@@ -6,12 +6,17 @@ import { useUser } from "../presenters/User";
 function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useUser();
+  const { user, logOut } = useUser();
+
+  const logOutHandler = () => {
+    logOut();
+    navigate("/login");
+  };
 
   return (
     <Navbar
       className="fixed-top p-2"
-      style={{height: 55}} //TODO: tolgo inline style
+      style={{ height: 55 }} //TODO: tolgo inline style
       id="my-navbar"
       collapseOnSelect
       expand="lg"
@@ -48,9 +53,13 @@ function NavigationBar() {
             }[user?.role]
           }
         </Nav>
-        <Nav variant="success" >
-          {user.username ? (
-            <Nav.Link active style={navLinkStyle} onClick={user.logOut}>
+        <Nav variant="success">
+          {user ? (
+            <Nav.Link
+              active
+              style={navLinkStyle}
+              onClick={logOutHandler}
+            >
               {/*TODO: quando il bottone è selezionato, il colore del testo è nero, lo rendo del colore della navbar*/}
               <Button variant="outline-light">Log out</Button>
             </Nav.Link>

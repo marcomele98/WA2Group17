@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../API";
 import jwtDecode from "jwt-decode";
 
@@ -28,8 +27,7 @@ const reducer = (state, action) => {
 };
 
 export const UserProvider = ({ children }) => {
-  const [user, dispatch] = useReducer(reducer, undefined);
-  const navigate = useNavigate();
+  const [user, dispatch] = useReducer(reducer, null);
 
   useEffect(() => {
     let accessToken = localStorage.getItem("accessToken");
@@ -37,14 +35,6 @@ export const UserProvider = ({ children }) => {
       dispatch({ type: CREATE });
     }
   }, []);
-
-  useEffect(() => {
-    if(user){
-      navigate("/"+user.role.toLowerCase());
-    } else {
-      navigate("/login");
-    }
-  }, [user]);
 
   const logIn = async (email, password) => {
     try {
@@ -64,7 +54,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ ...user, logIn, logOut }}>
+    <UserContext.Provider value={{ user, logIn, logOut}}>
       {children}
     </UserContext.Provider>
   );

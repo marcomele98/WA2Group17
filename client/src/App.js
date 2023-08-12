@@ -17,6 +17,8 @@ import { AuthRoute } from "./components/AuthRoute";
 
 function App() {
 
+  const [redirectRoute, setRedirectRoute] = useState(false);
+
   return (
     <Router>
       <UserProvider>
@@ -27,24 +29,30 @@ function App() {
 
           <Row id="body-container">
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route
+                path="/login"
+                element={
+                  <Login
+                    redirectRoute={redirectRoute}
+                    setRedirectRoute={setRedirectRoute}
+                  />
+                }
+              />
               <Route path="/unauthorized" element={<Unauthorized />} />
               {/* TUTTE LE ROUTE CASHIER, CON QUESTA ROUTE SONO GESTITE LE QUESTIONI PERMESSI */}
-              <Route element={<AuthRoute role="CASHIER" />}>
+              <Route
+                element={
+                  <AuthRoute
+                    role="CASHIER"
+                    setRedirectRoute={setRedirectRoute}
+                  />
+                }
+              >
                 <Route path="/cashier/*">
                   {/*TODO: capisco come impostare la schermata cashier*/}
-                  <Route
-                    index
-                    element={<Products/>}
-                  />
-                  <Route
-                    path="products/:ean"
-                    element={<Product/>}
-                  />
-                  <Route
-                    path="profiles"
-                    element={<Profiles/>}
-                  />
+                  <Route index element={<Products />} />
+                  <Route path="products/:ean" element={<Product />} />
+                  <Route path="profiles" element={<Profiles />} />
                 </Route>
               </Route>
               {/*<Route

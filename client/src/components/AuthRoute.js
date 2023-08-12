@@ -1,24 +1,29 @@
-import React from "react";
-import { Outlet, Route, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../presenters/User";
 
-export const AuthRoute = (props) => {
-
-  const user = useUser();
+export const AuthRoute = ({role, setRedirectRoute}) => {
+  const {user} = useUser();
 
   const navigate = useNavigate();
 
-  const required_role = props.role;
+  const location = useLocation();
+
+  const required_role = role;
 
   console.assert(required_role, "AuthRoute requires a role prop");
 
-  if (!user) {
-    navigate("/login");
-  }
-  
-  if (user.role !== required_role) {
-    navigate("/unauthorized");
-  }
+  useEffect(() => {
+    if (user===null) {
+      console.log(user, location.pathname);
+      setRedirectRoute(location.pathname);
+      navigate("/login");
+    }
+    if (user && user.role !== required_role) {
+      navigate("/unauthorized");
+    }
+  }, [user]);
 
-  return <Outlet/>;
+  return <Outlet />;
 };
+
