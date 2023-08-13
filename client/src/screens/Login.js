@@ -14,9 +14,9 @@ export function Login({ redirectRoute, setRedirectRoute }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("redirectRoute: ", redirectRoute);
-    if (!user)
+    if (!user){
       return
+    }
     if (redirectRoute) {
       const route = redirectRoute;
       setRedirectRoute(false);

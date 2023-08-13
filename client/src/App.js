@@ -6,14 +6,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { NavigationBar } from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
-import { Products } from "./components/Products";
-import { Product } from "./components/Product";
-import { Profiles } from "./components/Profiles";
 import "react-toastify/dist/ReactToastify.css";
 import { UserProvider } from "./presenters/User";
 import { Login } from "./screens/Login";
 import { Unauthorized } from "./screens/Unauthorized";
 import { AuthRoute } from "./components/AuthRoute";
+import { Cashier } from "./screens/Cashier";
 
 function App() {
 
@@ -48,12 +46,12 @@ function App() {
                   />
                 }
               >
-                <Route path="/cashier/*">
-                  {/*TODO: capisco come impostare la schermata cashier*/}
+                <Route path="/cashier/*" element={<Cashier />} />
+                {/*<Route path="/cashier/*">
                   <Route index element={<Products />} />
                   <Route path="products/:ean" element={<Product />} />
                   <Route path="profiles" element={<Profiles />} />
-                </Route>
+              </Route>*/}
               </Route>
               {/*<Route
                 path="/manager/profiles"

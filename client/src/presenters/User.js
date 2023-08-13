@@ -10,15 +10,21 @@ const DELETE = 1;
 const reducer = (state, action) => {
   switch (action.type) {
     case CREATE:
-      let decoded = jwtDecode(localStorage.getItem("accessToken"));
-      return { 
-        role: decoded.resource_access["wa2g17-keycloak-client"].roles[0],
-        email: decoded.email,
-        surname: decoded.family_name,
-        name: decoded.given_name,
-        username: decoded.preferred_username,
-        skills: decoded.skills
-       };
+      try {
+        let decoded = jwtDecode(localStorage.getItem("accessToken"));
+        return {
+          role: decoded.resource_access["wa2g17-keycloak-client"].roles[0],
+          email: decoded.email,
+          surname: decoded.family_name,
+          name: decoded.given_name,
+          username: decoded.preferred_username,
+          skills: decoded.skills,
+        };
+      } catch (err) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        return undefined;
+      }
     case DELETE:
       return undefined;
     default:
@@ -32,7 +38,11 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     let accessToken = localStorage.getItem("accessToken");
     if (accessToken && !user) {
-      dispatch({ type: CREATE });
+      try {
+        dispatch({ type: CREATE });
+      } catch (err) {
+        console.log(err);
+      }
     }
   }, []);
 
@@ -54,7 +64,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, logIn, logOut}}>
+    <UserContext.Provider value={{ user, logIn, logOut }}>
       {children}
     </UserContext.Provider>
   );

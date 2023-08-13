@@ -15,7 +15,6 @@ export const AuthRoute = ({role, setRedirectRoute}) => {
 
   useEffect(() => {
     if (user===null) {
-      console.log(user, location.pathname);
       setRedirectRoute(location.pathname);
       navigate("/login");
     }

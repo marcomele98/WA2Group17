@@ -10,14 +10,9 @@ function Products() {
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
-        console.log("products: ", products);
-    }, [products])
-
-    useEffect(() => {
         const getProductsFromServer = async () => {
             try {
                 const res = await API.getProducts();
-                console.log("prod res: ", res);
                 //TODO: IMPORTANTEEEE la stampa è corretta, ma non riesco a settare lo state quando refresho la pagina, da capire se c'è il problema anche per le chiamate quando non refresho, ma aggiorno il token
                 setProducts(res);
             } catch (err) {
