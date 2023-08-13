@@ -16,15 +16,11 @@ function Cashier() {
 
   const handleSubmit = async (event) => {
     event.preventDefault(); //evita di ricaricare la pagina
-    if(!cashierVM.user)
-      toast.error("You must select a user");
-    else if(!cashierVM.product)
-      toast.error("You must select a product");
-    else if(!cashierVM.duration)
-      toast.error("You must insert a duration");
-    else if(!cashierVM.type)
-      toast.error("You must select a typology");
-    else{
+    if (!cashierVM.user) toast.error("You must select a user");
+    else if (!cashierVM.product) toast.error("You must select a product");
+    else if (!cashierVM.duration) toast.error("You must insert a duration");
+    else if (!cashierVM.type) toast.error("You must select a typology");
+    else {
       try {
         await cashierVM.createWarranty();
         cashierVM.reset();
@@ -33,43 +29,42 @@ function Cashier() {
         toast.error(err.message);
       }
     }
-
-  }
+  };
 
   return (
     <>
       <h2 className="text-center">Create Warranty</h2>
       {cashierVM.user ? (
-        <Row className="pt-4">
-          <User //TODO: troppo margine a destra
-            user={cashierVM.user}
-            ActionElement={
-              <ClickableOpacity onClick={cashierVM.removeUser}>
-                <XLg color="black" />
-              </ClickableOpacity>
-            }
-          />
-        </Row>
+        <User
+          className="pt-4" 
+          user={cashierVM.user}
+          ActionElement={
+            <ClickableOpacity onClick={cashierVM.removeUser}>
+              <XLg color="black" />
+            </ClickableOpacity>
+          }
+        />
       ) : (
         <SearchBar
-          className={"pt-4"}
+          size="lg"
+          className="pt-4"
           placeholder="Search user email"
           onSearch={errorToaster(cashierVM.setUser)}
         />
       )}
       {cashierVM.product ? (
-        <Row className="pt-4">
-          <Product //TODO: troppo margine a destra
-            product={cashierVM.product}
-            ActionElement={
-              <ClickableOpacity onClick={cashierVM.removeProduct}>
-                <XLg color="black" />
-              </ClickableOpacity>
-            }
-          />
-        </Row>
+        <Product
+          product={cashierVM.product}
+          className="pt-4"
+          ActionElement={
+            <ClickableOpacity onClick={cashierVM.removeProduct}>
+              <XLg color="black" />
+            </ClickableOpacity>
+          }
+        />
       ) : (
         <SearchBar
+          size="lg"
           className="pt-4"
           placeholder="Search product ean"
           onSearch={errorToaster(cashierVM.setProduct)}
@@ -80,6 +75,7 @@ function Cashier() {
           <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
             <Form.Group controlId="duration">
               <Form.Control
+                size="lg"
                 type="number"
                 min={1}
                 placeholder="Insert the warranty duration in years"
@@ -91,6 +87,7 @@ function Cashier() {
           <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
             <Form.Group controlId="typology">
               <Form.Select
+                size="lg"
                 value={cashierVM.type}
                 onChange={(e) => cashierVM.setType(e.target.value)}
                 style={cashierVM.type ? {} : { color: "GrayText" }}
@@ -108,7 +105,15 @@ function Cashier() {
             </Form.Group>
           </Col>
         </Row>
-        <Button className="mt-4" variant="success" size="lg" id="submitLogin" type="submit" style={{float:"right"}} onClick={handleSubmit}>
+        <Button
+          className="mt-4"
+          variant="outline-success"
+          size="lg"
+          id="submitLogin"
+          type="submit"
+          style={{ float: "right" }}
+          onClick={handleSubmit}
+        >
           Create Warranty
         </Button>
       </Form>

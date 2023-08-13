@@ -1,9 +1,9 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 
-export const User = ({user, ActionElement}) => {
+export const User = ({user, ActionElement, className}) => {
   return (
-    <div>
+    <div className={className}>
       <Card className="card">
         <Card.Header className="d-flex justify-content-between align-items-center">
           {user.email}

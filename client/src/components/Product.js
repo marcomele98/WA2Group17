@@ -1,10 +1,10 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 
-function Product({ product, ActionElement }) {
+function Product({ product, ActionElement, className }) {
   return (
-    <div>
-      <Card className="card">
+    <div className={className}>
+      <Card className="card" >
         <Card.Header className="d-flex justify-content-between align-items-center">
           {product.name}
           {ActionElement}
