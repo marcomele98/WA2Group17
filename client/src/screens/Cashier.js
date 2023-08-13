@@ -7,7 +7,7 @@ import { errorToaster } from "../utils/Error";
 import { User } from "../components/User";
 import { ClickableOpacity } from "../components/ClickableOpacity";
 import { XLg } from "react-bootstrap-icons";
-import { Product } from "../components/Product";
+import { Product, ProductCard } from "../components/ProductCard";
 import "../style/App.css";
 import { toast } from "react-toastify";
 
@@ -35,8 +35,8 @@ function Cashier() {
     <>
       <h2 className="text-center">Create Warranty</h2>
       {cashierVM.user ? (
-        <User
-          className="pt-4" 
+        <UserCard
+          className="pt-4"
           user={cashierVM.user}
           ActionElement={
             <ClickableOpacity onClick={cashierVM.removeUser}>
@@ -53,7 +53,7 @@ function Cashier() {
         />
       )}
       {cashierVM.product ? (
-        <Product
+        <ProductCard
           product={cashierVM.product}
           className="pt-4"
           ActionElement={
@@ -73,18 +73,6 @@ function Cashier() {
       <Form onSubmit={handleSubmit}>
         <Row className="pt-4">
           <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
-            <Form.Group controlId="duration">
-              <Form.Control
-                size="lg"
-                type="number"
-                min={1}
-                placeholder="Insert the warranty duration in years"
-                value={cashierVM.duration}
-                onChange={(ev) => cashierVM.setDuration(ev.target.value)}
-              />
-            </Form.Group>
-          </Col>
-          <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
             <Form.Group controlId="typology">
               <Form.Select
                 size="lg"
@@ -102,6 +90,18 @@ function Cashier() {
                   CASCO
                 </option>
               </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
+            <Form.Group controlId="duration">
+              <Form.Control
+                size="lg"
+                type="number"
+                min={1}
+                placeholder="Insert the warranty duration in years"
+                value={cashierVM.duration}
+                onChange={(ev) => cashierVM.setDuration(ev.target.value)}
+              />
             </Form.Group>
           </Col>
         </Row>

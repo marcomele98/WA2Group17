@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 
-export const User = ({user, ActionElement, className}) => {
+export const UserCard = ({user, ActionElement, className}) => {
   return (
     <div className={className}>
       <Card className="card">

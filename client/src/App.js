@@ -12,9 +12,13 @@ import { Login } from "./screens/Login";
 import { Unauthorized } from "./screens/Unauthorized";
 import { AuthRoute } from "./components/AuthRoute";
 import { Cashier } from "./screens/Cashier";
+import { UnassignedTickets } from "./screens/manager/UnassignedTickets";
+import { Users } from "./screens/manager/Users";
+import { UserForm } from "./screens/manager/UserForm";
+import { AssignTicket } from "./screens/manager/AssignTicket";
+
 
 function App() {
-
   const [redirectRoute, setRedirectRoute] = useState(false);
 
   return (
@@ -46,25 +50,18 @@ function App() {
                   />
                 }
               >
-                <Route path="/cashier/*" element={<Cashier />} />
-                {/*<Route path="/cashier/*">
-                  <Route index element={<Products />} />
-                  <Route path="products/:ean" element={<Product />} />
-                  <Route path="profiles" element={<Profiles />} />
-              </Route>*/}
+                <Route path="/cashier" element={<Cashier />} />
               </Route>
-              {/*<Route
-                path="/manager/profiles"
-                element={<Profiles setIsLoading={setIsLoading} />}
-              />
-              <Route
-                path="/manager/create-profile"
-                element={<ProfileForm setIsLoading={setIsLoading} />}
-              />
-              <Route
-                path="/edit-profile/:userToEditEmail"
-                element={<ProfileForm setIsLoading={setIsLoading} />}
-              />*/}
+              <Route element={<AuthRoute role="MANAGER" />}>
+                <Route path="/manager/*">
+                  <Route index element={<Navigate to="unassigned-tickets"/>} />
+                  <Route path="unassigned-tickets" element={<UnassignedTickets />} />
+                  <Route path="users" element={<Users />} />
+                  <Route path="create-user" element={<UserForm />} />
+                  <Route path="edit-user/:email" element={<UserForm />} />
+                  <Route path="assign-ticket/:ticketId" element={<AssignTicket />} />
+                </Route>
+              </Route>
               <Route path="/*" element={<Navigate to="/login" />} />{" "}
             </Routes>
           </Row>

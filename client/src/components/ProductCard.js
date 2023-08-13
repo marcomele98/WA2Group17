@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 
-function Product({ product, ActionElement, className }) {
+function ProductCard({ product, ActionElement, className }) {
   return (
     <div className={className}>
       <Card className="card" >
@@ -18,4 +18,4 @@ function Product({ product, ActionElement, className }) {
   );
 }
 
-export { Product };
+export { ProductCard };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Nav, Navbar } from "react-bootstrap";
 import { useUser } from "../presenters/User";
@@ -33,17 +33,17 @@ function NavigationBar() {
                 <>
                   <Nav.Link
                     style={navLinkStyle}
-                    active={location?.pathname === "/products"}
-                    onClick={() => navigate("/products")}
+                    active={location?.pathname === "/manager/unassigned-tickets"}
+                    onClick={() => navigate("/manager/unassigned-tickets")}
                   >
                     Products
                   </Nav.Link>
                   <Nav.Link
                     style={navLinkStyle}
-                    active={location?.pathname === "/profiles"}
-                    onClick={() => navigate("/profiles")}
+                    active={location?.pathname === "/manager/users"}
+                    onClick={() => navigate("/manager/users")}
                   >
-                    Profiles
+                    Users
                   </Nav.Link>
                 </>
               ),
