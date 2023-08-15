@@ -22,13 +22,13 @@ class TicketGeneralController(private val ticketService: TicketService) {
 
     @PutMapping("message/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody message: MessageDTO, principal: Authentication, br: BindingResult): CompleteTicketDTO {
-        return ticketService.addMessage(ticketId, message, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString() )
+    fun addMessage(@PathVariable ticketId: Long, @Valid @RequestBody messageDTO: MessageDTO, principal: Authentication, br: BindingResult): TicketWithMessagesDTO {
+        return ticketService.addMessage(ticketId, messageDTO, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString() )
     }
 
     @PutMapping("close/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun closeTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
+    fun closeTicket(@PathVariable ticketId: Long, principal: Authentication): TicketWithMessagesDTO {
         return ticketService.closeTicket(ticketId, principal.name, principal.authorities.map{ it.authority }.toList()[0].toString())
     }
 }
@@ -58,7 +58,7 @@ class TicketManagerController(private val ticketService: TicketService) {
 
     @PutMapping("assign/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun assignTicket(@PathVariable ticketId: Long, @Valid @RequestBody assignTicketDTO: AssignTicketDTO, br: BindingResult): CompleteTicketDTO {
+    fun assignTicket(@PathVariable ticketId: Long, @Valid @RequestBody assignTicketDTO: AssignTicketDTO, br: BindingResult): TicketWithMessagesDTO {
         return ticketService.assignTicket(ticketId, assignTicketDTO.expertEmail, assignTicketDTO.priority)
     }
 
@@ -84,7 +84,7 @@ class TicketExpertController(private val ticketService: TicketService) {
 
     @PutMapping("resolve/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun resolveTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
+    fun resolveTicket(@PathVariable ticketId: Long, principal: Authentication): TicketWithMessagesDTO {
         return ticketService.resolveTicket(ticketId, principal.name)
     }
 }
@@ -96,7 +96,7 @@ class TicketCustomerController(private val ticketService: TicketService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun addTicket(@Valid @RequestBody ticket: CreateTicketDTO, br: BindingResult,  principal: Authentication): CompleteTicketDTO {
+    fun addTicket(@Valid @RequestBody ticket: CreateTicketDTO, br: BindingResult,  principal: Authentication): TicketWithMessagesDTO {
         return ticketService.createTicket(ticket, principal.name)
     }
 
@@ -108,7 +108,7 @@ class TicketCustomerController(private val ticketService: TicketService) {
 
     @PutMapping("reopen/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun reopenTicket(@PathVariable ticketId: Long, principal: Authentication): CompleteTicketDTO {
+    fun reopenTicket(@PathVariable ticketId: Long, principal: Authentication): TicketWithMessagesDTO {
         return ticketService.reopenTicket(ticketId, principal.name)
     }
 }

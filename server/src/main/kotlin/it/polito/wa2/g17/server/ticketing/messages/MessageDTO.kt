@@ -14,7 +14,7 @@ data class MessageDTO(
 
 fun Message.toDTO(): MessageDTO {
     val list : List<Long> = attachments.map { attachment -> attachment.id!! }
-    return MessageDTO(id!!, user!!.email, text, timestamp, attachmentIds = list)
+    return MessageDTO(id!!, userEmail, text, timestamp, attachmentIds = list)
 }
 
 fun MessageDTO.withTimestamp(date: Date): MessageDTO {

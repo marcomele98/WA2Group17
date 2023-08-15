@@ -16,7 +16,7 @@ data class PartialTicketDTO(
 fun Ticket.toPartialDTO(): PartialTicketDTO {
     return PartialTicketDTO(
         id!!,
-        expert?.email,
+        expertEmail,
         problemType,
         status,
         warranty.toDTO(),
@@ -26,8 +26,6 @@ fun Ticket.toPartialDTO(): PartialTicketDTO {
 
 data class PartialTicketWithoutWarrantyDTO(
     val id: Long,
-    val customerEmail: String,
-    val productEan: String,
     val expertEmail: String?,
     val problemType: ProblemType,
     val status: Status,
@@ -39,9 +37,7 @@ data class PartialTicketWithoutWarrantyDTO(
 fun Ticket.toPartialWithoutWarrantyDTO(): PartialTicketWithoutWarrantyDTO {
     return PartialTicketWithoutWarrantyDTO(
         id!!,
-        customer.email,
-        product.ean,
-        expert?.email,
+        expertEmail,
         problemType,
         status,
         priorityLevel

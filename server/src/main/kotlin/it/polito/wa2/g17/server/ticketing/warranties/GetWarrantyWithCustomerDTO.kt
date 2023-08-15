@@ -8,23 +8,27 @@ import it.polito.wa2.g17.server.ticketing.tickets.toPartialWithoutWarrantyDTO
 import java.util.*
 
 
-data class GetWarrantyDTO(
+data class GetWarrantyWithCustomerDTO(
     val id: Long,
     val endDate: String,
     val product: ProductDTO,
     val valid: Boolean,
     val typology: Typology,
-    val customerEmail: String,
-    val tickets: List<PartialTicketWithoutWarrantyDTO>
+    val tickets: List<PartialTicketWithoutWarrantyDTO>,
+    val customer: ProfileDTO? = null
 )
 
-fun Warranty.toDTO(): GetWarrantyDTO {
+fun GetWarrantyWithCustomerDTO.withCustomer(profile: ProfileDTO): GetWarrantyWithCustomerDTO {
+    return this.copy(customer = profile)
+}
+
+fun Warranty.toGetWarrantyWithCustomerDTO(): GetWarrantyWithCustomerDTO {
     val valid = endDate > Date()
-    return GetWarrantyDTO(id!!,
+    return GetWarrantyWithCustomerDTO(
+        id!!,
         endDate.toString(),
         product.toDTO(),
         valid,
         typology,
-        customerEmail,
         tickets.map { ticket -> ticket.toPartialWithoutWarrantyDTO() })
 }

@@ -5,7 +5,7 @@ import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
-import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
+import it.polito.wa2.g17.server.ticketing.tickets.TicketWithMessagesDTO
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -47,7 +47,7 @@ fun getTicketById(
     "http://localhost:$port/API/tickets/$id",
     HttpMethod.GET,
     requestEntity,
-    object : ParameterizedTypeReference<CompleteTicketDTO>() {}
+    object : ParameterizedTypeReference<TicketWithMessagesDTO>() {}
   )
 
   Assertions.assertEquals(HttpStatus.OK, getResponse.statusCode)

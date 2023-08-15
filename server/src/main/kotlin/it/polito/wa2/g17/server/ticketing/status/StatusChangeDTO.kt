@@ -10,5 +10,5 @@ data class StatusChangeDTO(
 )
 
 fun StatusChange.toDTO(): StatusChangeDTO {
-    return StatusChangeDTO(id!!, status, timestamp, user.email)
+    return StatusChangeDTO(id!!, status, timestamp, userEmail)
 }

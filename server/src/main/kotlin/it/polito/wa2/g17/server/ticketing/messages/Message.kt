@@ -18,9 +18,8 @@ class Message(
     @Column(nullable = false)
     var timestamp: Date = Date(),
 
-    @ManyToOne
-    @JoinColumn(name = "user_email", referencedColumnName = "email")
-    var user: Profile? = null,
+    @Column(nullable = false, name = "user_email")
+    var userEmail: String? = null,
 
     @ManyToOne
     var ticket: Ticket? = null,
@@ -37,8 +36,8 @@ class Message(
 
 }
 
-fun Message.withUser(p: Profile): Message {
-    this.user = p
+fun Message.withUser(email: String): Message {
+    this.userEmail = email
     return this
 }
 

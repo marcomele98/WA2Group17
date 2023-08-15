@@ -10,6 +10,7 @@ import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.status.StatusChangeDTO
 import it.polito.wa2.g17.server.ticketing.status.toDTO
 import it.polito.wa2.g17.server.ticketing.tickets.*
+import it.polito.wa2.g17.server.ticketing.warranties.Warranty
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Component
@@ -21,11 +22,12 @@ class DAO() {
   @PersistenceContext
   private lateinit var entityManager: EntityManager
 
-  fun getTicket(customer: Profile, product: Product): Ticket {
+  fun getTicket(customer: Profile, product: Product, warranty: Warranty): Ticket {
     return Ticket(
-      customer = customer,
+      customerEmail = customer.email,
       product = product,
-      problemType = ProblemType.HARDWARE
+      problemType = ProblemType.HARDWARE,
+      warranty = warranty
       //priorityLevel = Priority.LOW
     )
   }
@@ -33,7 +35,7 @@ class DAO() {
   fun getMessage(user: Profile, ticket: Ticket): Message {
     return Message(
       text = "This is a message",
-      user = user,
+      userEmail = user.email,
       ticket = ticket
     )
   }
@@ -59,7 +61,7 @@ class DAO() {
   fun getStatusChange(/*ticket: Ticket, */status: Status, user: Profile): StatusChange {
     return StatusChange(
       status = status,
-      user = user,
+      userEmail = user.email,
       timestamp = Date(),
       //ticket = ticket
     )
@@ -80,8 +82,8 @@ class DAO() {
     return ticket.toPartialDTO()
   }
 
-  fun getCompleteTicketDTO(ticket: Ticket): CompleteTicketDTO {
-    return ticket.toCompleteDTO()
+  fun getCompleteTicketDTO(ticket: Ticket): TicketWithMessagesDTO {
+    return ticket.toWithMessagesDTO()
   }
 
   fun getProfileManager(): Profile {

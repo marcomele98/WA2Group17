@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate
 @Service
 class AuthServiceImpl: AuthService {
 
+    //TODO: interrogo keycloak da un repository com per profile
+
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/token")
     private lateinit var url: String
 
@@ -24,7 +26,7 @@ class AuthServiceImpl: AuthService {
         val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
         formData.add("grant_type", "password")
         formData.add("client_id", "wa2g17-keycloak-client")
-        formData.add("username", authRequest.username)
+        formData.add("username", authRequest.email)
         formData.add("password", authRequest.password)
         val headers = HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)

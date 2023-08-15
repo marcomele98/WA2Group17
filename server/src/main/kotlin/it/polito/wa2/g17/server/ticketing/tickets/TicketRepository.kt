@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository
 interface TicketRepository : JpaRepository<Ticket, Long> {
     fun findAllByStatusIn(status: List<Status>): List<Ticket>
 
-    fun findAllByCustomerEmail(customerEmail: String): List<Ticket>
-
     fun findAllByExpertEmailAndStatusIn(expertEmail: String, status: List<Status>): List<Ticket>
 
     //Only for testing purposes DO NOT USE

@@ -6,7 +6,7 @@ import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
-import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
+import it.polito.wa2.g17.server.ticketing.tickets.TicketWithMessagesDTO
 import it.polito.wa2.g17.server.ticketing.tickets.TicketRepository
 import org.junit.jupiter.api.Assertions
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -54,7 +54,7 @@ fun createMessage(
     "http://localhost:$port/API/tickets/message/$id",
     HttpMethod.PUT,
     addRequestEntity,
-    object : ParameterizedTypeReference<CompleteTicketDTO>() {}
+    object : ParameterizedTypeReference<TicketWithMessagesDTO>() {}
   )
 
   Assertions.assertEquals(HttpStatus.OK, putResponse.statusCode)

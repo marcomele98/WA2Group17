@@ -4,6 +4,7 @@ import it.polito.wa2.g17.server.products.ProductNotFoundException
 import it.polito.wa2.g17.server.products.ProductRepository
 import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g17.server.profiles.ProfileRepository
+import it.polito.wa2.g17.server.profiles.toDTO
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -18,10 +19,13 @@ class WarrantyServiceImpl(
     private val productRepository: ProductRepository,
     private val profileRepository: ProfileRepository
 ) : WarrantyService {
-    override fun getWarrantyById(id: Long): GetWarrantyDTO {
-        return warrantyRepository.findById(id).orElseThrow {
+    override fun getWarrantyById(id: Long): GetWarrantyWithCustomerDTO {
+
+        val warranty = warrantyRepository.findById(id).orElseThrow {
             WarrantyNotFoundException("Warranty with ID $id not found")
-        }.toDTO()
+        }
+        val profile = profileRepository.findByEmail(warranty.customerEmail)
+        return warranty.toGetWarrantyWithCustomerDTO().withCustomer(profile!!.toDTO())
     }
 
     override fun getWarrantiesByEmail(email: String): List<GetWarrantyDTO> {
@@ -33,8 +37,8 @@ class WarrantyServiceImpl(
         val product = productRepository.findById(warranty.productEan)
             .orElseThrow { ProductNotFoundException("Product with EAN ${warranty.productEan} not found") }
 
-        val profile = profileRepository.findById(warranty.customerEmail)
-            .orElseThrow { ProfileNotFoundException("Profile with email ${warranty.customerEmail} not found") }
+        val profile = profileRepository.findByEmail(warranty.customerEmail)
+            ?: throw ProfileNotFoundException("Profile with email ${warranty.customerEmail} not found")
 
         val endDate = Date.from(
             LocalDate.now()
@@ -48,7 +52,7 @@ class WarrantyServiceImpl(
             startDate = Date(),
             product = product,
             typology = warranty.typology,
-            customer = profile
+            customerEmail = profile.email
         )
 
         return warrantyRepository.save(newWarranty).toDTO()

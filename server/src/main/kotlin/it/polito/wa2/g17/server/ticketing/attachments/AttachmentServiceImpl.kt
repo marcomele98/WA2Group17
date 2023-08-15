@@ -18,30 +18,30 @@ class AttachmentServiceImpl(private val attachmentRepository: AttachmentReposito
         val fileType = file.contentType!!
         val fileContent = file.bytes
 
-        val profile = profileRepository.findByIdOrNull(email)
+        val profile = profileRepository.findByEmail(email)
             ?: throw ProfileNotFoundException("User with email $email not found")
 
         if(role == "ROLE_MANAGER") {
             throw WrongUserException("You are not allowed to upload attachments")
         }
 
-        val newAttachment = Attachment(fileName, profile, fileType, fileContent)
+        val newAttachment = Attachment(fileName, profile.email, fileType, fileContent)
         return attachmentRepository.save(newAttachment).id!!
     }
 
 
      override fun downloadAttachment(id: Long, email: String): Attachment {
 
-        profileRepository.findByIdOrNull(email)
+        profileRepository.findByEmail(email)
             ?: throw ProfileNotFoundException("User with email $email not found")
 
          val attachment = attachmentRepository.findByIdOrNull(id)
              ?: throw AttachmentNotFoundException("Attachment with id $id not found")
 
-         if( attachment.user!!.email != email) {
+         if( attachment.userEmail != email) {
              throw WrongUserException("You are not allowed to download this attachment")
          }
 
-        return Attachment(attachment!!.name, attachment!!.user, attachment.type, attachment.content)
+        return Attachment(attachment.name, attachment.userEmail, attachment.type, attachment.content)
     }
 }

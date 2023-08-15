@@ -30,9 +30,8 @@ class Warranty(
     @Column(nullable = false)
     val typology: Typology,
 
-    @ManyToOne
-    @JoinColumn(name = "customer_email", nullable = false, referencedColumnName = "email")
-    var customer: Profile,
+    @Column(nullable = false, name = "customer_email")
+    var customerEmail: String,
 
-    ): EntityBase<Long>() {
+    ) : EntityBase<Long>() {
 }

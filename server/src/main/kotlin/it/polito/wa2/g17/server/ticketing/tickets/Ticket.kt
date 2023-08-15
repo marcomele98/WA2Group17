@@ -13,16 +13,6 @@ import jakarta.persistence.*
 @Table(name = "tickets")
 class Ticket(
 
-    //TODO: lo tolgo, sarà contenuto in warranty
-    @ManyToOne
-    @JoinColumn(name = "customer_email", nullable = false, referencedColumnName = "email")
-    var customer: Profile,
-
-    //TODO: lo tolgo, sarà contenuto in warranty
-    @ManyToOne
-    @JoinColumn(name = "product_ean", nullable = false, referencedColumnName = "ean")
-    var product: Product,
-
     @Enumerated(EnumType.STRING)
     var problemType: ProblemType,
 
@@ -39,9 +29,8 @@ class Ticket(
     @OneToMany(mappedBy = "ticket", cascade = [CascadeType.ALL])
     val statusHistory: MutableList<StatusChange> = mutableListOf(),
 
-    @ManyToOne
-    @JoinColumn(name = "expert_email", referencedColumnName = "email")
-    var expert: Profile? = null,
+    @Column(nullable = true, name = "expert_email")
+    var expertEmail: String? = null,
 
     @Enumerated(EnumType.STRING)
     var status: Status = Status.OPEN

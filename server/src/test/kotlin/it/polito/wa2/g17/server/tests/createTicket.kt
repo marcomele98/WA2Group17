@@ -6,7 +6,7 @@ import it.polito.wa2.g17.server.profiles.ProfileRepository
 import it.polito.wa2.g17.server.security.DTOs.AuthenticationResponseDTO
 import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
-import it.polito.wa2.g17.server.ticketing.tickets.CompleteTicketDTO
+import it.polito.wa2.g17.server.ticketing.tickets.TicketWithMessagesDTO
 import it.polito.wa2.g17.server.ticketing.tickets.CreateTicketDTO
 import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import org.junit.jupiter.api.Assertions
@@ -33,7 +33,7 @@ fun createTicket(
 
     val createTicketDTO: CreateTicketDTO = CreateTicketDTO(product.ean, messageDTO, ProblemType.HARDWARE)
 
-    val completeTicketDTO = CompleteTicketDTO(
+    val completeTicketDTO = TicketWithMessagesDTO(
         1,
         client.email,
         product.ean,
@@ -57,7 +57,7 @@ fun createTicket(
         "http://localhost:$port/API/customer/tickets",
         HttpMethod.POST,
         requestEntity,
-        object : ParameterizedTypeReference<CompleteTicketDTO>() {}
+        object : ParameterizedTypeReference<TicketWithMessagesDTO>() {}
     )
     Assertions.assertEquals(HttpStatus.CREATED, postResponse.statusCode)
 

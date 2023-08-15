@@ -1,6 +1,5 @@
 package it.polito.wa2.g17.server.ticketing.status
 
-import it.polito.wa2.g17.server.profiles.Profile
 import it.polito.wa2.g17.server.ticketing.EntityBase
 import it.polito.wa2.g17.server.ticketing.tickets.Ticket
 import jakarta.persistence.*
@@ -14,13 +13,14 @@ class StatusChange(
     @Enumerated(EnumType.STRING)
     var status: Status,
 
-    @ManyToOne
-    @JoinColumn(name = "user_email", nullable = false, referencedColumnName = "email")
-    var user: Profile,
+    @Column(nullable = false, name = "user_email")
+    var userEmail: String? = null,
 
     @Temporal(TemporalType.TIMESTAMP)
     var timestamp: Date = Date(),
 
     @ManyToOne
     var ticket: Ticket? = null,
-) : EntityBase<Long>()
+
+    ) : EntityBase<Long>()
+

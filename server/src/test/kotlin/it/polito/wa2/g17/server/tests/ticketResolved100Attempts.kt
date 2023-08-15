@@ -44,7 +44,7 @@ fun ticketResolved100Attempts(
   ticket.addStatus(statusChangeOpen)
   ticket.addStatus(statusChangeInProgress)
 
-  ticket.apply { this.expert = expert }
+  ticket.apply { this.expertEmail = expert }
 
   ticketRepository.save(ticket)
 

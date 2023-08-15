@@ -1,13 +1,7 @@
 package it.polito.wa2.g17.server.profiles
 
-import it.polito.wa2.g17.server.ticketing.tickets.ProblemType
 import org.keycloak.OAuth2Constants.*
-import org.keycloak.admin.client.Keycloak
-import org.keycloak.admin.client.KeycloakBuilder
-import org.keycloak.representations.idm.CredentialRepresentation
-import org.keycloak.representations.idm.UserRepresentation
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.repository.findByIdOrNull
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,123 +11,73 @@ import org.springframework.transaction.annotation.Transactional
 class ProfileServiceImpl(private val profileRepository: ProfileRepository) : ProfileService {
     override fun getProfile(email: String): ProfileDTO {
         val profile = profileRepository
-            .findByIdOrNull(email)
+            .findByEmail(email)
             ?: throw ProfileNotFoundException("Profile with email $email not found")
         return profile.toDTO()
     }
 
-    override fun addProfile(profile: ProfileDTO): ProfileDTO {
-        if (profileRepository.findByIdOrNull(profile.email) != null) {
-            throw DuplicateProfileException("Profile with email ${profile.email} already exists")
-        }
-        return profileRepository.save(Profile().apply {
-            email = profile.email
-            name = profile.name
-            surname = profile.surname
-            skills = profile.skills.toMutableList()
-        }).toDTO()
-    }
-
     @Transactional
-    override fun editProfile(email: String, profile: ProfileDTO): ProfileDTO {
-        if (profileRepository.findByIdOrNull(email) == null) {
+    override fun editProfile(email: String, request: EditWorkerDTO): ProfileDTO {
+
+        if (profileRepository.findByEmail(email) == null) {
             throw ProfileNotFoundException("Profile with email $email not found")
         }
 
-        if (profile.email != email) {
-            throw CannotUpdateEmailException("Impossible to update mail")
+        profileRepository.updateProfile(
+            Profile(
+                email = email,
+                name = request.name,
+                surname = request.surname,
+                role = request.role,
+                skills = request.skills.toMutableList(),
+                password = request.password
+            )
+        )
+        return profileRepository.findByEmail(email)!!.toDTO()
+    }
+
+    override fun createCustomer(request: SignupCustomerDTO): ProfileDTO {
+        profileRepository.createProfile(request.toEntity())
+        return profileRepository.findByEmail(request.email)!!.toDTO()
+    }
+
+    override fun createWorker(request: SignupWorkerDTO): ProfileDTO {
+
+        if (request.role == "CASHIER" && request.skills.isNotEmpty()) {
+            throw InvalidRoleException("Cashier cannot have skills")
         }
-
-        return profileRepository.save(Profile().apply {
-            this.email = email
-            name = profile.name
-            surname = profile.surname
-        }).toDTO()
-    }
-
-    override fun getProfilesBySkill(skill: ProblemType): List<ProfileDTO> {
-        return profileRepository.findBySkills(skill).map { it.toDTO() }
-    }
-
-    @Value("\${keycloak.server.url}")
-    private lateinit var KEYCLOAK_SERVER_URL: String
-    private val REALM_NAME = "WA2G17"
-
-    override fun createCustomer(request: SignupDTO): ProfileDTO {
-        return when (createUserOnKeycloak(request, "APP_CLIENT")) {
-            201 -> profileRepository.save(Profile().apply {
-                email = request.email
-                name = request.name
-                surname = request.surname
-            }).toDTO()
-
-            409 -> throw DuplicateProfileException("Profile with email ${request.email} already exists")
-            else -> throw InternalError("Error creating user")
+        if (request.role == "EXPERT" && request.skills.isEmpty()) {
+            throw InvalidRoleException("Expert must have at least one skill")
         }
+        profileRepository.createProfile(request.toEntity())
+        return profileRepository.findByEmail(request.email)!!.toDTO()
     }
 
-    override fun createExpert(request: SignupDTO): ProfileDTO {
-        return when (createUserOnKeycloak(request, "APP_EXPERT")) {
-            201 -> profileRepository.save(Profile().apply {
-                email = request.email
-                name = request.name
-                surname = request.surname
-                skills = request.skills.toMutableList()
-            }).toDTO()
-
-            409 -> throw DuplicateProfileException("Profile with email ${request.email} already exists")
-            else -> throw InternalError("Error creating user")
+    override fun getWorker(email: String): ProfileDTO {
+        val profile = profileRepository
+            .findByEmail(email)
+            ?: throw ProfileNotFoundException("Profile with email $email not found")
+        if (profile.role != "EXPERT" && profile.role != "CASHIER" && profile.role != "MANAGER") {
+            throw ProfileNotFoundException("Profile with email $email not found with role EXPERT, CASHIER or MANAGER")
         }
+        return profile.toDTO()
     }
 
-    override fun createCashier(request: SignupDTO): ProfileDTO {
-        return when (createUserOnKeycloak(request, "APP_CASHIER")) {
-            201 -> profileRepository.save(Profile().apply {
-                email = request.email
-                name = request.name
-                surname = request.surname
-            }).toDTO()
-
-            409 -> throw DuplicateProfileException("Profile with email ${request.email} already exists")
-            else -> throw InternalError("Error creating user")
+    override fun getClient(email: String): ProfileDTO {
+        val profile = profileRepository
+            .findByEmail(email)
+            ?: throw ProfileNotFoundException("Profile with email $email not found")
+        if (profile.role != "CUSTOMER") {
+            throw ProfileNotFoundException("Profile with email $email not found")
         }
+        return profile.toDTO()
+    }
+
+    override fun getWorkers(): List<ProfileDTO> {
+        val experts = profileRepository.findByRole("EXPERT")
+        val cashiers = profileRepository.findByRole("CASHIER")
+        return (experts + cashiers).map { it.toDTO() }
     }
 
 
-    private fun createUserOnKeycloak(request: SignupDTO, role: String): Int {
-        val keycloak: Keycloak = KeycloakBuilder
-            .builder()
-            .serverUrl(KEYCLOAK_SERVER_URL)
-            .realm(REALM_NAME)
-            .username("admin")
-            .password("password")
-            .clientId("admin-cli")
-            .build()
-
-        println(keycloak.realm(REALM_NAME))
-
-        // Create a UserRepresentation object and set user details
-        val user = UserRepresentation()
-        user.username = request.email
-        user.email = request.email
-        user.firstName = request.name
-        user.lastName = request.surname
-        user.realmRoles = listOf(role)
-        user.isEmailVerified = true
-        user.isEnabled = true
-        user.attributes = mapOf("skills" to request.skills.map { it.name })
-
-        // Create a CredentialRepresentation object and set the password
-        val password = CredentialRepresentation()
-        password.type = CredentialRepresentation.PASSWORD
-        password.value = request.password
-        password.isTemporary = false
-
-        user.credentials = listOf(password)
-
-        println(user.credentials)
-
-        // Use the Keycloak admin client to create the user
-        return keycloak.realm(REALM_NAME).users().create(user).status
-    }
 }

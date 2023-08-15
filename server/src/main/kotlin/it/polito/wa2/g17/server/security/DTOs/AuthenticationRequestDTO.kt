@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 
 data class AuthenticationRequestDTO(
     @field:NotBlank(message = "Username field is required")
-    val username: String,
+    val email: String,
 
     @field:NotBlank(message = "Password field is required")
     val password: String

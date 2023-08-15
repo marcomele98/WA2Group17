@@ -13,35 +13,6 @@ CREATE TABLE IF NOT EXISTS public.products
 );
 
 
--- public.profiles definition
-
--- Drop table
-
--- DROP TABLE public.profiles;
-
-CREATE TABLE IF NOT EXISTS public.profiles
-(
-    email   varchar(255) NOT NULL,
-    "name"  varchar(255) NOT NULL,
-    surname varchar(255) NOT NULL,
-    CONSTRAINT profiles_pkey PRIMARY KEY (email)
-);
-
-
--- public.profile_skills definition
-
--- Drop table
-
--- DROP TABLE public.profile_skills;
-
-CREATE TABLE IF NOT EXISTS public.profile_skills
-(
-    profile_email varchar(255) NOT NULL,
-    skills        varchar(255) NULL,
-    CONSTRAINT fkdvm53pu3nti4dav2vidsj8bv8 FOREIGN KEY (profile_email) REFERENCES profiles (email)
-);
-
-
 CREATE TABLE IF NOT EXISTS public.warranties
 (
     id             int8         NOT NULL,
@@ -52,8 +23,7 @@ CREATE TABLE IF NOT EXISTS public.warranties
     customer_email varchar(255) NOT NULL,
     "version"      int8         NOT NULL,
     CONSTRAINT warranties_pkey PRIMARY KEY (id),
-    FOREIGN KEY (product_ean) REFERENCES products (ean),
-    FOREIGN KEY (customer_email) REFERENCES profiles (email)
+    FOREIGN KEY (product_ean) REFERENCES products (ean)
 );
 
 
@@ -70,14 +40,9 @@ CREATE TABLE IF NOT EXISTS public.tickets
     priority_level varchar(255) NULL,
     problem_type   varchar(255) NULL,
     status         varchar(255) NULL,
-    customer_email varchar(255) NOT NULL,
     expert_email   varchar(255) NULL,
-    product_ean    varchar(255) NOT NULL,
     warranty_id    int8         NOT NULL,
     CONSTRAINT tickets_pkey PRIMARY KEY (id),
-    CONSTRAINT fk9m28r3wh8pt856v8w9r7we969 FOREIGN KEY (product_ean) REFERENCES products (ean),
-    CONSTRAINT fkpxhaghy083e9rjplpcxa3vaoh FOREIGN KEY (customer_email) REFERENCES profiles (email),
-    CONSTRAINT fkqu447rw3ykl5bgwxgn4lalgb9 FOREIGN KEY (expert_email) REFERENCES profiles (email),
     FOREIGN KEY (warranty_id) REFERENCES warranties (id)
 );
 
@@ -97,8 +62,7 @@ CREATE TABLE IF NOT EXISTS public.message
     ticket_id   int8         NULL,
     user_email  varchar(255) NULL,
     CONSTRAINT message_pkey PRIMARY KEY (id),
-    CONSTRAINT fkhnb59gu2lb6heob6tsdy7hbqr FOREIGN KEY (ticket_id) REFERENCES tickets (id),
-    CONSTRAINT fkpae8ihj1ajx2q5iknitan60wt FOREIGN KEY (user_email) REFERENCES profiles (email)
+    CONSTRAINT fkhnb59gu2lb6heob6tsdy7hbqr FOREIGN KEY (ticket_id) REFERENCES tickets (id)
 );
 
 
@@ -117,7 +81,6 @@ CREATE TABLE IF NOT EXISTS public.status_changes
     ticket_id   int8         NULL,
     user_email  varchar(255) NOT NULL,
     CONSTRAINT status_changes_pkey PRIMARY KEY (id),
-    CONSTRAINT fkbt46hd55iohsv0xk70ofipgpu FOREIGN KEY (user_email) REFERENCES profiles (email),
     CONSTRAINT fkpvlilvfs17xwbdnxcrlq75yjs FOREIGN KEY (ticket_id) REFERENCES tickets (id)
 );
 
@@ -138,27 +101,8 @@ CREATE TABLE IF NOT EXISTS public.attachment
     message_id int8         NULL,
     user_email varchar(255) NULL,
     CONSTRAINT attachment_pkey PRIMARY KEY (id),
-    CONSTRAINT fkoo11928qbsiolkc10dph1p214 FOREIGN KEY (message_id) REFERENCES message (id),
-    CONSTRAINT fkqtnm4x6je8s07mhjjvbya346w FOREIGN KEY (user_email) REFERENCES profiles (email)
+    CONSTRAINT fkoo11928qbsiolkc10dph1p214 FOREIGN KEY (message_id) REFERENCES message (id)
 );
-
-INSERT INTO profiles (email, name, surname)
-VALUES ('manager@mail.com', 'Marco', 'Mele');
-
-INSERT INTO profiles (email, name, surname)
-VALUES ('client@mail.com', 'Francesco', 'Russo');
-
-INSERT INTO profiles (email, name, surname)
-VALUES ('expert@mail.com', 'Federico', 'Rinaudi');
-
-INSERT INTO profiles (email, name, surname)
-VALUES ('client1@mail.com', 'Leonardo', 'Volpini');
-
-INSERT INTO profiles (email, name, surname)
-VALUES ('cashier@mail.com', 'Francesco', 'Totti');
-
-INSERT INTO profile_skills (profile_email, skills)
-VALUES ('expert@mail.com', 'HARDWARE');
 
 
 
@@ -196,9 +140,6 @@ VALUES ('6932799230098', 'Superior Quality Club Special Poker Playing Cards No. 
 
 CREATE SEQUENCE IF NOT EXISTS attachment_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS message_seq INCREMENT BY 50;
---CREATE SEQUENCE IF NOT EXISTS products_seq INCREMENT BY 50;
---CREATE SEQUENCE IF NOT EXISTS profile_skills_seq INCREMENT BY 50;
---CREATE SEQUENCE IF NOT EXISTS profiles_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS status_changes_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS tickets_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS warranties_seq INCREMENT BY 50;

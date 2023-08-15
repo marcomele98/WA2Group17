@@ -6,13 +6,15 @@ import org.springframework.security.access.prepost.PostAuthorize
 
 interface TicketService {
 
-    fun createTicket(ticketDTO: CreateTicketDTO, email: String): CompleteTicketDTO
+    fun createTicket(ticketDTO: CreateTicketDTO, email: String): TicketWithMessagesDTO
 
     fun getAllOpen(): List<PartialTicketDTO>
 
     fun getAllAssigned(): List<PartialTicketDTO>
 
-    @PostAuthorize("returnObject.expertEmail == authentication.name || hasRole('MANAGER') || returnObject.customerEmail == authentication.name")
+    @PostAuthorize("returnObject.expert.email == authentication.name " +
+            "|| hasRole('MANAGER') " +
+            "|| returnObject.warranty.customer.email == authentication.name")
     fun getTicket(id: Long): CompleteTicketDTO
 
 
@@ -24,14 +26,14 @@ interface TicketService {
 
     fun getAllByCustomerEmail(customerEmail: String): List<PartialTicketDTO>
 
-    fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): CompleteTicketDTO
+    fun assignTicket(ticketId: Long, expertEmail: String, priority: Priority): TicketWithMessagesDTO
 
-    fun closeTicket(ticketId: Long, userEmail: String, role: String): CompleteTicketDTO
+    fun closeTicket(ticketId: Long, userEmail: String, role: String): TicketWithMessagesDTO
 
-    fun reopenTicket(ticketId: Long, email: String): CompleteTicketDTO
+    fun reopenTicket(ticketId: Long, email: String): TicketWithMessagesDTO
 
-    fun resolveTicket(ticketId: Long, email: String): CompleteTicketDTO
+    fun resolveTicket(ticketId: Long, email: String): TicketWithMessagesDTO
 
-    fun addMessage(ticketId: Long, message: MessageDTO, email: String, role: String): CompleteTicketDTO
+    fun addMessage(ticketId: Long, message: MessageDTO, email: String, role: String): TicketWithMessagesDTO
 
 }
