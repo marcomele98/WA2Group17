@@ -7,14 +7,13 @@ import { Navigate } from "react-router-dom";
 import { NavigationBar } from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { UserProvider } from "./presenters/User";
+import { UserProvider } from "./presenters/LoggedUser";
 import { Login } from "./screens/Login";
 import { Unauthorized } from "./screens/Unauthorized";
 import { AuthRoute } from "./components/AuthRoute";
 import { Cashier } from "./screens/Cashier";
 import { UnassignedTickets } from "./screens/manager/UnassignedTickets";
-import { Users } from "./screens/manager/Users";
-import { UserForm } from "./screens/manager/UserForm";
+import { Workers } from "./screens/manager/Workers";
 import { AssignTicket } from "./screens/manager/AssignTicket";
 
 
@@ -32,6 +31,7 @@ function App() {
           <Row id="body-container">
             <Routes>
               <Route
+                index
                 path="/login"
                 element={
                   <Login
@@ -52,13 +52,13 @@ function App() {
               >
                 <Route path="/cashier" element={<Cashier />} />
               </Route>
-              <Route element={<AuthRoute role="MANAGER" />}>
+              <Route element={<AuthRoute role="MANAGER" setRedirectRoute={setRedirectRoute} />}>
                 <Route path="/manager/*">
                   <Route index element={<Navigate to="unassigned-tickets"/>} />
                   <Route path="unassigned-tickets" element={<UnassignedTickets />} />
-                  <Route path="users" element={<Users />} />
-                  <Route path="create-user" element={<UserForm />} />
-                  <Route path="edit-user/:email" element={<UserForm />} />
+                  <Route path="users" element={<Workers />} />
+                  {/*<Route path="create-user" element={<UserForm />} />
+                  <Route path="edit-user/:email" element={<UserForm />} />*/}
                   <Route path="assign-ticket/:ticketId" element={<AssignTicket />} />
                 </Route>
               </Route>

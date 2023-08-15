@@ -72,24 +72,14 @@ const getAuthHeader = () => {
   return { Authorization: `Bearer ${localStorage.getItem("accessToken")}` };
 };
 
+const axiosInstance = axios;
+
 async function logIn(username, password) {
   // call: POST /api/sessions
   try {
     let response = await axios.post(new URL("login", APIURL), {
-      username: username,
+      email: username,
       password: password,
-    });
-    return response.data;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function getProducts() {
-  // call: GET /api/products
-  try {
-    let response = await axios.get(new URL("products", APIURL), {
-      headers: getAuthHeader(),
     });
     return response.data;
   } catch (err) {
@@ -109,12 +99,15 @@ async function getProductByEan(ean) {
   }
 }
 
-async function getProfileByEmail(email) {
+async function getCustomerByEmail(email) {
   // call: GET /api/profiles/:email
   try {
-    let response = await axios.get(new URL("profiles/" + email, APIURL), {
-      headers: getAuthHeader(),
-    });
+    let response = await axios.get(
+      new URL("cashier/profiles/" + email, APIURL),
+      {
+        headers: getAuthHeader(),
+      }
+    );
     return response.data;
   } catch (err) {
     throw err;
@@ -150,7 +143,34 @@ async function createProfile(profile) {
 async function updateProfile(profile, email) {
   // call: PUT /api/profiles/:email
   try {
-    let response = await axios.put("API/profiles/" + email, profile);
+    let response = await axios.put("profiles/" + email, profile);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getWorkersProfiles() {
+  // call: GET /api/manager/profiles
+  try {
+    let response = await axios.get(new URL("manager/profiles", APIURL), {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getWorkerByEmail(email) {
+  // call: GET /api/profiles/:email
+  try {
+    let response = await axios.get(
+      new URL("manager/profiles/" + email, APIURL),
+      {
+        headers: getAuthHeader(),
+      }
+    );
     return response.data;
   } catch (err) {
     throw err;
@@ -158,9 +178,9 @@ async function updateProfile(profile, email) {
 }
 
 const API = {
-  getProducts,
+  getWorkersProfiles,
   getProductByEan,
-  getProfileByEmail,
+  getProfileByEmail: getCustomerByEmail,
   createProfile,
   createWarranty,
   updateProfile,

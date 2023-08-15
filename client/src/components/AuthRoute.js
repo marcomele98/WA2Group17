@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useUser } from "../presenters/User";
+import { useUser } from "../presenters/LoggedUser";
 
 export const AuthRoute = ({role, setRedirectRoute}) => {
   const {user} = useUser();

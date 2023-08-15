@@ -93,7 +93,7 @@ public class ProfileRepositoryImpl : ProfileRepository {
                 email = it.email,
                 name = it.firstName,
                 surname = it.lastName,
-                skills = it.attributes["skills"]?.map { ProblemType.valueOf(it) } ?: emptyList(),
+                skills = it.attributes?.getOrDefault("skills", listOf())?.map { ProblemType.valueOf(it) } ?: emptyList(),
                 role = role
             )
         }

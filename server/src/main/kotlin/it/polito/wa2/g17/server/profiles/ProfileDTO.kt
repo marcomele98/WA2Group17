@@ -16,9 +16,11 @@ data class ProfileDTO(
     @field:NotBlank(message = "Surname field is required")
     val surname: String,
 
+    val role: String,
+
     val skills: List<ProblemType> = emptyList()
 )
 
 fun Profile.toDTO(): ProfileDTO {
-    return ProfileDTO(email, name, surname, skills)
+    return ProfileDTO(email, name, surname, role!!, skills)
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Nav, Navbar } from "react-bootstrap";
-import { useUser } from "../presenters/User";
+import { useUser } from "../presenters/LoggedUser";
 
 function NavigationBar() {
   const navigate = useNavigate();

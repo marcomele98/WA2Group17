@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Button, Row } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import { useUser } from "../presenters/User";
+import { useUser } from "../presenters/LoggedUser";
 import "../style/Login.css";
 import { useNavigate } from "react-router-dom";
 

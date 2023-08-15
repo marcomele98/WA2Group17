@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { InputGroup, FormControl, Button, Col, Form } from "react-bootstrap";
 
 //Voelssi usare questo componente in un form capisco se passare value e set value o no
-export const SearchBar = ({ placeholder, buttonText, onSearch, className, size }) => {
+export const SearchBar = ({ placeholder, buttonText, onSearch, className, size, ...props }) => {
   const [value, setValue] = useState("");
   return (
     <Form
@@ -21,6 +21,7 @@ export const SearchBar = ({ placeholder, buttonText, onSearch, className, size }
             onChange={(ev) => setValue(ev.target.value)}
             value={value}
             className="mr-sm-2"
+            {...props}
           />
           <Button variant="outline-success" type="submit">
             {buttonText ? buttonText : "Search"}

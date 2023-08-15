@@ -81,7 +81,7 @@ export const useCashierVM = () => {
     dispatch({ type: "RESET" });
   };
 
-  const createWarranty = () => {
+  const save = () => {
     try {
       API.createWarranty({
         productEan: state.product.ean,
@@ -97,7 +97,7 @@ export const useCashierVM = () => {
 
   return {
     ...state,
-    createWarranty,
+    createWarranty: save,
     setProduct,
     removeProduct,
     setUser,

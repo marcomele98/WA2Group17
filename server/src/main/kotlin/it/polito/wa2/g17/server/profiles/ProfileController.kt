@@ -33,11 +33,13 @@ class ManagerProfileController(private val profileService: ProfileService) {
         return profileService.getWorkers()
     }
 
-    @PostMapping("/create-profile")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createCashier(@Valid @RequestBody request: SignupWorkerDTO, br: BindingResult) {
+    fun createWorker(@Valid @RequestBody request: SignupWorkerDTO, br: BindingResult) {
         profileService.createWorker(request)
     }
+
+
 
     @GetMapping("{email}")
     @ResponseStatus(HttpStatus.OK)

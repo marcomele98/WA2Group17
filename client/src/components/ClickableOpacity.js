@@ -9,7 +9,7 @@ function ClickableOpacity({ onClick, children, style, disabled, className, id, t
   return (
     <Button
       variant="link"
-      className={"text-white shadow-none text-decoration-none "+className}
+      className={"text-success shadow-none text-decoration-none "+className}
       id={id}
       disabled={disabled}
       onClick={onClick}

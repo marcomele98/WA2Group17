@@ -67,7 +67,7 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         val profile = profileRepository
             .findByEmail(email)
             ?: throw ProfileNotFoundException("Profile with email $email not found")
-        if (profile.role != "CUSTOMER") {
+        if (profile.role != "CLIENT") {
             throw ProfileNotFoundException("Profile with email $email not found")
         }
         return profile.toDTO()
