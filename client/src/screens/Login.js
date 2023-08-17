@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Row } from "react-bootstrap";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { useUser } from "../presenters/LoggedUser";
@@ -14,15 +14,15 @@ export function Login({ redirectRoute, setRedirectRoute }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user){
-      return
+    if (!user) {
+      return;
     }
     if (redirectRoute) {
       const route = redirectRoute;
       setRedirectRoute(false);
       navigate(route);
     } else if (user) {
-      navigate("/"+user.role.toLowerCase());
+      navigate("/" + user.role.toLowerCase());
     }
   }, [user]);
 
@@ -61,11 +61,33 @@ export function Login({ redirectRoute, setRedirectRoute }) {
           />
         </Form.Group>
         <br />
-        <Form.Group size="lg">
-          <Button variant="success" size="lg" id="submitLogin" type="submit">
-            Login
-          </Button>
-        </Form.Group>
+        <Row>
+          <Col>
+            <Form.Group size="lg">
+              <Button
+                style={{ width: 100 }}
+                variant="primary"
+                size="lg"
+                id="submitLogin"
+                type="submit"
+              >
+                Login
+              </Button>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group size="lg">
+              <Button
+                style={{ width: 100 }}
+                variant="primary"
+                size="lg"
+                onClick={() => navigate("/signup")}
+              >
+                Signup
+              </Button>
+            </Form.Group>
+          </Col>
+        </Row>
       </Form>
     </div>
   );

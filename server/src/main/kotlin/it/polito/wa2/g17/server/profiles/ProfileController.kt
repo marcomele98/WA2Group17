@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @Validated
@@ -13,13 +14,20 @@ import org.springframework.web.bind.annotation.*
 class SignupController(private val profileService: ProfileService) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun signup(@Valid @RequestBody request: SignupCustomerDTO, br: BindingResult) {
-        profileService.createCustomer(request)
+    fun signup(@Valid @RequestBody request: SignupCustomerDTO, br: BindingResult): ProfileDTO {
+        return profileService.createCustomer(request)
     }
+}
 
-    //TODO: prevedo cambio password? (soprattutto per expert e cashier per cui la sceglie il manager)
-    // potrebbe essere che loro creano i loro profili e poi il manager li approva
-    //TODO: password dimenticata?
+@RestController
+@Validated
+@RequestMapping("/API/reset-password")
+class ResetPasswordController(private val profileService: ProfileService) {
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    fun resetPassword(@Valid @RequestBody request: ResetPasswordDTO, br: BindingResult) {
+        profileService.resetPassword(request.email, request.newPassword, request.oldPassword, request.confirmPassword)
+    }
 }
 
 @RestController
@@ -33,18 +41,32 @@ class ManagerProfileController(private val profileService: ProfileService) {
         return profileService.getWorkers()
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createWorker(@Valid @RequestBody request: SignupWorkerDTO, br: BindingResult) {
-        profileService.createWorker(request)
+    fun createWorker(@Valid @RequestBody request: SignupWorkerDTO, br: BindingResult): ProfileDTO {
+        return profileService.createWorker(request)
     }
 
-
+    @DeleteMapping("{email}")
+    @ResponseStatus(HttpStatus.OK)
+    fun deleteWorker(@PathVariable email: String) {
+        profileService.deleteWorker(email)
+    }
 
     @GetMapping("{email}")
     @ResponseStatus(HttpStatus.OK)
     fun getProfile(@PathVariable email: String): ProfileDTO {
         return profileService.getWorker(email)
+    }
+
+    @PutMapping("{email}")
+    @ResponseStatus(HttpStatus.OK)
+    fun editWorker(
+        @PathVariable email: String,
+        @Valid @RequestBody request: EditWorkerDTO,
+        br: BindingResult
+    ): ProfileDTO {
+        return profileService.editWorker(email, request)
     }
 
 }

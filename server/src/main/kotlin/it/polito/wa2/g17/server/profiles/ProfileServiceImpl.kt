@@ -1,14 +1,14 @@
 package it.polito.wa2.g17.server.profiles
 
-import org.keycloak.OAuth2Constants.*
-import org.springframework.beans.factory.annotation.Autowired
+import it.polito.wa2.g17.server.security.AuthRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 
 @Service
 @Transactional
-class ProfileServiceImpl(private val profileRepository: ProfileRepository) : ProfileService {
+class ProfileServiceImpl(private val profileRepository: ProfileRepository, private val authRepository: AuthRepository) :
+    ProfileService {
     override fun getProfile(email: String): ProfileDTO {
         val profile = profileRepository
             .findByEmail(email)
@@ -17,11 +17,18 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
     }
 
     @Transactional
-    override fun editProfile(email: String, request: EditWorkerDTO): ProfileDTO {
+    override fun editWorker(email: String, request: EditWorkerDTO): ProfileDTO {
 
-        if (profileRepository.findByEmail(email) == null) {
-            throw ProfileNotFoundException("Profile with email $email not found")
+        if(request.role == "CASHIER" && request.skills.isNotEmpty()) {
+            throw InvalidRoleException("Cashier cannot have skills")
         }
+
+        if(request.role == "EXPERT" && request.skills.isEmpty()) {
+            throw InvalidRoleException("Expert must have at least one skill")
+        }
+
+        val profile = profileRepository.findByEmail(email)
+            ?: throw ProfileNotFoundException("Profile with email $email not found")
 
         profileRepository.updateProfile(
             Profile(
@@ -33,15 +40,40 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
                 password = request.password
             )
         )
+
+        try {
+            profileRepository.removeRole(email, profile.role!!)
+            profileRepository.addRole(email, request.role)
+        } catch (e: Exception) {
+            profileRepository.updateProfile(profile)
+            throw e
+        }
+
+
         return profileRepository.findByEmail(email)!!.toDTO()
     }
 
     override fun createCustomer(request: SignupCustomerDTO): ProfileDTO {
+        if (profileRepository.findByEmail(request.email) != null) {
+            throw ProfileAlreadyExistsException("Profile with email ${request.email} already exists")
+        }
         profileRepository.createProfile(request.toEntity())
+        try {
+            profileRepository.addRole(request.email, "CLIENT")
+        } catch (e: Exception) {
+            profileRepository.deleteProfile(request.email)
+            throw e
+        }
+
         return profileRepository.findByEmail(request.email)!!.toDTO()
+
     }
 
     override fun createWorker(request: SignupWorkerDTO): ProfileDTO {
+
+        if (profileRepository.findByEmail(request.email) != null) {
+            throw ProfileAlreadyExistsException("Profile with email ${request.email} already exists")
+        }
 
         if (request.role == "CASHIER" && request.skills.isNotEmpty()) {
             throw InvalidRoleException("Cashier cannot have skills")
@@ -50,7 +82,23 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
             throw InvalidRoleException("Expert must have at least one skill")
         }
         profileRepository.createProfile(request.toEntity())
+        try {
+            profileRepository.addRole(request.email, request.role)
+        } catch (e: Exception) {
+            profileRepository.deleteProfile(request.email)
+            throw e
+        }
         return profileRepository.findByEmail(request.email)!!.toDTO()
+    }
+
+    override fun deleteWorker(email: String) {
+        val profile = profileRepository
+            .findByEmail(email)
+            ?: throw ProfileNotFoundException("Profile with email $email not found")
+        if (profile.role != "EXPERT" && profile.role != "CASHIER") {
+            throw ProfileNotFoundException("Profile with email $email not found with role EXPERT or CASHIER")
+        }
+        profileRepository.deleteProfile(email)
     }
 
     override fun getWorker(email: String): ProfileDTO {
@@ -78,6 +126,18 @@ class ProfileServiceImpl(private val profileRepository: ProfileRepository) : Pro
         val cashiers = profileRepository.findByRole("CASHIER")
         return (experts + cashiers).map { it.toDTO() }
     }
+
+
+    override fun resetPassword(email: String, newPassword: String, oldPassword: String, confirmPassword: String) {
+        authRepository.login(email, oldPassword)
+        if(newPassword != confirmPassword){
+            throw Exception("Passwords do not match")
+        }
+        profileRepository.resetPassword(email, newPassword, oldPassword, confirmPassword)
+        profileRepository.logout(email)
+    }
+
+
 
 
 }

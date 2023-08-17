@@ -16,10 +16,14 @@ axios.interceptors.response.use(
     return response;
   },
   async function (error) {
-    const originalRequest = error.config;
+    
+    if(!error){
+      return Promise.reject(error);
+    }
+    const originalRequest = error?.config;
     let refreshTokenError, res;
     if (
-      error.response.status === 401 &&
+      error?.response?.status === 401 &&
       !originalRequest._retry &&
       originalRequest?.url?.pathname !== "/API/refresh" &&
       originalRequest?.url?.pathname !== "/API/login"
@@ -67,6 +71,7 @@ axios.interceptors.response.use(
     return Promise.reject(error.response);
   }
 );
+
 
 const getAuthHeader = () => {
   return { Authorization: `Bearer ${localStorage.getItem("accessToken")}` };
@@ -133,17 +138,7 @@ async function createWarranty(warranty) {
 async function createProfile(profile) {
   // call: POST /api/profiles
   try {
-    let response = await axios.post("profiles", profile);
-    return response.data;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function updateProfile(profile, email) {
-  // call: PUT /api/profiles/:email
-  try {
-    let response = await axios.put("profiles/" + email, profile);
+    let response = await axios.post(new URL("signup", APIURL), profile);
     return response.data;
   } catch (err) {
     throw err;
@@ -177,14 +172,62 @@ async function getWorkerByEmail(email) {
   }
 }
 
+
+export async function createWorker(user){
+  try {
+    let response = await axios.post(new URL("manager/profiles", APIURL), user, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function updateWorker(email, user){
+  try {
+    let response = await axios.put(new URL("manager/profiles/" + email, APIURL), user, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export async function deleteWorker(email){
+  try {
+    let response = await axios.delete(new URL("manager/profiles/" + email, APIURL), {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function signup(user){
+  try {
+    let response = await axios.post(new URL("signup", APIURL), user);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
 const API = {
   getWorkersProfiles,
   getProductByEan,
-  getProfileByEmail: getCustomerByEmail,
+  getCustomerByEmail,
   createProfile,
   createWarranty,
-  updateProfile,
   logIn,
+  getWorkerByEmail,
+  createWorker,
+  updateWorker,
+  deleteWorker,
+  signup
 };
 
 export default API;

@@ -15,7 +15,9 @@ import { Cashier } from "./screens/Cashier";
 import { UnassignedTickets } from "./screens/manager/UnassignedTickets";
 import { Workers } from "./screens/manager/Workers";
 import { AssignTicket } from "./screens/manager/AssignTicket";
-
+import { CreateWorker } from "./screens/manager/CreateWorker";
+import { EditWorker } from "./screens/manager/EditWorker";
+import { Signup } from "./screens/Signup";
 
 function App() {
   const [redirectRoute, setRedirectRoute] = useState(false);
@@ -52,17 +54,31 @@ function App() {
               >
                 <Route path="/cashier" element={<Cashier />} />
               </Route>
-              <Route element={<AuthRoute role="MANAGER" setRedirectRoute={setRedirectRoute} />}>
+              <Route
+                element={
+                  <AuthRoute
+                    role="MANAGER"
+                    setRedirectRoute={setRedirectRoute}
+                  />
+                }
+              >
                 <Route path="/manager/*">
-                  <Route index element={<Navigate to="unassigned-tickets"/>} />
-                  <Route path="unassigned-tickets" element={<UnassignedTickets />} />
+                  <Route index element={<Navigate to="unassigned-tickets" />} />
+                  <Route
+                    path="unassigned-tickets"
+                    element={<UnassignedTickets />}
+                  />
                   <Route path="users" element={<Workers />} />
-                  {/*<Route path="create-user" element={<UserForm />} />
-                  <Route path="edit-user/:email" element={<UserForm />} />*/}
-                  <Route path="assign-ticket/:ticketId" element={<AssignTicket />} />
+                  <Route path="create-user" element={<CreateWorker />} />
+                  <Route path="edit-user/:email" element={<EditWorker />} />
+                  <Route
+                    path="assign-ticket/:ticketId"
+                    element={<AssignTicket />}
+                  />
                 </Route>
               </Route>
-              <Route path="/*" element={<Navigate to="/login" />} />{" "}
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/*" element={<Navigate to="/login" />} />
             </Routes>
           </Row>
         </div>

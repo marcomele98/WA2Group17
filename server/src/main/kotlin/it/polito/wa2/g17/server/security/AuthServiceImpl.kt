@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate
 
 
 @Service
-class AuthServiceImpl: AuthService {
+class AuthServiceImpl(val authRepository: AuthRepository) : AuthService {
 
     //TODO: interrogo keycloak da un repository com per profile
 
@@ -23,48 +23,30 @@ class AuthServiceImpl: AuthService {
     var restTemplate: RestTemplate = RestTemplate()
     override fun login(authRequest: AuthenticationRequestDTO): AuthenticationResponseDTO {
 
-        val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
-        formData.add("grant_type", "password")
-        formData.add("client_id", "wa2g17-keycloak-client")
-        formData.add("username", authRequest.email)
-        formData.add("password", authRequest.password)
-        val headers = HttpHeaders()
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
+        val responseEntity: ResponseEntity<AuthenticationResponseKeyClockDTO> =
+            authRepository.login(authRequest.email, authRequest.password)
 
-        val requestEntity = HttpEntity(formData, headers)
-
-        val responseEntity: ResponseEntity<AuthenticationResponseKeyClockDTO> = restTemplate.exchange(
-            url, HttpMethod.POST, requestEntity,
-            AuthenticationResponseKeyClockDTO::class.java
-        )
-
-        if (!responseEntity.statusCode.is2xxSuccessful) {
+        if (responseEntity.statusCode == HttpStatus.UNAUTHORIZED) {
+            throw UnauthorizedException("Error: " + responseEntity.statusCode)
+        }
+        if(!responseEntity.statusCode.is2xxSuccessful) {
             println("Error: " + responseEntity.statusCode)
             throw Exception("Error: " + responseEntity.statusCode)
         }
+
         return AuthenticationResponseDTO(responseEntity.body!!.access_token, responseEntity.body!!.refresh_token)
     }
 
     override fun refresh(refreshToken: String): AuthenticationResponseDTO {
 
-        val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
-        formData.add("grant_type", "refresh_token")
-        formData.add("client_id", "wa2g17-keycloak-client")
-        formData.add("refresh_token", refreshToken)
-        val headers = HttpHeaders()
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
+        val responseEntity: ResponseEntity<AuthenticationResponseKeyClockDTO> =
+            authRepository.refresh(refreshToken)
 
-        val requestEntity = HttpEntity(formData, headers)
-
-        val responseEntity: ResponseEntity<AuthenticationResponseKeyClockDTO> = restTemplate.exchange(
-            url, HttpMethod.POST, requestEntity,
-            AuthenticationResponseKeyClockDTO::class.java
-        )
-
-        if (!responseEntity.statusCode.is2xxSuccessful) {
+        if(!responseEntity.statusCode.is2xxSuccessful) {
             println("Error: " + responseEntity.statusCode)
             throw Exception("Error: " + responseEntity.statusCode)
         }
+
         return AuthenticationResponseDTO(responseEntity.body!!.access_token, responseEntity.body!!.refresh_token)
     }
 

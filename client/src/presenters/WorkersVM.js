@@ -16,9 +16,21 @@ export const useWorkersVM = (onError) => {
     }
   };
 
+  const deleteWorker = async (id) => {
+    try {
+      await API.deleteWorker(id);
+      set();
+    } catch (err) {
+      switch (err.status) {
+        default:
+          throw "Error while deleting user";
+      }
+    }
+  };
+
   useEffect(() => {
     set();
   }, []);
 
-  return { workers };
+  return { workers, deleteWorker };
 };

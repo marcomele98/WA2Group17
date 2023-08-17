@@ -5,10 +5,17 @@ import "../../style/App.css";
 import { UserCard } from "../../components/UserCard";
 import { toast } from "react-toastify";
 import { ClickableOpacity } from "../../components/ClickableOpacity";
-import { PlusSquareFill } from "react-bootstrap-icons";
+import { PlusSquareFill, Trash, Pencil } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom";
+import { errorToaster } from "../../utils/Error";
+import { ConfirmDialog } from "../../components/ConfirmationModal";
 
 export const Workers = () => {
   const [searchValue, setSearchValue] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [workerToDelete, setWorkerToDelete] = useState(null);
+
+  const navigate = useNavigate();
   const workersVM = useWorkersVM((err) =>
     toast.error(err, { position: "top-center" }, { toastId: 10 })
   );
@@ -17,6 +24,16 @@ export const Workers = () => {
   }, [workersVM.workers]);
   return (
     <>
+      <ConfirmDialog
+        title="Delete worker"
+        text={`Are you sure you want to delete ${workerToDelete?.email} profile?`}
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={errorToaster(() => {
+          workersVM.deleteWorker(workerToDelete?.email);
+          setShowModal(false);
+        })}
+      />
       <Row style={{ margin: 0, padding: 0, marginBottom: 20 }}>
         <Col style={{ width: "100%" }}>
           <Form.Control
@@ -28,7 +45,11 @@ export const Workers = () => {
         </Col>
         <Col xs="auto" sm="auto" md="auto" lg="auto" xl="auto" xxl="auto">
           <ClickableOpacity>
-            <PlusSquareFill size={47} className="plus" fill="#198753" />
+            <PlusSquareFill
+              size={47}
+              className="text-primary"
+              onClick={() => navigate("/manager/create-user")}
+            />
           </ClickableOpacity>
         </Col>
       </Row>
@@ -47,9 +68,24 @@ export const Workers = () => {
             <UserCard
               user={worker}
               ActionElement={
-                <ClickableOpacity style={{ fontSize: 20 }}>
-                  Edit
-                </ClickableOpacity>
+                <div>
+                  <ClickableOpacity
+                    style={{ marginRight: 5 }}
+                    onClick={() =>
+                      navigate("/manager/edit-user/" + worker.email)
+                    }
+                  >
+                    <Pencil size={25} className="text-primary" />
+                  </ClickableOpacity>
+                  <ClickableOpacity
+                    onClick={() => {
+                      setWorkerToDelete(worker);
+                      setShowModal(true);
+                    }}
+                  >
+                    <Trash size={30} className="text-danger" />
+                  </ClickableOpacity>
+                </div>
               }
               key={worker.email}
               withRole={true}

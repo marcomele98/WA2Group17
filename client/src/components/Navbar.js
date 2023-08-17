@@ -20,13 +20,13 @@ function NavigationBar() {
       id="my-navbar"
       collapseOnSelect
       expand="lg"
-      bg="success"
+      bg="primary"
       variant="dark"
     >
       <Navbar.Brand className="navbar-brand">WA2</Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
-        <Nav variant="success" className="me-auto">
+        <Nav variant="primary" className="me-auto">
           {
             {
               MANAGER: (
@@ -53,7 +53,7 @@ function NavigationBar() {
             }[user?.role]
           }
         </Nav>
-        <Nav variant="success">
+        <Nav variant="primary">
           {user ? (
             <Nav.Link
               active

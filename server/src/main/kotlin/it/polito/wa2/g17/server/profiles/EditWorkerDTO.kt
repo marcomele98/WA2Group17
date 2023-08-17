@@ -17,10 +17,10 @@ data class EditWorkerDTO(
     @field:Pattern(regexp = "^(EXPERT|CASHIER)$", message = "Role must be either EXPERT or CASHIER")
     val role: String,
 
-    @field:NotBlank(message = "Password field is required")
+    //@field:NotBlank(message = "Password field is required")
     @field:Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
     @field:Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).*$", message = "Password must contain at least one lowercase letter, one uppercase letter, one digit and one special character")
-    val password: String,
+    val password: String?,
     val skills: List<ProblemType> = emptyList()
 )
 

@@ -20,7 +20,7 @@ function ProfileForm({ setIsLoading }) {
         const getProfileFromServer = async () => {
             try {
                 setIsLoading(true);
-                const res = await API.getProfileByEmail(userToEditEmail);
+                const res = await API.getCustomerByEmail(userToEditEmail);
                 setEmail(res.email);
                 setName(res.name);
                 setSurname(res.surname);
@@ -84,7 +84,7 @@ function ProfileForm({ setIsLoading }) {
                     <Form.Control type="text" value={surname} onChange={ev => setSurname(ev.target.value)} placeholder="Enter Surname" required />
                 </Form.Group>
 
-                <Button variant="success" type="submit">
+                <Button variant="primary" type="submit">
                     {userToEditEmail ? "Update" : "Create"}
                 </Button>
             </Form>

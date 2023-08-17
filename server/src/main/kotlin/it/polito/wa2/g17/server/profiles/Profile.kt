@@ -18,7 +18,6 @@ fun Profile.toUserRepresentation(): UserRepresentation{
     user.email = this.email
     user.firstName = this.name
     user.lastName = this.surname
-    user.realmRoles = listOf("APP_" + this.role)
     user.isEmailVerified = true
     user.isEnabled = true
     user.attributes = mapOf("skills" to this.skills.map { it.name })

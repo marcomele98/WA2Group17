@@ -7,7 +7,7 @@ import { errorToaster } from "../utils/Error";
 import { UserCard } from "../components/UserCard";
 import { ClickableOpacity } from "../components/ClickableOpacity";
 import { XLg } from "react-bootstrap-icons";
-import { Product, ProductCard } from "../components/ProductCard";
+import { ProductCard } from "../components/ProductCard";
 import "../style/App.css";
 import { toast } from "react-toastify";
 
@@ -16,9 +16,7 @@ function Cashier() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!cashierVM.user) toast.error("You must select a user");
-    else if (!cashierVM.product) toast.error("You must select a product");
-    else if (!cashierVM.duration) toast.error("You must insert a duration");
+    if (!cashierVM.duration) toast.error("You must insert a duration");
     else if (!cashierVM.type) toast.error("You must select a typology");
     else {
       try {
@@ -113,7 +111,7 @@ function Cashier() {
                 </Row>
                 <Button
                   className="mt-4"
-                  variant="success"
+                  variant="primary"
                   size="lg"
                   id="submitLogin"
                   type="submit"

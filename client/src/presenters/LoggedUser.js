@@ -36,10 +36,16 @@ export const UserProvider = ({ children }) => {
   const [user, dispatch] = useReducer(reducer, null);
 
   useEffect(() => {
-    let accessToken = localStorage.getItem("accessToken");
-    if (accessToken && !user) {
+    let refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken && !user) {
       try {
-        dispatch({ type: CREATE });
+        let refreshInfo = jwtDecode(refreshToken);
+        if (refreshInfo.exp * 1000 > Date.now()) {
+          dispatch({ type: CREATE });
+        } else {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+        }
       } catch (err) {
         console.log(err);
       }

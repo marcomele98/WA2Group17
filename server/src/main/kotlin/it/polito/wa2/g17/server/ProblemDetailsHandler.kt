@@ -2,9 +2,8 @@ package it.polito.wa2.g17.server
 
 import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g17.server.products.ProductNotFoundException
-import it.polito.wa2.g17.server.profiles.CannotUpdateEmailException
-import it.polito.wa2.g17.server.profiles.DuplicateProfileException
-import it.polito.wa2.g17.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g17.server.profiles.*
+import it.polito.wa2.g17.server.security.UnauthorizedException
 import it.polito.wa2.g17.server.ticketing.tickets.*
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.Logger
@@ -20,6 +19,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     private val log: Logger = LoggerFactory.getLogger(ProblemDetailsHandler::class.java)
+
+    @ExceptionHandler(ProfileAlreadyExistsException::class)
+    fun handleProfileAlreadyExists(e: ProfileAlreadyExistsException): ProblemDetail {
+        log.error(e.toString())
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+    }
+
+    @ExceptionHandler(InvalidRoleException::class)
+    fun handleInvalidRole(e: InvalidRoleException): ProblemDetail {
+        log.error(e.toString())
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message!!)
+    }
+
+    @ExceptionHandler(UnauthorizedException::class)
+    fun handleUnauthorized(e: UnauthorizedException): ProblemDetail {
+        log.error(e.toString())
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.message!!)
+    }
 
     @ExceptionHandler(ProductNotFoundException::class)
     fun handleProductNotFound(e: ProductNotFoundException): ProblemDetail {

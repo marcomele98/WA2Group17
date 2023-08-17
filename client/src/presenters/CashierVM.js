@@ -52,7 +52,7 @@ export const useCashierVM = () => {
   const setUser = async (email) => {
     try {
       console.log(1);
-      const user = await API.getProfileByEmail(email);
+      const user = await API.getCustomerByEmail(email);
       dispatch({ type: "SET_USER", payload: user });
     } catch (err) {
       switch(err.status){
