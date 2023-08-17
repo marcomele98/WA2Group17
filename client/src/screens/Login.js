@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useUser } from "../presenters/LoggedUser";
 import "../style/Login.css";
 import { useNavigate } from "react-router-dom";
+import {errorToaster} from "../utils/Error";
 
 export function Login({ redirectRoute, setRedirectRoute }) {
   const [username, setUsername] = useState("");
@@ -32,7 +33,7 @@ export function Login({ redirectRoute, setRedirectRoute }) {
     try {
       await logIn(username, password);
     } catch (err) {
-      toast.error(err.message);
+      throw "Wrong username or password";
     }
   };
 
@@ -42,7 +43,7 @@ export function Login({ redirectRoute, setRedirectRoute }) {
       <Row className="justify-content-center text-center">
         <h2> LOGIN </h2>
       </Row>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={errorToaster(handleSubmit)}>
         <Form.Group controlId="username">
           <Form.Label>Email</Form.Label>
           <Form.Control

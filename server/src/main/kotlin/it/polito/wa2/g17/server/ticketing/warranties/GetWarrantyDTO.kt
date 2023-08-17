@@ -10,6 +10,7 @@ import java.util.*
 
 data class GetWarrantyDTO(
     val id: Long,
+    val startDate: String,
     val endDate: String,
     val product: ProductDTO,
     val valid: Boolean,
@@ -21,6 +22,7 @@ data class GetWarrantyDTO(
 fun Warranty.toDTO(): GetWarrantyDTO {
     val valid = endDate > Date()
     return GetWarrantyDTO(id!!,
+        startDate.toString(),
         endDate.toString(),
         product.toDTO(),
         valid,

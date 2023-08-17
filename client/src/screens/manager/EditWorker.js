@@ -98,7 +98,7 @@ export const EditWorker = () => {
         />
       )}
 
-      {editWorkerVM.role == "EXPERT" && (
+      {editWorkerVM.role === "EXPERT" && (
         <SkillsCheckBoxes
           skills={editWorkerVM.skills}
           addSkill={editWorkerVM.addSkill}
