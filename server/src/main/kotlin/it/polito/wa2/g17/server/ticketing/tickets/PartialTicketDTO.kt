@@ -6,6 +6,7 @@ import it.polito.wa2.g17.server.ticketing.warranties.toDTO
 
 data class PartialTicketDTO(
     val id: Long,
+    val title: String,
     val expertEmail: String?,
     val problemType: ProblemType,
     val status: Status,
@@ -16,6 +17,7 @@ data class PartialTicketDTO(
 fun Ticket.toPartialDTO(): PartialTicketDTO {
     return PartialTicketDTO(
         id!!,
+        title,
         expertEmail,
         problemType,
         status,
@@ -26,6 +28,7 @@ fun Ticket.toPartialDTO(): PartialTicketDTO {
 
 data class PartialTicketWithoutWarrantyDTO(
     val id: Long,
+    val title: String,
     val expertEmail: String?,
     val problemType: ProblemType,
     val status: Status,
@@ -37,6 +40,7 @@ data class PartialTicketWithoutWarrantyDTO(
 fun Ticket.toPartialWithoutWarrantyDTO(): PartialTicketWithoutWarrantyDTO {
     return PartialTicketWithoutWarrantyDTO(
         id!!,
+        title,
         expertEmail,
         problemType,
         status,

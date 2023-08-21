@@ -9,7 +9,7 @@ import {
 } from "../components/UserForm";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { errorToaster } from "../utils/Error";
+import {errorToaster, successToast} from "../utils/Error";
 
 export const Signup = () => {
   const signupVM = useSignupVM();
@@ -22,7 +22,7 @@ export const Signup = () => {
     setValidated(true);
     if (signupVM.password !== confirmPassword) throw "Passwords do not match";
     await signupVM.save();
-    toast.success("Account created successfully", { position: "top-center" });
+    successToast("Account created successfully");
     navigate("/customer");
   });
 

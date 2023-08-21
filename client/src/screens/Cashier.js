@@ -3,7 +3,7 @@ import { useCashierVM } from "../presenters/CashierVM";
 import { Button, Col, Form } from "react-bootstrap";
 import { SearchBar } from "../components/SearchBar";
 import { Row } from "react-bootstrap";
-import { errorToaster } from "../utils/Error";
+import {errorToast, errorToaster, successToast} from "../utils/Error";
 import { UserCard } from "../components/UserCard";
 import { ClickableOpacity } from "../components/ClickableOpacity";
 import { XLg } from "react-bootstrap-icons";
@@ -16,15 +16,15 @@ function Cashier() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!cashierVM.duration) toast.error("You must insert a duration");
-    else if (!cashierVM.type) toast.error("You must select a typology");
+    if (!cashierVM.duration) errorToast("You must insert a duration");
+    else if (!cashierVM.type) errorToast("You must select a typology");
     else {
       try {
         await cashierVM.createWarranty();
         cashierVM.reset();
-        toast.success("Warranty created");
+        successToast("Warranty created");
       } catch (err) {
-        toast.error(err.message);
+        errorToast(err.message);
       }
     }
   };

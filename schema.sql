@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS public.warranties
 CREATE TABLE IF NOT EXISTS public.tickets
 (
     id             int8         NOT NULL,
+    title          varchar(255) NOT NULL,
     "version"      int8         NOT NULL,
     priority_level varchar(255) NULL,
     problem_type   varchar(255) NULL,

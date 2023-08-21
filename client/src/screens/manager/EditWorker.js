@@ -8,7 +8,7 @@ import {
   SkillsCheckBoxes,
 } from "../../components/UserForm";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { errorToaster } from "../../utils/Error";
+import {errorToaster, successToast} from "../../utils/Error";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -33,7 +33,7 @@ export const EditWorker = () => {
     )
       throw "Password must contain at least one lowercase letter, one uppercase letter, one number and one special character";
     await editWorkerVM.save();
-    toast.success("User edited successfully", { position: "top-center" });
+    successToast("User edited successfully");
     navigate("/manager/users");
   });
 

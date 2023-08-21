@@ -8,8 +8,7 @@ import {
   SkillsCheckBoxes,
 } from "../../components/UserForm";
 import { useNavigate } from "react-router-dom";
-import { errorToaster } from "../../utils/Error";
-import { toast } from "react-toastify";
+import {errorToaster, successToast} from "../../utils/Error";
 
 export const CreateWorker = () => {
   const createWorkerVM = useCreateWorkerVM();
@@ -23,7 +22,7 @@ export const CreateWorker = () => {
     if (createWorkerVM.password !== confirmPassword)
       throw "Passwords do not match";
     await createWorkerVM.save();
-    toast.success("User created successfully", { position: "top-center" });
+    successToast("User created successfully");
     navigate("/manager/users");
   });
 

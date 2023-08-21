@@ -5,6 +5,7 @@ import it.polito.wa2.g17.server.products.ProductNotFoundException
 import it.polito.wa2.g17.server.profiles.*
 import it.polito.wa2.g17.server.security.UnauthorizedException
 import it.polito.wa2.g17.server.ticketing.tickets.*
+import it.polito.wa2.g17.server.ticketing.warranties.WarrantyNotFoundException
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,6 +20,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     private val log: Logger = LoggerFactory.getLogger(ProblemDetailsHandler::class.java)
+
+    @ExceptionHandler(WarrantyNotFoundException::class)
+    fun handleWarrantyNotFound(e: WarrantyNotFoundException): ProblemDetail {
+        log.error(e.toString())
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+    }
 
     @ExceptionHandler(ProfileAlreadyExistsException::class)
     fun handleProfileAlreadyExists(e: ProfileAlreadyExistsException): ProblemDetail {

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
-import { toast } from 'react-toastify';
+import React, {useState} from 'react';
+import {Form, Button} from 'react-bootstrap';
+import {toast} from 'react-toastify';
 import API from '../API';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import {useParams, useNavigate} from 'react-router-dom';
+import {useEffect} from 'react';
+import {errorToast, successToast} from "../utils/Error";
 
-function ProfileForm({ setIsLoading }) {
+function ProfileForm({setIsLoading}) {
 
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
@@ -13,7 +14,7 @@ function ProfileForm({ setIsLoading }) {
 
     const navigate = useNavigate();
 
-    const { userToEditEmail } = useParams();
+    const {userToEditEmail} = useParams();
 
 
     useEffect(() => {
@@ -30,14 +31,13 @@ function ProfileForm({ setIsLoading }) {
                 if (err.status == 404)
                     navigate("/profiles")
                 else
-                    toast.error("Server error", { position: "top-center" }, { toastId: 4 });
+                    errorToast("Server error");
             }
         };
         if (userToEditEmail) {
             getProfileFromServer()
         }
     }, [userToEditEmail])
-
 
 
     const handleSubmit = async (event) => {
@@ -55,12 +55,13 @@ function ProfileForm({ setIsLoading }) {
                 :
                 await API.createProfile(newProfile)
             setIsLoading(false);
-            toast.success(userToEditEmail ? "Profile updated succesfully." : "Profile created successfully.", { position: "top-center" }, { toastId: 11 });
+            successToast(userToEditEmail ? "Profile updated succesfully." : "Profile created successfully.");
             navigate("/profiles")
         } catch (err) {
             setIsLoading(false);
-            toast.error(err.detail, { position: "top-center" }, { toastId: 4 });
-        };
+            errorToast(err.detail);
+        }
+        ;
     }
 
     return (
@@ -71,17 +72,20 @@ function ProfileForm({ setIsLoading }) {
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" value={email} onChange={ev => setEmail(ev.target.value)} placeholder="Enter email" readOnly={userToEditEmail} required />
+                    <Form.Control type="email" value={email} onChange={ev => setEmail(ev.target.value)}
+                                  placeholder="Enter email" readOnly={userToEditEmail} required/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" value={name} onChange={ev => setName(ev.target.value)} placeholder="Enter Name" required />
+                    <Form.Control type="text" value={name} onChange={ev => setName(ev.target.value)}
+                                  placeholder="Enter Name" required/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="">
                     <Form.Label>Surname</Form.Label>
-                    <Form.Control type="text" value={surname} onChange={ev => setSurname(ev.target.value)} placeholder="Enter Surname" required />
+                    <Form.Control type="text" value={surname} onChange={ev => setSurname(ev.target.value)}
+                                  placeholder="Enter Surname" required/>
                 </Form.Group>
 
                 <Button variant="primary" type="submit">
@@ -92,4 +96,4 @@ function ProfileForm({ setIsLoading }) {
     );
 }
 
-export { ProfileForm };
+export {ProfileForm};

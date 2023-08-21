@@ -16,6 +16,8 @@ class Ticket(
     @Enumerated(EnumType.STRING)
     var problemType: ProblemType,
 
+    var title: String,
+
     @ManyToOne
     @JoinColumn(name = "warranty_id", referencedColumnName = "id")
     val warranty: Warranty,

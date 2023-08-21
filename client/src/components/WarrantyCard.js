@@ -6,11 +6,11 @@ export const WarrantyCard = ({warranty, ActionElement}) => {
         <div key={warranty.id}>
             <Card className="card">
                 <Card.Header className="d-flex justify-content-between align-items-center">
-                    {`Warranty# ${warranty.id}`}
+                    {warranty.product.name}
                     {ActionElement}
                 </Card.Header>
                 <Card.Body>
-                    <Card.Text>{`Product: ${warranty.product.name}`}</Card.Text>
+                    <Card.Text>{`Type: ${warranty.typology}`}</Card.Text>
                     <Card.Text>{`Product brand: ${warranty.product.brand}`}</Card.Text>
                     <Card.Text>{`Creation date: ${warranty.startDate}`}</Card.Text>
                     <Card.Text>{`Expiration date: ${warranty.endDate}`}</Card.Text>

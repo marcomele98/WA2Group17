@@ -9,6 +9,10 @@ import jakarta.validation.constraints.Pattern
 
 data class CreateTicketDTO(
 
+    @field:Pattern(regexp = "^[a-zA-Z0-9 ]{1,50}$")
+    val title: String,
+
+    @field:Min(1)
     val warrantyId: Long,
 
     val initialMessage: MessageDTO,

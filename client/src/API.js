@@ -228,6 +228,58 @@ async function getWarranties() {
     }
 }
 
+async function getWarranty(id) {
+    // call: GET /api/warranties/:id
+    try {
+        let response = await axios.get(new URL("customer/warranties/" + id, APIURL), {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function createTicket(ticket) {
+    // call: POST /api/tickets
+    try {
+        let response = await axios.post(new URL("customer/tickets", APIURL), ticket, {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function uploadAttachment(attachment) {
+    try {
+        const formData = new FormData();
+        formData.append('file', attachment);
+        const response = await axios.post(new URL("attachments/upload", APIURL), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                ...getAuthHeader()
+            },
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function downloadAttachment(attachment) {
+    try {
+        const response = await axios.get('attachments/download', {
+            headers: {
+                ...getAuthHeader()
+            },
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
 
 const API = {
     getWorkersProfiles,
@@ -241,7 +293,10 @@ const API = {
     updateWorker,
     deleteWorker,
     signup,
-    getWarranties
+    getWarranties,
+    getWarranty,
+    createTicket,
+    uploadAttachment,
 };
 
 export default API;

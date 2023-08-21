@@ -9,6 +9,7 @@ import it.polito.wa2.g17.server.ticketing.warranties.toDTO
 
 data class TicketWithMessagesDTO(
     val id: Long,
+    val title: String,
     val problemType: ProblemType,
     val status: Status,
     val priority: Priority? = null,
@@ -20,6 +21,7 @@ data class TicketWithMessagesDTO(
 fun Ticket.toWithMessagesDTO(): TicketWithMessagesDTO {
     return TicketWithMessagesDTO(
         id!!,
+        title,
         problemType,
         status,
         priorityLevel,

@@ -37,7 +37,7 @@ class TicketServiceImpl(
             .orElseThrow { WarrantyNotFoundException("Warranty with ID ${ticketDTO.warrantyId} not found") }
 
         val date = Date()
-        val ticket = Ticket(ticketDTO.problemType, warranty)
+        val ticket = Ticket(ticketDTO.problemType, ticketDTO.title ,warranty)
         warranty.tickets.add(ticket)
 
         val message = ticketDTO.initialMessage

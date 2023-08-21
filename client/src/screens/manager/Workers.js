@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { ClickableOpacity } from "../../components/ClickableOpacity";
 import { PlusSquareFill, Trash, Pencil } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
-import { errorToaster } from "../../utils/Error";
+import {errorToast, errorToaster} from "../../utils/Error";
 import { ConfirmDialog } from "../../components/ConfirmationModal";
 
 export const Workers = () => {
@@ -17,11 +17,9 @@ export const Workers = () => {
 
   const navigate = useNavigate();
   const workersVM = useWorkersVM((err) =>
-    toast.error(err, { position: "top-center" }, { toastId: 10 })
+    errorToast(err)
   );
-  useEffect(() => {
-    console.log(workersVM.workers);
-  }, [workersVM.workers]);
+  
   return (
     <>
       <ConfirmDialog

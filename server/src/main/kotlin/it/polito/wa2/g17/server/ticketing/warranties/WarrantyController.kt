@@ -15,6 +15,12 @@ class WarrantyCustomerController(private val warrantyService: WarrantyService) {
     fun getCustomerWarranties(principal: Authentication): List<GetWarrantyDTO> {
         return warrantyService.getWarrantiesByEmail(principal.name)
     }
+
+    @GetMapping("/{warrantyId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun getCustomerWarrantyById(@PathVariable warrantyId: Long, principal: Authentication): GetWarrantyWithCustomerDTO {
+        return warrantyService.getWarrantyById(warrantyId)
+    }
 }
 
 @RestController

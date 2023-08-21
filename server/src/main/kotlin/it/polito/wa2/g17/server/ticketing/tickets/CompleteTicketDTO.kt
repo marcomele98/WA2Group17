@@ -8,6 +8,7 @@ import it.polito.wa2.g17.server.ticketing.warranties.GetWarrantyWithCustomerDTO
 
 data class CompleteTicketDTO(
     val id: Long,
+    val title: String,
     val problemType: ProblemType,
     val status: Status,
     val priority: Priority? = null,
@@ -21,7 +22,7 @@ fun CompleteTicketDTO.withWarranty(warranty: GetWarrantyWithCustomerDTO): Comple
 }
 
 fun Ticket.toCompleteDTO(): CompleteTicketDTO {
-    return CompleteTicketDTO(id!!, problemType, status, priorityLevel, messages.map { it.toDTO() })
+    return CompleteTicketDTO(id!!, title, problemType, status, priorityLevel, messages.map { it.toDTO() })
 }
 
 fun CompleteTicketDTO.withExpert(expert: ProfileDTO): CompleteTicketDTO {

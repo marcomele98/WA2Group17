@@ -35,6 +35,7 @@ class SecurityConfig {
             .requestMatchers("API/expert/**").hasRole("EXPERT")
             .requestMatchers("/API/cashier/**").hasRole("CASHIER")
             .requestMatchers("/API/customer/**").hasRole("CLIENT")
+            .requestMatchers("/API/attachments/**").hasAnyRole("EXPERT", "CLIENT")
             .anyRequest().authenticated();
         http.oauth2ResourceServer()
             .jwt()
