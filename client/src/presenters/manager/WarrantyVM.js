@@ -13,7 +13,6 @@ export const useWarrantyVM = (id, onError) => {
     const getWarranty = async () => {
         try {
             const result = await API.getWarranty(id);
-            console.log("aaa", result);
             setWarranty(result)
         } catch (err) {
             switch (err.status) {

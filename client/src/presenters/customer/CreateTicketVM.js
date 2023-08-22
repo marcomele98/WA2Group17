@@ -54,7 +54,6 @@ export const useCreateTicketVM = (warrantyId) => {
     const setProblemType = (problemType) => dispatch({type: 'SET_PROBLEM_TYPE', payload: problemType})
     const setDescription = (description) => dispatch({type: 'SET_DESCRIPTION', payload: description})
     const addAttachment = async (attachment) => {
-        console.log("attachment" + attachment)
         if(!attachment) return
         try {
             const id = await API.uploadAttachment(attachment)
@@ -62,7 +61,7 @@ export const useCreateTicketVM = (warrantyId) => {
             payload[id] = attachment
             dispatch({type: 'ADD_ATTACHMENT', payload: payload})
         } catch (e) {
-            console.log("e: ",e)
+            throw "Error while uploading attachment"
         }
     }
 
@@ -73,12 +72,12 @@ export const useCreateTicketVM = (warrantyId) => {
 
     const reset = () => dispatch({type: 'RESET'})
 
-    const save = () => {
+    const save = async () => {
         //TODO: validazione
         try {
             let ticketDTO = {...ticket}
             ticketDTO.initialMessage.attachments = Object.keys(ticket.initialMessage.attachments)
-            API.createTicket(ticketDTO)
+            await API.createTicket(ticketDTO)
         } catch (e) {
             switch (e?.response?.status) {
                 default: //TODO: gestire gli altri errori e gestisco il messaggio corretto

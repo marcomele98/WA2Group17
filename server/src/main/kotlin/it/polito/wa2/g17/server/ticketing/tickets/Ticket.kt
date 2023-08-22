@@ -8,6 +8,7 @@ import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.status.StatusChange
 import it.polito.wa2.g17.server.ticketing.warranties.Warranty
 import jakarta.persistence.*
+import java.util.*
 
 @Entity
 @Table(name = "tickets")
@@ -21,6 +22,10 @@ class Ticket(
     @ManyToOne
     @JoinColumn(name = "warranty_id", referencedColumnName = "id")
     val warranty: Warranty,
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    var timestamp: Date = Date(),
 
     @Enumerated(EnumType.STRING)
     var priorityLevel: Priority? = null,

@@ -5,12 +5,14 @@ import it.polito.wa2.g17.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g17.server.ticketing.messages.toDTO
 import it.polito.wa2.g17.server.ticketing.status.Status
 import it.polito.wa2.g17.server.ticketing.warranties.GetWarrantyWithCustomerDTO
+import java.sql.Timestamp
 
 data class CompleteTicketDTO(
     val id: Long,
     val title: String,
     val problemType: ProblemType,
     val status: Status,
+    val timestamp: String,
     val priority: Priority? = null,
     val messages: List<MessageDTO> = emptyList(),
     val expert: ProfileDTO? = null,
@@ -22,7 +24,7 @@ fun CompleteTicketDTO.withWarranty(warranty: GetWarrantyWithCustomerDTO): Comple
 }
 
 fun Ticket.toCompleteDTO(): CompleteTicketDTO {
-    return CompleteTicketDTO(id!!, title, problemType, status, priorityLevel, messages.map { it.toDTO() })
+    return CompleteTicketDTO(id!!, title, problemType, status, timestamp.toString(), priorityLevel, messages.map { it.toDTO() })
 }
 
 fun CompleteTicketDTO.withExpert(expert: ProfileDTO): CompleteTicketDTO {

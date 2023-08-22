@@ -22,6 +22,7 @@ import {CreateTicket} from "./screens/customer/CreateTicket";
 import {Tickets} from "./screens/customer/Tickets";
 import {Warranties} from "./screens/customer/Warranties";
 import {Warranty} from "./screens/customer/Warranty";
+import {Ticket} from "./screens/manager/Ticket";
 
 function App() {
     const [redirectRoute, setRedirectRoute] = useState(false);
@@ -86,8 +87,9 @@ function App() {
                                     <Route index element={<Navigate to="warranties"/>}/>
                                     <Route path="warranties" element={<Warranties/>}/>
                                     <Route path="warranties/:id" element={<Warranty/>}/>
-                                    <Route path="tickets" element={<Tickets/>}/>
                                     <Route path="create-ticket/:warrantyId" element={<CreateTicket/>}/>
+                                    <Route path="tickets" element={<Tickets/>}/>
+                                    <Route path="tickets/:id" element={<Ticket/>}/>
                                 </Route>
                             </Route>
                             <Route path="/signup" element={<Signup/>}/>

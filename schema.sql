@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS public.tickets
     problem_type   varchar(255) NULL,
     status         varchar(255) NULL,
     expert_email   varchar(255) NULL,
+    timestamp      timestamp    NOT NULL,
     warranty_id    int8         NOT NULL,
     CONSTRAINT tickets_pkey PRIMARY KEY (id),
     FOREIGN KEY (warranty_id) REFERENCES warranties (id)

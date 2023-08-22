@@ -56,7 +56,6 @@ const useBaseUserVM = () => {
   const setRole = (role) => {
     if (role !== "EXPERT") {
       for (let skill of user.skills) {
-        console.log("skill", skill);
         dispatch({ type: "REMOVE_SKILL", payload: skill });
       }
     }
@@ -138,7 +137,6 @@ export const useEditWorkerVM = (email) => {
   const fetch = async () => {
     try {
       const response = await API.getWorkerByEmail(email);
-      console.log("r", response);
       user.set(response);
     } catch (err) {
       switch (err.status) {

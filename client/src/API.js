@@ -281,6 +281,18 @@ async function downloadAttachment(attachment) {
     }
 }
 
+async function getTickets() {
+    // call: GET /api/tickets
+    try {
+        let response = await axios.get(new URL("customer/tickets", APIURL), {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
 const API = {
     getWorkersProfiles,
     getProductByEan,
@@ -297,6 +309,7 @@ const API = {
     getWarranty,
     createTicket,
     uploadAttachment,
+    getTickets
 };
 
 export default API;
