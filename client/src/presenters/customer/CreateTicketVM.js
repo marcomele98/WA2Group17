@@ -3,7 +3,7 @@ import API from "../../API";
 
 const emptyMessage = {
     text: '',
-    attachments: {}
+    attachmentIds: {}
 }
 
 const emptyTicket = {
@@ -27,16 +27,16 @@ const ticketReducer = (state, action) => {
             return {...state,
                 initialMessage: {
                     ...state.initialMessage,
-                    attachments: {...state.initialMessage.attachments, ...action.payload}
+                    attachmentIds: {...state.initialMessage.attachmentIds, ...action.payload}
                 }
             }
         case 'REMOVE_ATTACHMENT':
-            let attachments = {...state.initialMessage.attachments}
-            delete attachments[action.payload]
+            let attachmentIds = {...state.initialMessage.attachmentIds}
+            delete attachmentIds[action.payload]
             return {...state,
                 initialMessage: {
                     ...state.initialMessage,
-                    attachments: attachments
+                    attachmentIds: attachmentIds
                 }
             }
         case 'RESET':
@@ -76,7 +76,7 @@ export const useCreateTicketVM = (warrantyId) => {
         //TODO: validazione
         try {
             let ticketDTO = {...ticket}
-            ticketDTO.initialMessage.attachments = Object.keys(ticket.initialMessage.attachments)
+            ticketDTO.initialMessage.attachmentIds = Object.keys(ticket.initialMessage.attachmentIds)
             await API.createTicket(ticketDTO)
         } catch (e) {
             switch (e?.response?.status) {
@@ -91,7 +91,7 @@ export const useCreateTicketVM = (warrantyId) => {
         problemType: ticket.problemType,
         warrantyId: ticket.warrantyId,
         description: ticket.initialMessage.text,
-        attachments: ticket.initialMessage.attachments,
+        attachments: ticket.initialMessage.attachmentIds,
         setTitle,
         setProblemType,
         setDescription,

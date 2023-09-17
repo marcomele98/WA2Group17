@@ -37,7 +37,7 @@ class TicketServiceImpl(
             .orElseThrow { WarrantyNotFoundException("Warranty with ID ${ticketDTO.warrantyId} not found") }
 
         val date = Date()
-        val ticket = Ticket(ticketDTO.problemType, ticketDTO.title ,warranty)
+        val ticket = Ticket(ticketDTO.problemType, ticketDTO.title, warranty)
         warranty.tickets.add(ticket)
 
         val message = ticketDTO.initialMessage
@@ -82,12 +82,16 @@ class TicketServiceImpl(
     override fun getTicket(id: Long): CompleteTicketDTO {
         val ticket = ticketRepository.findByIdOrNull(id)
             ?: throw TicketNotFoundException("Ticket with ID $id not found")
-        val expert = profileRepository.findByEmail(ticket.warranty.customerEmail)
-            ?: throw ProfileNotFoundException("Customer with email ${ticket.warranty.customerEmail} not found")
         val customer = profileRepository.findByEmail(ticket.warranty.customerEmail)
             ?: throw ProfileNotFoundException("Profile with email ${ticket.warranty.customerEmail} not found")
-        return ticket.toCompleteDTO().withExpert(expert.toDTO())
+        var t = ticket.toCompleteDTO()
             .withWarranty(ticket.warranty.toGetWarrantyWithCustomerDTO().withCustomer(customer.toDTO()))
+        if (ticket.expertEmail != null) {
+            val expert = profileRepository.findByEmail(ticket.expertEmail!!)
+                ?: throw ProfileNotFoundException("Customer with email ${ticket.expertEmail} not found")
+            t = t.withExpert(expert.toDTO())
+        }
+        return t
     }
 
 

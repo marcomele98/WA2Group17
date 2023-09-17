@@ -12,7 +12,7 @@ interface TicketService {
 
     fun getAllAssigned(): List<PartialTicketDTO>
 
-    @PostAuthorize("returnObject.expert.email == authentication.name " +
+    @PostAuthorize("(returnObject.expert!=null && returnObject.expert.email == authentication.name) " +
             "|| hasRole('MANAGER') " +
             "|| returnObject.warranty.customer.email == authentication.name")
     fun getTicket(id: Long): CompleteTicketDTO

@@ -61,6 +61,7 @@ export const Workers = () => {
         .sort((a, b) =>
           a.email.toLowerCase() > b.email.toLowerCase() ? 1 : -1
         )
+        .filter((worker) => worker.email !== "admin@mail.com")
         .map((worker) => {
           return (
             <UserCard

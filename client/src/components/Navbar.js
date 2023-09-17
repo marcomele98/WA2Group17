@@ -1,22 +1,24 @@
 import React from "react";
-import {useNavigate, useLocation} from "react-router-dom";
-import {Button, Nav, Navbar} from "react-bootstrap";
-import {useUser} from "../presenters/LoggedUser";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { useUser } from "../presenters/LoggedUser";
 
 function NavigationBar() {
     const navigate = useNavigate();
     const location = useLocation();
-    const {user, logOut} = useUser();
+    const { user, logOut } = useUser();
 
     const logOutHandler = () => {
         logOut();
         navigate("/login");
     };
 
+    console.log(location?.pathname)
+
     return (
         <Navbar
             className="fixed-top p-2"
-            style={{height: 55}} //TODO: tolgo inline style
+            style={{ height: 55 }} //TODO: tolgo inline style
             id="my-navbar"
             collapseOnSelect
             expand="lg"
@@ -24,20 +26,23 @@ function NavigationBar() {
             variant="dark"
         >
             <Navbar.Brand className="navbar-brand">WA2</Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav variant="primary" className="me-auto">
                     {
                         {
                             MANAGER: (
                                 <>
-                                    <Nav.Link
-                                        style={navLinkStyle}
-                                        active={location?.pathname === "/manager/unassigned-tickets"}
-                                        onClick={() => navigate("/manager/unassigned-tickets")}
+
+                                    <NavDropdown title="Tickets" style={navLinkStyle}
+                                        active={location?.pathname === "/manager/assigned-tickets" || location?.pathname === "/manager/unassigned-tickets"}
                                     >
-                                        Products
-                                    </Nav.Link>
+                                        <NavDropdown.Item className='dropdown-item:hover' style={{ backgroundColor: location?.pathname === "/manager/unassigned-tickets" ? "#0c6dfd" : false, color: location?.pathname === "/manager/unassigned-tickets" ? "white" : false, }} active={location?.pathname === "/managerunassigned-tickets"} onClick={() => navigate('manager/unassigned-tickets')}>Unassigned Tickets</NavDropdown.Item>
+                                        <NavDropdown.Divider />
+                                        <NavDropdown.Item className='dropdown-item:hover' style={{ backgroundColor: location?.pathname === "/manager/assigned-tickets" ? "#0c6dfd" : false, color: location?.pathname === "/manager/assigned-tickets" ? "white" : false, }} active={location?.pathname === "/manager/assigned-tickets"} onClick={() => navigate('manager/assigned-tickets')}>Assigned Tickets</NavDropdown.Item>
+                                    </NavDropdown>
+
+
                                     <Nav.Link
                                         style={navLinkStyle}
                                         active={location?.pathname === "/manager/users"}
@@ -93,4 +98,4 @@ const navLinkStyle = {
     fontSize: 18,
 };
 
-export {NavigationBar};
+export { NavigationBar };

@@ -252,6 +252,18 @@ async function createTicket(ticket) {
     }
 }
 
+async function addMessage(message, id) {
+    // call: PUT /api/tickets/messages/:id
+    try {
+        let response = await axios.put(new URL("tickets/message/" +id, APIURL), message, {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function uploadAttachment(attachment) {
     try {
         const formData = new FormData();
@@ -293,6 +305,54 @@ async function getTickets() {
     }
 }
 
+async function getTicket(id) {
+    // call: GET /api/tickets/:id
+    try {
+        let response = await axios.get(new URL("tickets/" +id, APIURL), {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function getAssignedTickets() {
+    // call: GET /api/tickets
+    try {
+        let response = await axios.get(new URL("manager/tickets/assigned", APIURL), {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function getOpenTickets() {
+    // call: GET /api/manager/tickets/open
+    try {
+        let response = await axios.get(new URL("manager/tickets/open", APIURL), {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function assignTicket(assignTicketDTO, id) {
+    // call: POST /api/manager/tickets/assign
+    try {
+        let response = await axios.put(new URL("manager/tickets/assign/"+ id, APIURL), assignTicketDTO,{
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
 const API = {
     getWorkersProfiles,
     getProductByEan,
@@ -309,7 +369,12 @@ const API = {
     getWarranty,
     createTicket,
     uploadAttachment,
-    getTickets
+    getTickets,
+    getOpenTickets,
+    assignTicket,
+    getAssignedTickets,
+    getTicket,
+    addMessage,
 };
 
 export default API;
