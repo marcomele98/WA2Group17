@@ -22,12 +22,14 @@ axios.interceptors.response.use(
         }
         const originalRequest = error?.config;
         let refreshTokenError, res;
+        console.log("url", originalRequest?.url?.pathname);
         if (
             error?.response?.status === 401 &&
             !originalRequest._retry &&
             originalRequest?.url?.pathname !== "/API/refresh" &&
             originalRequest?.url?.pathname !== "/API/login"
         ) {
+            console.log("refreshing token");
             originalRequest._retry = true;
             let url = new URL("refresh", APIURL);
             const params = new URLSearchParams();
@@ -63,15 +65,29 @@ axios.interceptors.response.use(
             }
             return Promise.resolve(res);
         } else if (originalRequest?.url?.pathname === "/API/refresh") {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            window.location.reload();
+            console.log("token", localStorage.getItem("refreshToken"));
+            if(localStorage.getItem("refreshToken") !== null && localStorage.getItem("accessToken") !== null){
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                window.location.reload();
+            }
         }
         document.body.classList.remove("loading-overlay");
         return Promise.reject(error.response);
     }
 );
 
+
+const refreshToken = async () => {
+    let url = new URL("refresh", APIURL);
+    const params = new URLSearchParams();
+    params.append("refreshToken", localStorage.getItem("refreshToken"));
+    url.search = params.toString();
+    let res = await axios.post(url, undefined, undefined);
+    localStorage.setItem("accessToken", res.data.accessToken);
+    localStorage.setItem("refreshToken", res.data.refreshToken);
+    return;
+};
 
 const getAuthHeader = () => {
     return {Authorization: `Bearer ${localStorage.getItem("accessToken")}`};
@@ -375,6 +391,7 @@ const API = {
     getAssignedTickets,
     getTicket,
     addMessage,
+    refreshToken,
 };
 
 export default API;

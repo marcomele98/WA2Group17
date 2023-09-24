@@ -7,6 +7,7 @@ const UserContext = createContext(undefined);
 const CREATE = 0;
 const DELETE = 1;
 
+
 const reducer = (state, action) => {
   switch (action.type) {
     case CREATE:
@@ -35,8 +36,17 @@ const reducer = (state, action) => {
 export const UserProvider = ({ children }) => {
   const [user, dispatch] = useReducer(reducer, null);
 
-  useEffect(() => {
+  const ciao = async () => {
     let refreshToken = localStorage.getItem("refreshToken");
+    
+    try {
+      let decoded = jwtDecode(localStorage.getItem("accessToken"));
+      console.log(decoded);
+    } 
+    catch (err) {
+      await API.refreshToken();
+    }
+
     if (refreshToken && !user) {
       try {
         let refreshInfo = jwtDecode(refreshToken);
@@ -50,6 +60,11 @@ export const UserProvider = ({ children }) => {
         console.log(err);
       }
     }
+  }
+
+
+  useEffect(() => {
+   ciao();
   }, []);
 
   const logIn = async (email, password) => {

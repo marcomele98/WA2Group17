@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../API";
 
-export const useTicketVM = (onError) => {
+export const useTicketVM = (onError, id) => {
     const [ticket, setTicket] = useState()
 
-    const getTicket = async (id) => {
+    const getTicket = async () => {
         try {
             const result = await API.getTicket(id);
             setTicket(result);
@@ -15,6 +15,10 @@ export const useTicketVM = (onError) => {
             }
         }
     }
+
+    useEffect(() => {
+        getTicket();
+    }, []);
 
     return { ticket, getTicket }
 }

@@ -13,7 +13,8 @@ export const AuthRoute = ({role, setRedirectRoute}) => {
 
   console.assert(required_role, "AuthRoute requires a role prop");
 
-  useEffect(() => {
+  useEffect(() => { 
+    console.log("user: ", user);   
     if (user===null) {
       setRedirectRoute(location.pathname);
       console.log("redirect route: ", location.pathname);

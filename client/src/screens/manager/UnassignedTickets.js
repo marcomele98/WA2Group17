@@ -2,7 +2,7 @@ import { useUnassignedTicketsVM } from "../../presenters/manager/UnasignTicketVM
 import { errorToast } from "../../utils/Error";
 import { TicketCard } from "../../components/TicketCard";
 import { useWorkersVM } from "../../presenters/WorkersVM";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import { successToast } from "../../utils/Error";
 
@@ -47,6 +47,10 @@ export const UnassignedTickets = () => {
         handleCloseModal();
     }
 
+    useEffect(() => {
+        console.log(selectedTicket);
+        console.log(workersVM.workers)
+    }, [selectedTicket]);
 
     return (
         <>
@@ -60,7 +64,11 @@ export const UnassignedTickets = () => {
                         title={selectedExpert || 'Select an Expert'}
                     >
                         {workersVM.workers.filter(
-                            (worker) => worker.role === "EXPERT" && worker.name != "admin"
+                            (worker) => (
+                                    worker.role === "EXPERT" 
+                                    && worker.name != "admin" 
+                                    && worker.skills.includes(openTicketsVM.openTickets.find(t => t.id === selectedTicket)?.problemType)
+                                )
                         ).map((option) => (
                             <Dropdown.Item
                                 key={option.email}

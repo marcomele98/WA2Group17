@@ -1,6 +1,6 @@
 import "./style/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Row} from "react-bootstrap";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import {Navigate} from "react-router-dom";
@@ -27,6 +27,10 @@ import {AssignedTickets} from "./screens/manager/AssignedTickets";
 
 function App() {
     const [redirectRoute, setRedirectRoute] = useState(false);
+
+    useEffect(() => {
+        console.log("redirect route: ", redirectRoute);
+    }, [redirectRoute]);
 
     return (
         <Router>
@@ -94,10 +98,15 @@ function App() {
                                     <Route path="warranties/:id" element={<Warranty/>}/>
                                     <Route path="create-ticket/:warrantyId" element={<CreateTicket/>}/>
                                     <Route path="tickets" element={<Tickets/>}/>
+                                    <Route path="tickets/:id" element={<Ticket/>}/>
+                                </Route>
+                            </Route> 
+                            <Route element={<AuthRoute role="EXPERT" setRedirectRoute={setRedirectRoute}/>}>
+                                <Route path="/expert/*">
+                                    <Route path="tickets/:id" element={<Ticket/>}/>
                                 </Route>
                             </Route>
                             <Route path="/signup" element={<Signup/>}/>
-                            <Route path="tickets/:id" element={<Ticket/>}/>
                             <Route path="/*" element={<Navigate to="/login"/>}/>
                         </Routes>
                     </Row>

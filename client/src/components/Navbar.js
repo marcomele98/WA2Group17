@@ -13,8 +13,6 @@ function NavigationBar() {
         navigate("/login");
     };
 
-    console.log(location?.pathname)
-
     return (
         <Navbar
             className="fixed-top p-2"

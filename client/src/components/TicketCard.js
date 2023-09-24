@@ -3,28 +3,19 @@ import React from "react";
 import { useUser } from "../presenters/LoggedUser";
 import { useNavigate } from "react-router-dom";
 
-export const TicketCard = ({ ticket, ActionElement, withProductDetais, openModal, setSelectedTicket }) => {
-    const { user } = useUser();
-    const navigate = useNavigate();
+export const TicketCard = ({ ticket, ActionElement, withProductDetais, openModal, setSelectedTicket, handleClick }) => {
     const timestampFields = ticket.timestamp.split(" ");
     const date = timestampFields[0];
     const time = timestampFields[1];
     const hour = time.split(":")[0];
     const minutes = time.split(":")[1];
 
-    const handleClick = (id) => {
-        if(user?.role !== "MANAGER"){
-            navigate("/tickets/" + id)
-        }
-    }
+
 
     return (
         <div key={ticket.id}>
             <Card className="card"
-                onClick={
-                    handleClick(ticket.id)
-            
-                }>
+                onClick={handleClick}>
                 <Card.Header className="d-flex justify-content-between align-items-center">
                     <strong>{ticket.title}</strong>
                     {ActionElement}
