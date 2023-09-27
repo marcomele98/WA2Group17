@@ -369,6 +369,40 @@ async function assignTicket(assignTicketDTO, id) {
     }
 }
 
+async function closeTicket(ticketId) {
+    try {
+        let response = await axios.put(new URL("tickets/close/"+ ticketId, APIURL), undefined,{
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    }
+    catch (err) {
+        throw err;
+    }
+}
+
+async function resolveTicket(ticketId){
+    try {
+        let response = await axios.put(new URL("expert/tickets/resolve/"+ ticketId, APIURL), undefined,{
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function reopenTicket(ticketId){
+    try {
+        let response = await axios.put(new URL("customer/tickets/reopen/"+ ticketId, APIURL), undefined,{
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
 const API = {
     getWorkersProfiles,
     getProductByEan,
@@ -392,6 +426,10 @@ const API = {
     getTicket,
     addMessage,
     refreshToken,
+    downloadAttachment,
+    closeTicket,
+    resolveTicket,
+    reopenTicket
 };
 
 export default API;

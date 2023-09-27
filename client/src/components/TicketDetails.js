@@ -37,7 +37,7 @@ export const TicketDetails = ({ticket}) => {
                             <strong>Priority:</strong> {ticket?.priority || 'Not specified'}
                         </div>
                         <div>
-                            <strong>Customer:</strong> {ticket?.warranty.customer.name + " " + ticket?.warranty.customer.surname}
+                            <strong>Customer:</strong> {ticket?.warranty?.customer?.name + " " + ticket?.warranty?.customer?.surname}
                         </div>
                     </div>
                 </Col>

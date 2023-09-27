@@ -157,7 +157,7 @@ class TicketServiceImpl(
         if ((ticket.warranty.customerEmail != userEmail && ticket.expertEmail != userEmail) || role == "ROLE_MANAGER")
             throw WrongUserException("You are not allowed to close this ticket")
 
-        if (ticket.status != Status.IN_PROGRESS)
+        if (ticket.status != Status.IN_PROGRESS && ticket.status != Status.OPEN)
             throw WrongStateException("Ticket with ID $ticketId is not in progress")
 
         ticket.addStatus(StatusChange(Status.CLOSED, userEmail))
@@ -176,7 +176,10 @@ class TicketServiceImpl(
         if (ticket.status != Status.CLOSED && ticket.status != Status.RESOLVED)
             throw WrongStateException("Ticket with ID $ticketId is not closed")
 
-        ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.warranty.customerEmail))
+        if(ticket.expertEmail == null)
+            ticket.addStatus(StatusChange(Status.OPEN, ticket.warranty.customerEmail))
+        else
+            ticket.addStatus(StatusChange(Status.IN_PROGRESS, ticket.warranty.customerEmail))
 
         return ticketRepository.save(ticket).toWithMessagesDTO()
     }

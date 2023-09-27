@@ -3,6 +3,7 @@ import API from "../API";
 
 export const useTicketVM = (onError, id) => {
     const [ticket, setTicket] = useState()
+    const [loading, setLoading] = useState(true);
 
     const getTicket = async () => {
         try {
@@ -16,9 +17,49 @@ export const useTicketVM = (onError, id) => {
         }
     }
 
-    useEffect(() => {
-        getTicket();
-    }, []);
+    const closeTicket = async (id) => {
+        try {
+            let ticket = await API.closeTicket(id);
+            console.log(ticket);
+            setLoading(true);
+        } catch (e) {
+            switch (e.status) {
+                default:
+                    onError("Error while closing ticket " + id);
+            }
+        }
+    }
 
-    return { ticket, getTicket }
+    const reopenTicket = async (id ) => {
+        try {
+            let ticket = await API.reopenTicket(id);
+            setLoading(true);
+        } catch (e) {
+            switch (e.status) {
+                default:
+                    onError("Error while reopening ticket " + id);
+            }
+        }
+    }
+
+    const resolveTicket = async (id) => {
+        try {
+            let ticket = await API.resolveTicket(id);
+            setLoading(true);
+        } catch (e) {
+            switch (e.status) {
+                default:
+                    onError("Error while resolving ticket " + id);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if(loading) {
+            getTicket();
+            setLoading(false);
+        }
+    }, [loading]);
+
+    return { ticket, getTicket, closeTicket, reopenTicket, resolveTicket }
 }

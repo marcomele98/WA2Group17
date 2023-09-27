@@ -5,27 +5,21 @@ import { Card, ListGroup, ListGroupItem } from 'react-bootstrap';
 import '.././components/Chat.css'
 import { Form, Button } from 'react-bootstrap';
 import { ClickableOpacity } from './ClickableOpacity';
-import { Paperclip, X } from 'react-bootstrap-icons';
+import { Paperclip, X, SendFill } from 'react-bootstrap-icons';
 import { successToast } from '../utils/Error';
 import { useState } from 'react';
 import { useAddMessageVM } from '../presenters/AddMessageVM';
 import { useUser } from '../presenters/LoggedUser';
+import { isObjectEmpty } from '../utils/objects';
 
-export const Messages = ({ id, messages, refreshMessages }) => {
+export const Messages = ({ id, messages, refreshMessages, canSendMessage }) => {
 
     const [dirty, setDirty] = useState(true);
-    const [showMessages, setShowMessages] = useState(false);
     const fileInputRef = React.useRef(null);
     const user = useUser();
     const addMessageVM = useAddMessageVM();
+    const [chatHeight, setChatHeight] = useState(0);
 
-    useEffect(() => {
-        if (dirty) {
-            refreshMessages();
-            setDirty(false);
-        }
-    }, [dirty])
-    
     const handleAttachmentClick = (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -50,73 +44,99 @@ export const Messages = ({ id, messages, refreshMessages }) => {
         successToast("Message sended successfully")
     });
 
+    useEffect(() => {
+        console.log("canSendMessage", canSendMessage)
+        if (!canSendMessage) {
+            setChatHeight(500)
+        } else if (!isObjectEmpty(addMessageVM.attachments)) {
+            setChatHeight(340)
+        } else {
+            setChatHeight(400)
+        }
+
+    }, [isObjectEmpty(addMessageVM.attachments), canSendMessage])
+
+    useEffect(() => {
+        var objDiv = document.getElementById("chat");
+        console.log(objDiv.clientHeight)
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }, [messages.length, isObjectEmpty(addMessageVM.attachments), chatHeight])
+
+    useEffect(() => {
+        if (dirty) {
+            refreshMessages();
+            setDirty(false);
+        }
+    }, [dirty])
+
+    useEffect(() => {
+        console.log(isObjectEmpty(addMessageVM.attachments))
+
+    }, [isObjectEmpty(addMessageVM.attachments), canSendMessage])
 
     return (
+
         <>
-            <Button style={{ marginTop: 20, marginBottom: 20 }} variant="primary" onClick={() => setShowMessages(!showMessages)}>{showMessages ? "Hide Messages" : "Show Messages"}</Button>
-            {
-                showMessages ? (
-                    <>
-                        <Button style={{ marginLeft: 20, marginTop: 20, marginBottom: 20 }} variant="primary" onClick={() => setDirty(true)}>Refresh Messages</Button>
+            <div className="chat-container" id="chat" style={{ height: chatHeight, overflow: "scroll", marginTop: 10 }}>
+                <ListGroup>
+                    {messages?.map((message, index) => (
+                        <ListGroupItem key={index} className={message.userEmail === user.user.email ? 'user-card' : 'other-card'}>
+                            <MessageCard message={message} />
+                        </ListGroupItem>
 
-                        <div className="chat-container">
-                            <ListGroup>
-                                {messages?.map((message, index) => (
-                                    <ListGroupItem key={index} className={message.userEmail === user.user.email ? 'user-card' : 'other-card'}>
-                                        <MessageCard message={message} />
-                                    </ListGroupItem>
-                                ))}
-                            </ListGroup>
+                    ))}
+                </ListGroup>
+            </div>
+            {canSendMessage &&
+                <div id="input-message" style={{ position: 'fixed', bottom: 0, width: '100%', background: 'white', paddingRight: 20, paddingTop: 10 }}>
+                    <Form onSubmit={onSubmit}>
+                        <div className="attachments d-flex flex-wrap">
+                            {Object.keys(addMessageVM.attachments).map((attachmentId, index) => (
+                                <Card key={index} className="attachment-card p-2" style={{ display: "flex", flexDirection: "row" }}>
+                                    <Card.Img variant="top" src={URL.createObjectURL(addMessageVM.attachments[attachmentId])}
+                                        style={{ width: "20px", height: "20px", marginRight: 15 }} />
+                                    <Card.Text className="m-0 texts-secondary"
+                                        style={{ marginLeft: 10 }}>{addMessageVM.attachments[attachmentId].name}</Card.Text>
+                                    <ClickableOpacity onClick={(e) => {
+                                        e.preventDefault();
+                                        addMessageVM.removeAttachment(attachmentId)
+                                    }
+                                    }>
+                                        <X size={25} />
+                                    </ClickableOpacity>
+                                </Card>
+                            ))}
                         </div>
-                        <div style={{ paddingTop: "20px" }}>
-                            <Form onSubmit={onSubmit}>
-                                <div className="attachments d-flex flex-wrap">
-                                    {Object.keys(addMessageVM.attachments).map((attachmentId, index) => (
-                                        <Card key={index} className="attachment-card p-2" style={{ display: "flex", flexDirection: "row" }}>
-                                            <Card.Img variant="top" src={URL.createObjectURL(addMessageVM.attachments[attachmentId])}
-                                                style={{ width: "20px", height: "20px", marginRight: 15 }} />
-                                            <Card.Text className="m-0 texts-secondary"
-                                                style={{ marginLeft: 10 }}>{addMessageVM.attachments[attachmentId].name}</Card.Text>
-                                            <ClickableOpacity onClick={(e) => {
-                                                e.preventDefault();
-                                                addMessageVM.removeAttachment(attachmentId)
-                                            }
-                                            }>
-                                                <X size={25} />
-                                            </ClickableOpacity>
-                                        </Card>
-                                    ))}
-                                </div>
-                                <div className="input-with-icon">
-                                    <Form.Group className="mb-3" controlId="formDescription">
-                                        <Form.Control as="textarea" rows={3} placeholder="Type your message here"
-                                            value={addMessageVM.description}
-                                            required
-                                            size="lg"
-                                            onChange={(e) => addMessageVM.setDescription(e.target.value)}
-                                            style={{ paddingRight: '40px' }}
-                                        />
-                                        <ClickableOpacity className="attachment-icon" style={{ marginLeft: '5px', cursor: 'pointer' }}
-                                            onClick={handleAttachmentClick}>
-                                            <Paperclip size={35} />
-                                        </ClickableOpacity>
-                                        <Form.Control
-                                            style={{ display: 'none' }}
-                                            ref={fileInputRef}
-                                            onChange={onChangeAttachment}
-                                            type="file"
+                        <div className="input-with-icon">
+                            <Form.Group className="mb-3" controlId="formDescription">
+                                <Form.Control as="textarea" rows={3} placeholder="Type your message here"
+                                    value={addMessageVM.description}
+                                    required
+                                    size="lg"
+                                    onChange={(e) => addMessageVM.setDescription(e.target.value)}
+                                    style={{ paddingRight: '70px' }}
+                                />
+                                <ClickableOpacity className="attachment-icon" style={{ cursor: 'pointer' }}
+                                    onClick={handleAttachmentClick}>
+                                    <Paperclip size={35} />
+                                </ClickableOpacity>
+                                <ClickableOpacity className="send-icon" style={{ cursor: 'pointer' }}
+                                    onClick={onSubmit}>
+                                    <SendFill size={30} color='#007bff' />
+                                </ClickableOpacity>
+                                <Form.Control
+                                    style={{ display: 'none' }}
+                                    ref={fileInputRef}
+                                    onChange={onChangeAttachment}
+                                    type="file"
 
-                                        />
-                                    </Form.Group>
-                                </div>
-                                <Button type="submit" size="lg" style={{ float: "right" }}>
-                                    Send Message
-                                </Button>
-                            </Form>
+                                />
+                            </Form.Group>
                         </div>
-                    </>
-                ) : null
+                    </Form>
+                </div>
             }
+
         </>
     )
 }
