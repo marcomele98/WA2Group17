@@ -16,10 +16,6 @@ export const CustomerTicket = ({}) => {
     const { id } = useParams();
     const ticketVM = useTicketVM(errorToast, id);
 
-    useEffect(() => {
-        console.log(ticketVM.ticket?.status)
-    }, [ticketVM.ticket])
-
     return (
         <div style={{ paddingBottom: 20 }}>
             <Row>
@@ -32,11 +28,14 @@ export const CustomerTicket = ({}) => {
                     {
                     (ticketVM.ticket?.status === "OPEN" || ticketVM.ticket?.status === "IN_PROGRESS" ) ?
                     (
-                                <Button style={{float: 'right'}} variant="danger" onClick={() => ticketVM.closeTicket(id)}>Close</Button>
+                        <div style={{float: 'right'}}>
+                        <Button style={{marginRight:20}} onClick={()=>ticketVM.getTicket(id)} >Refresh Chat</Button>
+                        <Button variant="danger" onClick={() => ticketVM.closeTicket(id)}>Close</Button>
+                        </div>
 
                     ) : (
                         
-                            <Button variant="warning" style={{float: 'right'}}  onClick={() => ticketVM.reopenTicket(id)}>Reopen</Button>
+                        <Button variant="warning" style={{float: 'right'}}  onClick={() => ticketVM.reopenTicket(id)}>Reopen</Button>
                     
                     )
 }

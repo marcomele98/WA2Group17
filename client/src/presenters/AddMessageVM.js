@@ -55,9 +55,7 @@ export const useAddMessageVM = () => {
     const save = async (id) => {
         //TODO: validazione
         try {
-            console.log(message)
             let messageDTO = { ...message }
-            console.log(messageDTO)
             messageDTO.attachmentIds = Object.keys(message.attachmentIds)
             await API.addMessage(messageDTO, id)
         } catch (e) {

@@ -47,11 +47,6 @@ export const UnassignedTickets = () => {
         handleCloseModal();
     }
 
-    useEffect(() => {
-        console.log(selectedTicket);
-        console.log(workersVM.workers)
-    }, [selectedTicket]);
-
     return (
         <>
             <Modal show={showModal} onHide={handleCloseModal}>

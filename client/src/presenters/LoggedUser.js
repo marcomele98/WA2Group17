@@ -36,12 +36,12 @@ const reducer = (state, action) => {
 export const UserProvider = ({ children }) => {
   const [user, dispatch] = useReducer(reducer, null);
 
-  const ciao = async () => {
+  const refresh = async () => {
     let refreshToken = localStorage.getItem("refreshToken");
     
     try {
-      let decoded = jwtDecode(localStorage.getItem("accessToken"));
-      console.log(decoded);
+      jwtDecode(localStorage.getItem("accessToken"));
+  
     } 
     catch (err) {
       await API.refreshToken();
@@ -64,7 +64,7 @@ export const UserProvider = ({ children }) => {
 
 
   useEffect(() => {
-   ciao();
+   refresh();
   }, []);
 
   const logIn = async (email, password) => {

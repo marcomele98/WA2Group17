@@ -22,14 +22,12 @@ axios.interceptors.response.use(
         }
         const originalRequest = error?.config;
         let refreshTokenError, res;
-        console.log("url", originalRequest?.url?.pathname);
         if (
             error?.response?.status === 401 &&
             !originalRequest._retry &&
             originalRequest?.url?.pathname !== "/API/refresh" &&
             originalRequest?.url?.pathname !== "/API/login"
         ) {
-            console.log("refreshing token");
             originalRequest._retry = true;
             let url = new URL("refresh", APIURL);
             const params = new URLSearchParams();
@@ -60,12 +58,10 @@ axios.interceptors.response.use(
                 });
             if (refreshTokenError) {
                 document.body.classList.remove("loading-overlay");
-                console.log("refreshtoketerror", refreshTokenError);
                 return Promise.reject(refreshTokenError);
             }
             return Promise.resolve(res);
         } else if (originalRequest?.url?.pathname === "/API/refresh") {
-            console.log("token", localStorage.getItem("refreshToken"));
             if(localStorage.getItem("refreshToken") !== null && localStorage.getItem("accessToken") !== null){
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
@@ -296,9 +292,9 @@ async function uploadAttachment(attachment) {
     }
 }
 
-async function downloadAttachment(attachment) {
+async function downloadAttachment(attachmentId) {
     try {
-        const response = await axios.get('attachments/download', {
+        const response = await axios.get(new URL('attachments/download/'+attachmentId, APIURL), {
             headers: {
                 ...getAuthHeader()
             },
@@ -402,6 +398,7 @@ async function reopenTicket(ticketId){
         throw err;
     }
 }
+
 
 const API = {
     getWorkersProfiles,

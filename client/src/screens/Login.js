@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Button, Row, Col, InputGroup } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { useUser } from "../presenters/LoggedUser";
 import "../style/Login.css";
 import { useNavigate } from "react-router-dom";
-import {errorToaster} from "../utils/Error";
+import { errorToaster } from "../utils/Error";
+import { Eye, EyeSlash } from "react-bootstrap-icons";
+import {ClickableOpacity} from "../components/ClickableOpacity.js"
 
 export function Login({ redirectRoute, setRedirectRoute }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); //per mostrare la password
   const { logIn } = useUser();
   const { user } = useUser();
   const navigate = useNavigate();
@@ -54,12 +57,25 @@ export function Login({ redirectRoute, setRedirectRoute }) {
         </Form.Group>
         <br />
         <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
-          />
+        <Form.Label>Password</Form.Label>
+          <InputGroup>
+            <Form.Control
+              style={{borderRightColor: "transparent"}}
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+            />
+              <InputGroup.Text style={{borderLeftColor: "transparent", backgroundColor:"transparent"}}>
+                <ClickableOpacity onClick={(e) =>{ 
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setShowPassword(!showPassword)
+                  }
+                  }>
+                  {showPassword ? <Eye /> : <EyeSlash />}
+                </ClickableOpacity>
+              </InputGroup.Text>
+          </InputGroup>
         </Form.Group>
         <br />
         <Row>

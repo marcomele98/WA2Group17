@@ -29,10 +29,6 @@ import {ExpertTicket} from "./screens/expert/ExpertTicket";
 function App() {
     const [redirectRoute, setRedirectRoute] = useState(false);
 
-    useEffect(() => {
-        console.log("redirect route: ", redirectRoute);
-    }, [redirectRoute]);
-
     return (
         <Router>
             <UserProvider>

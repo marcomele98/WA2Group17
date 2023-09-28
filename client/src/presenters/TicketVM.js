@@ -5,9 +5,25 @@ export const useTicketVM = (onError, id) => {
     const [ticket, setTicket] = useState()
     const [loading, setLoading] = useState(true);
 
+    const addAttachment = async (attachmentId, messageId) => {
+        const attachment = await API.downloadAttachment(attachmentId);
+        const newMessages = ticket.messages.map(message => {
+            if (message.id === messageId) {
+                const newAttachments = message.attachments ? [...message.attachments, attachment] : [attachment]
+                return { ...message, attachments: newAttachments }
+            }
+            return message
+        })
+        return { ...ticket, messages: newMessages }
+    }
     const getTicket = async () => {
         try {
-            const result = await API.getTicket(id);
+            let result = await API.getTicket(id);
+            for(let message of result.messages){
+                for(let attachmentId of message.attachmentIds){
+                    result = await addAttachment(attachmentId, message.id);
+                }
+            }
             setTicket(result);
         } catch (e) {
             switch (e.status) {
@@ -20,7 +36,6 @@ export const useTicketVM = (onError, id) => {
     const closeTicket = async (id) => {
         try {
             let ticket = await API.closeTicket(id);
-            console.log(ticket);
             setLoading(true);
         } catch (e) {
             switch (e.status) {

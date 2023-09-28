@@ -1,15 +1,6 @@
-import React, { useEffect } from 'react'
-import { errorToast } from '../utils/Error';
-import { useTicketVM } from "../presenters/TicketVM"
-import { useParams } from "react-router-dom";
+import React from 'react'
 import { Row, Col } from 'react-bootstrap';
-import { MessageCard } from '../components/MessageCard';
-import { useUser } from "../presenters/LoggedUser";
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import '.././components/Chat.css'
-import { Button } from 'react-bootstrap';
-import { useState } from 'react';
-
 export const TicketDetails = ({ticket}) => {
 
 
