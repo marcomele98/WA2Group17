@@ -5,7 +5,7 @@ export const useTicketVM = (onError, id) => {
     const [ticket, setTicket] = useState()
     const [loading, setLoading] = useState(true);
 
-    const addAttachment = async (attachmentId, messageId) => {
+    const addAttachment = async (attachmentId, messageId, ticket) => {
         const attachment = await API.downloadAttachment(attachmentId);
         const newMessages = ticket.messages.map(message => {
             if (message.id === messageId) {
@@ -16,14 +16,16 @@ export const useTicketVM = (onError, id) => {
         })
         return { ...ticket, messages: newMessages }
     }
+    
     const getTicket = async () => {
         try {
             let result = await API.getTicket(id);
             for(let message of result.messages){
                 for(let attachmentId of message.attachmentIds){
-                    result = await addAttachment(attachmentId, message.id);
+                    result = await addAttachment(attachmentId, message.id, result);
                 }
             }
+            console.log(result)
             setTicket(result);
         } catch (e) {
             switch (e.status) {

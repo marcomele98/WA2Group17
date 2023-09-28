@@ -7,7 +7,7 @@ import "../style/Login.css";
 import { useNavigate } from "react-router-dom";
 import { errorToaster } from "../utils/Error";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
-import {ClickableOpacity} from "../components/ClickableOpacity.js"
+import { ClickableOpacity } from "../components/ClickableOpacity.js";
 
 export function Login({ redirectRoute, setRedirectRoute }) {
   const [username, setUsername] = useState("");
@@ -57,24 +57,31 @@ export function Login({ redirectRoute, setRedirectRoute }) {
         </Form.Group>
         <br />
         <Form.Group controlId="password">
-        <Form.Label>Password</Form.Label>
+          <Form.Label>Password</Form.Label>
           <InputGroup>
             <Form.Control
-              style={{borderRightColor: "transparent"}}
+              style={{ borderRightColor: "transparent" }}
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
             />
-              <InputGroup.Text style={{borderLeftColor: "transparent", backgroundColor:"transparent"}}>
-                <ClickableOpacity onClick={(e) =>{ 
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setShowPassword(!showPassword)
-                  }
-                  }>
-                  {showPassword ? <Eye /> : <EyeSlash />}
-                </ClickableOpacity>
-              </InputGroup.Text>
+            <InputGroup.Text
+              style={{
+                borderLeftColor: "transparent",
+                backgroundColor: "transparent",
+              }}
+            >
+              <ClickableOpacity
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? <Eye /> : <EyeSlash />}
+              </ClickableOpacity>
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
         <br />

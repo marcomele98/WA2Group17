@@ -3,6 +3,8 @@ import { Row, Col } from 'react-bootstrap';
 import '.././components/Chat.css'
 export const TicketDetails = ({ticket}) => {
 
+    
+
 
     return (
             <Row>

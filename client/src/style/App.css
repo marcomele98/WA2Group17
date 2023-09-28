@@ -56,12 +56,20 @@
   position: relative;
 }
 
-.attachment-icon {
+.attachment-icon2 {
   position: absolute;
   top: 10px;
   right: 45px;
   cursor: pointer;
 }
+
+.attachment-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
 
 .send-icon {
   position: absolute;

@@ -76,7 +76,7 @@ export const Messages = ({ id, messages, refreshMessages, canSendMessage }) => {
 
   useEffect(() => {
     console.log("Messages: ", messages);
-  }, [messages])
+  }, [messages]);
 
   return (
     <>
@@ -86,7 +86,7 @@ export const Messages = ({ id, messages, refreshMessages, canSendMessage }) => {
         style={{
           height: chatHeight,
           overflow: "scroll",
-          marginTop: 20
+          marginTop: 20,
         }}
       >
         <ListGroup>
@@ -163,7 +163,7 @@ export const Messages = ({ id, messages, refreshMessages, canSendMessage }) => {
                   style={{ paddingRight: "70px" }}
                 />
                 <ClickableOpacity
-                  className="attachment-icon"
+                  className="attachment-icon2"
                   style={{ cursor: "pointer" }}
                   onClick={handleAttachmentClick}
                 >
