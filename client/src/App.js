@@ -25,6 +25,8 @@ import {Warranty} from "./screens/customer/Warranty";
 import {CustomerTicket} from "./screens/customer/CustomerTicket";
 import {AssignedTickets} from "./screens/manager/AssignedTickets";
 import {ExpertTicket} from "./screens/expert/ExpertTicket";
+import {UnresolvedTickets} from "./screens/expert/UnresolvedTickets";
+import {ResolvedTickets} from "./screens/expert/ResolvedTickets";
 
 function App() {
     const [redirectRoute, setRedirectRoute] = useState(false);
@@ -100,6 +102,9 @@ function App() {
                             </Route> 
                             <Route element={<AuthRoute role="EXPERT" setRedirectRoute={setRedirectRoute}/>}>
                                 <Route path="/expert/*">
+                                    <Route index element={<Navigate to="tickets/in-progress"/>}/>
+                                    <Route path="tickets/in-progress" element={<UnresolvedTickets/>}/>
+                                    <Route path="tickets/completed" element={<ResolvedTickets/>}/>
                                     <Route path="tickets/:id" element={<ExpertTicket/>}/>
                                 </Route>
                             </Route>

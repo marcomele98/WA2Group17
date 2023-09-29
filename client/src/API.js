@@ -350,6 +350,7 @@ async function getTickets() {
   }
 }
 
+
 async function getTicket(id) {
   // call: GET /api/tickets/:id
   try {
@@ -450,6 +451,28 @@ async function reopenTicket(ticketId) {
   }
 }
 
+async function getUnresovedTickets() {
+  try {
+    let response = await axios.get(new URL("expert/tickets/unresolved", APIURL), {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getResolvedTickets() {
+  try {
+    let response = await axios.get(new URL("expert/tickets/resolved", APIURL), {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
 const API = {
   getWorkersProfiles,
   getProductByEan,
@@ -477,6 +500,8 @@ const API = {
   closeTicket,
   resolveTicket,
   reopenTicket,
+  getUnresovedTickets,
+  getResolvedTickets
 };
 
 export default API;

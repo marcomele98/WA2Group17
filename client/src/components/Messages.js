@@ -60,7 +60,7 @@ export const Messages = ({ id, messages, refreshMessages, canSendMessage }) => {
 
   useEffect(() => {
     if (!canSendMessage) {
-      setChatHeight(pageHeight - 200);
+      setChatHeight(pageHeight - 270);
     } else if (!isObjectEmpty(addMessageVM.attachments)) {
       setChatHeight(pageHeight - 420);
     } else {
@@ -99,7 +99,7 @@ export const Messages = ({ id, messages, refreshMessages, canSendMessage }) => {
                   : "other-card"
               }
             >
-              <MessageCard message={message} />
+              <MessageCard message={message} textColor={message.userEmail === user.user.email ? "white" : "black"} />
             </ListGroupItem>
           ))}
         </ListGroup>

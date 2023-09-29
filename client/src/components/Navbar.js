@@ -51,6 +51,18 @@ function NavigationBar() {
                                 </>
                             ),
                             CASHIER: <></>,
+                            EXPERT: (
+                                <>
+
+                                    <NavDropdown title="Tickets" style={navLinkStyle}
+                                        active={location?.pathname === "/expert/tickets/in-progress" || location?.pathname === "/expert/tickets/completed"}
+                                    >
+                                        <NavDropdown.Item className='dropdown-item:hover' style={{ backgroundColor: location?.pathname === "/expert/tickets/in-progress" ? "#0c6dfd" : false, color: location?.pathname === "/expert/tickets/in-progress" ? "white" : false, }} active={location?.pathname === "/expert/tickets/in-progress"} onClick={() => navigate('/expert/tickets/in-progress')}>In Progress</NavDropdown.Item>
+                                        <NavDropdown.Divider />
+                                        <NavDropdown.Item className='dropdown-item:hover' style={{ backgroundColor: location?.pathname === "/expert/tickets/completed" ? "#0c6dfd" : false, color: location?.pathname === "/expert/tickets/completed" ? "white" : false, }} active={location?.pathname === "/expert/tickets/completed"} onClick={() => navigate('/expert/tickets/completed')}>Completed</NavDropdown.Item>
+                                    </NavDropdown>
+                                </>
+                            ),
                             CLIENT: (
                                 <>
                                     <Nav.Link
