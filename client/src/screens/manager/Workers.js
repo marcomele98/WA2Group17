@@ -32,6 +32,7 @@ export const Workers = () => {
           setShowModal(false);
         })}
       />
+      <h1>Manage Users</h1>
       <Row style={{ margin: 0, padding: 0, marginBottom: 20 }}>
         <Col style={{ width: "100%" }}>
           <Form.Control

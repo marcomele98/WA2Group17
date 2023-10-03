@@ -28,7 +28,7 @@ export const CreateWorker = () => {
 
   return (
     <Form onSubmit={onSubmit}>
-      <h2 className="mb-3">Edit Profile</h2>
+      <h2 className="mb-3">Create Profile</h2>
       <Row>
         <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
           <CustomControl

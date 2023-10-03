@@ -1,7 +1,15 @@
 import React from "react";
-import { Form, Row, Col } from "react-bootstrap";
+import { Form, Row, Col, InputGroup } from "react-bootstrap";
+import { Eye, EyeSlash } from "react-bootstrap-icons";
+import { ClickableOpacity } from "./ClickableOpacity";
 
-export const CustomControl = ({ value, setValue, placeholder, disabled, isInvalid }) => {
+export const CustomControl = ({
+  value,
+  setValue,
+  placeholder,
+  disabled,
+  isInvalid,
+}) => {
   return (
     <Form.Group className="mb-3" controlId="NameInput">
       <Form.Control
@@ -46,25 +54,47 @@ export const PasswordInput = ({
   setPassword,
   confirmPassword,
   setConfirmPassword,
-  validated
+  validated,
 }) => {
+  const [showPassword1, setShowPassword1] = React.useState(false);
+  const [showPassword2, setShowPassword2] = React.useState(false);
   return (
     <Row>
       <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
         <Form.Group className="mb-3" controlId="PassWordInput">
-          <Form.Control
-            type="password"
-            size="lg"
-            value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
-            placeholder="Enter Password"
-            isInvalid={
-              !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=]).*$/.test(
-                password
-              ) && validated
-            }
-            required
-          />
+          <InputGroup>
+            <Form.Control
+              size="lg"
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+              placeholder="Enter Password"
+              isInvalid={
+                !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=]).*$/.test(
+                  password
+                ) && validated
+              }
+              required
+              style={{ borderRightColor: "transparent" }}
+              type={showPassword2 ? "text" : "password"}
+            />
+            <InputGroup.Text
+              style={{
+                borderLeftColor: "transparent",
+                backgroundColor: "transparent",
+              }}
+            >
+              <ClickableOpacity
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowPassword2(!showPassword2);
+                }}
+              >
+                {showPassword2 ? <Eye /> : <EyeSlash />}
+              </ClickableOpacity>
+            </InputGroup.Text>
+          </InputGroup>
           <Form.Control.Feedback type="invalid">
             Password must contain at least 1 lowercase letter, 1 uppercase
             letter, 1 number and 1 special character
@@ -73,21 +103,41 @@ export const PasswordInput = ({
       </Col>
       <Col xs={12} sm={12} md={6} lg={6} xl={6} xxl={6}>
         <Form.Group className="mb-3" controlId="PassWordCheckInput">
-          <Form.Control
-            type="password"
-            size="lg"
-            value={confirmPassword}
-            onChange={(ev) => setConfirmPassword(ev.target.value)}
-            placeholder="Confirm Password"
-            isInvalid={
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=]).*$/.test(
-                password
-              ) &&
-              password !== confirmPassword &&
-              validated
-            }
-            required
-          />
+          <InputGroup>
+            <Form.Control
+              size="lg"
+              value={confirmPassword}
+              onChange={(ev) => setConfirmPassword(ev.target.value)}
+              placeholder="Confirm Password"
+              isInvalid={
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=]).*$/.test(
+                  password
+                ) &&
+                password !== confirmPassword &&
+                validated
+              }
+              required
+              style={{ borderRightColor: "transparent" }}
+              type={showPassword1 ? "text" : "password"}
+            />
+            <InputGroup.Text
+              style={{
+                borderLeftColor: "transparent",
+                backgroundColor: "transparent",
+              }}
+            >
+              <ClickableOpacity
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowPassword1(!showPassword1);
+                }}
+              >
+                {showPassword1 ? <Eye /> : <EyeSlash />}
+              </ClickableOpacity>
+            </InputGroup.Text>
+          </InputGroup>
           <Form.Control.Feedback type="invalid">
             Passwords do not match
           </Form.Control.Feedback>
@@ -97,7 +147,12 @@ export const PasswordInput = ({
   );
 };
 
-export const SkillsCheckBoxes = ({ skills, addSkill, removeSkill, validated }) => {
+export const SkillsCheckBoxes = ({
+  skills,
+  addSkill,
+  removeSkill,
+  validated,
+}) => {
   return (
     <Form.Group className="mb-3" controlId="SkillsCheckBoxes" required>
       <Form.Label style={{ fontSize: 25 }}>Expert Skills: </Form.Label>
