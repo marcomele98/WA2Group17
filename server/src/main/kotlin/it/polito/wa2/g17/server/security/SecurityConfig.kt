@@ -30,6 +30,7 @@ class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/API/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/API/refresh").permitAll()
             .requestMatchers(HttpMethod.POST, "/API/signup").permitAll()
+            .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
             .requestMatchers("/API/reset-password").authenticated()
             .requestMatchers("/API/manager/**").hasRole("MANAGER")
             .requestMatchers("API/expert/**").hasRole("EXPERT")
