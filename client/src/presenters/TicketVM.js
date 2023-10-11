@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../API";
+import { errorToast, successToast } from "../utils/Error";
 
 export const useTicketVM = (onError, id) => {
     const [ticket, setTicket] = useState()
@@ -28,6 +29,7 @@ export const useTicketVM = (onError, id) => {
             console.log(result)
             setTicket(result);
         } catch (e) {
+            errorToast("Error while retrieving ticket " + id);
             switch (e.status) {
                 default:
                     onError("Error while searching ticket " + id);
@@ -37,9 +39,11 @@ export const useTicketVM = (onError, id) => {
 
     const closeTicket = async (id) => {
         try {
-            let ticket = await API.closeTicket(id);
+            await API.closeTicket(id);
             setLoading(true);
+            successToast("Ticket closed successfully");
         } catch (e) {
+            errorToast("Error while closing ticket " + id);
             switch (e.status) {
                 default:
                     onError("Error while closing ticket " + id);
@@ -49,9 +53,11 @@ export const useTicketVM = (onError, id) => {
 
     const reopenTicket = async (id ) => {
         try {
-            let ticket = await API.reopenTicket(id);
+            await API.reopenTicket(id);
             setLoading(true);
+            successToast("Ticket reopened successfully");
         } catch (e) {
+            errorToast("Error while reopening ticket " + id);
             switch (e.status) {
                 default:
                     onError("Error while reopening ticket " + id);
@@ -61,9 +67,11 @@ export const useTicketVM = (onError, id) => {
 
     const resolveTicket = async (id) => {
         try {
-            let ticket = await API.resolveTicket(id);
+            await API.resolveTicket(id);
             setLoading(true);
+            successToast("Ticket resolved successfully");
         } catch (e) {
+            errorToast("Error while resolving ticket " + id);
             switch (e.status) {
                 default:
                     onError("Error while resolving ticket " + id);
