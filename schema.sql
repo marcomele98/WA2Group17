@@ -111,34 +111,37 @@ CREATE TABLE IF NOT EXISTS public.attachment
 
 INSERT INTO products
     (ean, name, brand)
-VALUES ('4935531461206', 'JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976', 'JMT');
+VALUES ('4935531461206', 'Apple iPhone 15 256GB Titanium Blu', 'Apple');
 INSERT INTO products
     (ean, name, brand)
-VALUES ('3521201753911', '1x Summer Tyre Michelin Pilot Sport 4 255/40zr17 98y El', 'Michelin');
+VALUES ('4935531461207', 'Apple iPhone 15 256GB Titanium Black', 'Apple');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461208', 'Apple iPhone 15 256GB Titanium Natural', 'Apple');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461209', 'Apple iPhone 15 512GB Titanium Blu', 'Apple');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461210', 'Apple iPhone 15 512GB Titanium Black', 'Apple');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461211', 'Apple iPhone 15 512GB Titanium Natural', 'Apple');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461212', 'Google Pixel 8 Pro 256GB Green', 'Google');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461213', 'Google Pixel 8 Pro 256GB Blue', 'Google');
+INSERT INTO products
+(ean, name, brand)
+VALUES ('4935531461214', 'Google Pixel 8 Pro 256GB Black', 'Google');
 INSERT INTO products
     (ean, name, brand)
-VALUES ('5013812835005', 'Kent Bag of Rags 500g 100 Cotton KR500', 'Kent');
+VALUES ('4935531461215', 'Macbook Pro 1TB 16GB M2Pro Space Gray', 'Apple');
 INSERT INTO products
     (ean, name, brand)
-VALUES ('5051247498761', 'Sealey Tools VS3815 Suspension Arm Lever', 'Sealey');
-INSERT INTO products
-    (ean, name, brand)
-VALUES ('4007817332127', 'Staedtler Lumocolor Medium Tip Water Soluble OHP Black Pen St33192', 'Staedtler');
-INSERT INTO products
-    (ean, name, brand)
-VALUES ('5052746112566', 'BM Fitting Kit FK80303B for Exhaust Catalytic Converter Bm80303h Fits OPEL', 'BM Catalysts');
-INSERT INTO products
-    (ean, name, brand)
-VALUES ('4260558857718', '32gb Mini Button Security Camera WiFi WLAN IP Live App Video Tone Recording A106', 'IBM');
-INSERT INTO products
-    (ean, name, brand)
-VALUES ('5905133212661', 'Pipe Connector Exhaust System FA1 913-962', 'FA1');
-INSERT INTO products
-    (ean, name, brand)
-VALUES ('8424445071292', 'Rear View Mirror Glass Pair LHD Only Alkar 6401453 2pcs P OE Replacement', 'Alkar');
-INSERT INTO products
-    (ean, name, brand)
-VALUES ('6932799230098', 'Superior Quality Club Special Poker Playing Cards No. 2009', 'TJM');
+VALUES ('4935531461216', 'Macbook Pro 1TB 32GB M2Max Space Gray', 'Apple');
 
 CREATE SEQUENCE IF NOT EXISTS attachment_seq INCREMENT BY 50;
 CREATE SEQUENCE IF NOT EXISTS message_seq INCREMENT BY 50;
